@@ -1,4 +1,4 @@
-#新闻搜索系统
+# 新闻搜索系统
 
 这里是软件工程 `rzotgorz` 组的新闻搜索系统项目
 
@@ -16,11 +16,12 @@ npm install -g @vue/cli
 ```
 
 执行程序时，请使用如下命令：
+
 控制台1：` vue ui `，并在打开的网页中载入frontend中的项目
+
 控制台2: ` python manage.py runserver 8001 `，使得后端服务器在8001端口上运行
 
-clone时，请先在gitlab中配置好自己的sshkey，然后使用以下命令：
+clone时，请先在gitlab中配置好自己的sshkey，然后使用以下命令将项目clone到本地：
 ```
 git clone git@gitlab.secoder.net:rzotgorz/news-search-system.git
 ```
-将项目clone到本地

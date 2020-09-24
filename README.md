@@ -17,7 +17,9 @@ npm install -g @vue/cli
 
 执行程序时，请使用如下命令：
 
-控制台1：` vue ui `，并在打开的网页中载入frontend中的项目
+控制台1：` vue ui `，并在打开的网页中导入frontend中的项目
+
+如果希望运行前端服务器，请在网页中选择`任务`,再选择`serve`，点击运行，即可在8080端口运行前端服务器了
 
 控制台2: ` python manage.py runserver 8001 `，使得后端服务器在8001端口上运行
 

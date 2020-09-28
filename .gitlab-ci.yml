@@ -34,21 +34,22 @@ build:
 unit-test:
   extends: .test
   script:
-    # - coverage run -m pytest --junit-xml=xunit-reports/xunit-result.xml
+    - mysqladmin -u root password "123456"
+    - coverage run -m pytest --junit-xml=xunit-reports/xunit-result.xml
     - pytest --junit-xml=xunit-reports/xunit-result.xml
     - BACKEND_RET=$?
-    # - coverage xml -o coverage-reports/coverage.xml
-    # - coverage report
+    - coverage xml -o coverage-reports/coverage.xml
+    - coverage report
     - cd frontend/
     - npm run test:unit
     - FRONTEND_RET=$?
     - if [ $FRONTEND_RET \> 0 ]; then exit $FRONTEND_RET; fi;
     - exit $BACKEND_RET
-  # after_script:
-  #   - SUFFIX=$RANDOM
-  #   - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
-  #   - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
-  #   - /opt/sonar-scanner/bin/sonar-scanner
+  after_script:
+    - SUFFIX=$RANDOM
+    - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
+    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
+    - /opt/sonar-scanner/bin/sonar-scanner
 
 style-test:
   extends: .test

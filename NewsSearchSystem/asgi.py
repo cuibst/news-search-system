@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 ASGI config for NewsSearchSystem project.
 

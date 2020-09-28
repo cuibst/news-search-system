@@ -1,7 +1,8 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+NewsSearchSystem/__pycache__/
 *.py[cod]
 *$py.class
+backend/__pycache__
 
 # Environments
 .env

@@ -3,7 +3,7 @@
     <div class="message">
       {{msg}}
     </div>
-    <button v-on:click = "sendRequest">Click Me!</button>
+    <button @click = "sendRequest">Click Me!</button>
   </div>
 </template>
 

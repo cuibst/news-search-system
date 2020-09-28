@@ -34,12 +34,11 @@ build:
 unit-test:
   extends: .test
   script:
-    - mysqladmin -u root password "123456"
-    - coverage run -m pytest --junit-xml=xunit-reports/xunit-result.xml
-    - pytest --junit-xml=xunit-reports/xunit-result.xml
+    # - coverage run -m pytest --junit-xml=xunit-reports/xunit-result.xml
+    - python manage.py test
     - BACKEND_RET=$?
-    - coverage xml -o coverage-reports/coverage.xml
-    - coverage report
+    # - coverage xml -o coverage-reports/coverage.xml
+    # - coverage report
     - cd frontend/
     - npm run test:unit
     - FRONTEND_RET=$?

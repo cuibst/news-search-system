@@ -18,7 +18,7 @@ export default {
     sendRequest () {
       var Vue = this
       this.$http.get('').then(function (response) {
-        console.log(response.data.message)
+        // console.log(response.data.message)
         Vue.msg = response.data.message
       })
     }

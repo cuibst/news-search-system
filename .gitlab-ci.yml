@@ -35,15 +35,15 @@ unit-test:
   extends: .test
   script:
     # - coverage run -m pytest --junit-xml=xunit-reports/xunit-result.xml
-    - python manage.py test
-    - BACKEND_RET=$?
+    # - BACKEND_RET=$?
     # - coverage xml -o coverage-reports/coverage.xml
     # - coverage report
     - cd frontend/
     - npm run test:unit
     - FRONTEND_RET=$?
-    - if [ $FRONTEND_RET \> 0 ]; then exit $FRONTEND_RET; fi;
-    - exit $BACKEND_RET
+    # - if [ $FRONTEND_RET \> 0 ]; then exit $FRONTEND_RET; fi;
+    # - exit $BACKEND_RET
+    - exit $FRONTEND_RET
   after_script:
     - SUFFIX=$RANDOM
     - curl "http://10.0.0.11/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"

@@ -27,6 +27,7 @@ COPY . $HOME
 COPY --from=0 /opt/frontend/dist frontend/build
 
 EXPOSE 80
+EXPOSE 8001
 
 ENV PYTHONUNBUFFERED=true
 CMD ["/bin/sh", "config/run.sh"]

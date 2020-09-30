@@ -32,7 +32,7 @@ WORKDIR $HOME
 COPY --from=0 /opt/frontend/dist dist
 COPY nginx/ nginx/
 
-RUN rm -r /rtc/nginx/conf.d \
+RUN rm -r /etc/nginx/conf.d \
  && ln -s $HOME/nginx /etc/nginx/conf.d
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \

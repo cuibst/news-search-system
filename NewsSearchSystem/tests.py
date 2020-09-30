@@ -15,3 +15,5 @@ class TestViews(TestCase):
         '''
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
+        response = self.client.get('/favicon.ico')
+        self.assertEqual(response.status_code, 200)

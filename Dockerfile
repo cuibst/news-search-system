@@ -29,13 +29,9 @@ FROM nginx:1.18.0
 ENV HOME=/opt/app
 WORKDIR $HOME
 
-COPY --from=0 /opt/frontend/dist dist
-COPY nginx/ nginx/
-
-RUN rm -r /etc/nginx/conf.d \
- && ln -s $HOME/nginx /etc/nginx/conf.d
-
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
- && ln -sf /dev/stderr /var/log/nginx/error.log
+COPY --from=0 /opt/frontend/dist frontend/dist
 
 EXPOSE 80
+
+ENV PYTHONUNBUFFERED=true
+CMD ["/bin/sh", "config/run.sh"]

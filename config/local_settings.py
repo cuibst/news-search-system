@@ -5,7 +5,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = False
+DEBUG = True
 '''
 DATABASES = {
     'default': {
@@ -18,4 +18,4 @@ DATABASES = {
     }
 }
 '''
-STATICFILES_DIR = os.path.join(BASE_DIR, 'frontend', 'build')
+STATICFILES_DIR = os.path.join(BASE_DIR, 'frontend', 'dist')

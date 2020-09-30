@@ -9,7 +9,6 @@ WORKDIR $FRONTEND
 
 COPY frontend/ $FRONTEND
 RUN npm install
-RUN npm run build
 
 # Second stage for the backend
 FROM python:3.8.5
@@ -24,7 +23,7 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 COPY . $HOME
 
 # Copy frontend from the first stage
-COPY --from=0 /opt/frontend/dist frontend/build
+COPY --from=0 /opt/frontend frontend
 
 EXPOSE 80
 EXPOSE 8001

@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
@@ -17,7 +18,7 @@ export default {
   methods: {
     sendRequest () {
       var Vue = this
-      this.$http.get('').then(function (response) {
+      axios.get('').then(function (response) {
         // console.log(response.data.message)
         Vue.msg = response.data.message
       })

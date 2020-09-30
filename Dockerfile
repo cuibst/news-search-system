@@ -24,11 +24,6 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 COPY . $HOME
 
 # Copy frontend from the first stage
-FROM nginx:1.18.0
-
-ENV HOME=/opt/app
-WORKDIR $HOME
-
 COPY --from=0 /opt/frontend/dist frontend/dist
 
 EXPOSE 80

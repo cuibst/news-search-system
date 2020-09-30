@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="D:\git-repo\news-search-system\frontend\tests\unit\example.spec.js">
+    <testCase name="HelloWorld.vue renders props.msg when passed" duration="36"/>
+  </file>
+</testExecutions>

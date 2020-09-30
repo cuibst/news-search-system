@@ -1,11 +1,10 @@
-import { expect } from 'chai'
 import { shallowMount } from '@vue/test-utils'
 import Sample from '@/components/Sample.vue'
 
-describe('Sample.vue', () => {
-  it('renders msg and get data from backend when clicked', function () {
+describe('HelloWorld.vue', () => {
+  it('renders props.msg when passed', () => {
     const wrapper = shallowMount(Sample)
-    expect(wrapper.find('.message').text()).to.be.equal('hello')
+    expect(wrapper.find('.message').text()).toMatch('hello')
     wrapper.find('button').trigger('click')
   })
 })

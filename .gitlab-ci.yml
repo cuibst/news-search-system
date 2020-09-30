@@ -39,9 +39,8 @@ unit-test:
     - coverage xml -o coverage-reports/coverage.xml
     - coverage report
     - cd frontend/
-    - coverage run -m npm run test:unit
+    - npm run test:unit
     - FRONTEND_RET=$?
-    - coverage xml -o coverage/coverage.xml
     - if [ $FRONTEND_RET \> 0 ]; then exit $FRONTEND_RET; fi;
     - exit $BACKEND_RET
     - exit $FRONTEND_RET

@@ -104,7 +104,9 @@ class QqNewsBriefInfoSpider(scrapy.Spider):
                        'finance', 'auto', 'fashion', 'photo', 'games', 'cul', 'finance_stock',
                        'house', 'comic', 'emotion', 'digi', 'astro', 'health', 'visit', 'baby',
                        'pet', 'history', 'politics', 'zfw', 'football', 'society', 'cul_ru',
-                       'edu', 'finance_licai', 'sports', 'life', 'kepu']
+                       'edu', 'finance_licai', 'sports', 'life', 'kepu', 'sh', 'gd', 'tj',
+                       'hebei', 'cd', 'cq', 'xian', 'hn', 'hb', 'fj', 'henan', 'zj', 'ln',
+                       'jiangsu']
     url_prefix = 'https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id='
     url_mid = '&srv_id=pc&offset='
     url_suffix = '&limit=100&strategy=1&ext={%22pool%22:[%22high%22,%22top%22],%22is_filter%22:10,%22check_type%22:true}'
@@ -112,6 +114,8 @@ class QqNewsBriefInfoSpider(scrapy.Spider):
     for sub_srv_id in sub_srv_id_list:
         for i in range(2):
             start_urls.append(url_prefix + sub_srv_id + url_mid + str(100*i) + url_suffix)
+    total_error = 0
+
 
     def parse(self, response):
         try:
@@ -133,25 +137,24 @@ class QqNewsBriefInfoSpider(scrapy.Spider):
 
     def parse_item(self, response):
         current_url = response.request.url
-        pattern = '.+/omn/\\w+/([A-Za-z]*2020[0-9]{4}\\w+).*'
-        match_obj = re.match(pattern, current_url)
         item = NewsItem()
-        item['source'] = self.name.split('_')[0]
-        title = response.xpath('//title/text()').extract()[0].split('_')[0]
+        pattern = '.+/omn/\\w+/([A-Za-z]*2020[0-9]{4}\\w+).*'
         try:
+            match_obj = re.match(pattern, current_url)
+            item['source'] = self.name.split('_')[0]
+            title = response.xpath('//title/text()').extract()[0].split('_')[0]
             item['news_url'] = current_url
             item['title'] = title
             item['news_id'] = match_obj.group(1)
             item['pub_date'] = response.xpath('//meta[@name="apub:time"]/@content').extract()[0]
             item['content_text'] = response.xpath('//p[@class="one-p"]/text()').extract()
             item['content_picture'] = response.xpath('//img[@class="content-picture"]/@src').extract()
-            # yield item
+            yield item
         except:
-            print('_____ERROR_____')
-        f = open('data/news_info/' + item['news_id'] + '.json', 'w', encoding="utf-8")
-        content = json.dumps(dict(item), indent=4, ensure_ascii=False)
-        f.write(content)
-        f.close()
+            error_f = open('data/error/error_url.txt', 'a', encoding='utf-8')
+            error_f.write(str(self.total_error) + '_' + current_url + '\n')
+            error_f.close()
+            self.total_error += 1
 
 
 

@@ -12,9 +12,10 @@ class NewsItem(scrapy.Item):
     source = scrapy.Field()
     news_url = scrapy.Field()
     category = scrapy.Field()
+    media = scrapy.Field()
+    tags = scrapy.Field()
     title = scrapy.Field()
     news_id = scrapy.Field()
     pub_date = scrapy.Field()
-    content_text = scrapy.Field()
-    content_picture = scrapy.Field()
+    content = scrapy.Field()
 

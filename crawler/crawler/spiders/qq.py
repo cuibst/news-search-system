@@ -116,7 +116,6 @@ class QqNewsBriefInfoSpider(scrapy.Spider):
             start_urls.append(url_prefix + sub_srv_id + url_mid + str(100*i) + url_suffix)
     total_error = 0
 
-
     def parse(self, response):
         try:
             list = json.loads(response.text)['data']['list']
@@ -137,18 +136,29 @@ class QqNewsBriefInfoSpider(scrapy.Spider):
 
     def parse_item(self, response):
         current_url = response.request.url
+        script_list = response.xpath('/html/head//script/text()').extract()
+        news_brief_info = None
+        for script in script_list:
+            if(script.find('window.DATA = ') >= 0):
+                news_brief_info = json.loads(script.lstrip('window.DATA = '))
+                break
         item = NewsItem()
-        pattern = '.+/omn/\\w+/([A-Za-z]*2020[0-9]{4}\\w+).*'
         try:
-            match_obj = re.match(pattern, current_url)
+            item['title'] = news_brief_info['title']
+            item['category'] = news_brief_info['catalog1']
+            item['media'] = news_brief_info['media']
+            item['pub_date'] = news_brief_info['pubtime']
+            item['tags'] = news_brief_info['tags']
+            item['news_id'] = news_brief_info['cms_id']
             item['source'] = self.name.split('_')[0]
-            title = response.xpath('//title/text()').extract()[0].split('_')[0]
             item['news_url'] = current_url
-            item['title'] = title
-            item['news_id'] = match_obj.group(1)
-            item['pub_date'] = response.xpath('//meta[@name="apub:time"]/@content').extract()[0]
-            item['content_text'] = response.xpath('//p[@class="one-p"]/text()').extract()
-            item['content_picture'] = response.xpath('//img[@class="content-picture"]/@src').extract()
+            item['content'] = []
+            for one_p in response.xpath('//p[@class="one-p"]'):
+                img = one_p.xpath('.//img/@src').extract()
+                if(len(img) != 0):
+                    item['content'] += ['img_' + src for src in img]
+                else:
+                    item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
             yield item
         except:
             error_f = open('data/error/error_url.txt', 'a', encoding='utf-8')

@@ -48,7 +48,7 @@ class QqSpider(scrapy.Spider):
 
 # CrawlSpider与Rule配合使用可以起到历遍全站的作用、Request干啥的我就不解释了
 from scrapy.spiders import CrawlSpider, Rule, Request
-from scrapy import Spider
+import scrapy
 # 配合Rule进行URL规则匹配
 from scrapy.linkextractors import LinkExtractor
 import re
@@ -89,12 +89,14 @@ class QqIncSpider(CrawlSpider):
             yield item
         except:
             pass
+
+
     def follow(self, response):
         pass
 
-class QqNewsBriefInfoSpider(Spider):
+class QqNewsBriefInfoSpider(scrapy.Spider):
     name = 'qq_news_brief_info'
-    allowed_domains = ['i.news.qq.com']
+    allowed_domains = ['i.news.qq.com', 'new.qq.com']
     # https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id=24hours
     # &srv_id=pc&offset=0&limit=20&strategy=1&ext={%22pool%22:[%22high%22,%22top%22],%22is_filter%22:10,%22check_type%22:true}
     # 一下是腾讯新闻的不同新闻标签
@@ -126,6 +128,30 @@ class QqNewsBriefInfoSpider(Spider):
             f = open('data/news_brief_info/' + dic['cms_id'] + '.json', 'w', encoding='utf-8')
             f.write(json.dumps(dic, indent=4, ensure_ascii=False))
             f.close()
+            yield Request(dic['url'], callback=self.parse_item)
+
+
+    def parse_item(self, response):
+        current_url = response.request.url
+        pattern = '.+/omn/\\w+/([A-Za-z]*2020[0-9]{4}\\w+).*'
+        match_obj = re.match(pattern, current_url)
+        item = NewsItem()
+        item['source'] = self.name.split('_')[0]
+        title = response.xpath('//title/text()').extract()[0].split('_')[0]
+        try:
+            item['news_url'] = current_url
+            item['title'] = title
+            item['news_id'] = match_obj.group(1)
+            item['pub_date'] = response.xpath('//meta[@name="apub:time"]/@content').extract()[0]
+            item['content_text'] = response.xpath('//p[@class="one-p"]/text()').extract()
+            item['content_picture'] = response.xpath('//img[@class="content-picture"]/@src').extract()
+            # yield item
+        except:
+            print('_____ERROR_____')
+        f = open('data/news_info/' + item['news_id'] + '.json', 'w', encoding="utf-8")
+        content = json.dumps(dict(item), indent=4, ensure_ascii=False)
+        f.write(content)
+        f.close()
 
 
 

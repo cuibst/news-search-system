@@ -10,8 +10,8 @@ import json
 
 class NewsPipeline:
     def process_item(self, item, spider):
-        f = open('data/' + item['news_id'] + '.json', 'w', encoding="utf-8")
-        content = json.dumps(dict(item), ensure_ascii=False)
+        f = open('data/news_info/' + item['news_id'] + '.json', 'w', encoding="utf-8")
+        content = json.dumps(dict(item), indent=4, ensure_ascii=False)
         f.write(content)
         f.close()
         return item

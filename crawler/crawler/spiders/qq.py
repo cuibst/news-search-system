@@ -48,6 +48,7 @@ class QqSpider(scrapy.Spider):
 
 # CrawlSpider与Rule配合使用可以起到历遍全站的作用、Request干啥的我就不解释了
 from scrapy.spiders import CrawlSpider, Rule, Request
+from scrapy import Spider
 # 配合Rule进行URL规则匹配
 from scrapy.linkextractors import LinkExtractor
 import re
@@ -90,5 +91,41 @@ class QqIncSpider(CrawlSpider):
             pass
     def follow(self, response):
         pass
+
+class QqNewsBriefInfoSpider(Spider):
+    name = 'qq_news_brief_info'
+    allowed_domains = ['i.news.qq.com']
+    # https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id=24hours
+    # &srv_id=pc&offset=0&limit=20&strategy=1&ext={%22pool%22:[%22high%22,%22top%22],%22is_filter%22:10,%22check_type%22:true}
+    # 一下是腾讯新闻的不同新闻标签
+    sub_srv_id_list = ['24hours', 'antip', 'bj', 'ent', 'milite', 'world', 'tech',
+                       'finance', 'auto', 'fashion', 'photo', 'games', 'cul', 'finance_stock',
+                       'house', 'comic', 'emotion', 'digi', 'astro', 'health', 'visit', 'baby',
+                       'pet', 'history', 'politics', 'zfw', 'football', 'society', 'cul_ru',
+                       'edu', 'finance_licai', 'sports', 'life', 'kepu']
+    url_prefix = 'https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id='
+    url_mid = '&srv_id=pc&offset='
+    url_suffix = '&limit=100&strategy=1&ext={%22pool%22:[%22high%22,%22top%22],%22is_filter%22:10,%22check_type%22:true}'
+    start_urls = []
+    for sub_srv_id in sub_srv_id_list:
+        for i in range(2):
+            start_urls.append(url_prefix + sub_srv_id + url_mid + str(100*i) + url_suffix)
+
+    def parse(self, response):
+        try:
+            list = json.loads(response.text)['data']['list']
+        except:
+            return
+        for data in list:
+            dic = {}
+            key_list = ['article_id', 'article_type', 'category_cn', 'create_time',
+                        'category_id', 'category_name', 'cms_id', 'img', 'img_exp_type',
+                        'media_id', 'media_name', 'publish_time', 'title', 'url']
+            for key in key_list:
+                dic[key] = data[key]
+            f = open('data/news_brief_info/' + dic['cms_id'] + '.json', 'w', encoding='utf-8')
+            f.write(json.dumps(dic, indent=4, ensure_ascii=False))
+            f.close()
+
 
 

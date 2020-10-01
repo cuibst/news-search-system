@@ -55,8 +55,9 @@ from crawler.items import NewsItem
 import json
 from selenium import webdriver
 
-class QqSpider(CrawlSpider):
-    name = 'qq'
+class QqIncSpider(CrawlSpider):
+    # 这是一个功能及其不完善的增量爬虫，使用chromedirver对首页进行爬取
+    name = 'qq_inc'
     allowed_domains = ['qq.com', 'news.qq.com', 'sports.qq.com', 'new.qq.com']
     count_all = 0
     url_all = []
@@ -67,19 +68,19 @@ class QqSpider(CrawlSpider):
         Rule(LinkExtractor(allow=('https://new[s]{0,1}.qq.com/.*',)), callback='follow', follow=True),
     )
 
-    browser = webdriver.Chrome(executable_path='chromedriver.exe')
-    browser.set_page_load_timeout(30)
+    #browser = webdriver.Chrome(executable_path='chromedriver.exe')
+    #browser.set_page_load_timeout(3)
 
     def parse_item(self, response):
         current_url = response.request.url
         pattern = '.+/omn/2020[0-9]{4}/(2020[0-9]{4}[A-za-z0-9]+).*'
         match_obj = re.match(pattern, current_url)
         item = NewsItem()
-        item['source'] = self.name
-        title = response.xpath('//h1/text()').extract()
+        item['source'] = self.name.split('_')[0]
+        title = response.xpath('//h1/text()').extract()[0]
         try:
             item['news_url'] = current_url
-            item['title'] = response.xpath('//title/text()').extract()[0]
+            item['title'] = title
             item['news_id'] = match_obj.group(1)
             item['pub_date'] = response.xpath('//meta[@name="apub:time"]/@content').extract()[0]
             item['content_text'] = response.xpath('//p[@class="one-p"]/text()').extract()

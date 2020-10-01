@@ -24,7 +24,7 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 COPY . $HOME
 
 # Copy frontend from the first stage
-COPY --from=0 /opt/frontend/dist frontend/build
+COPY --from=0 /opt/frontend/dist frontend/dist
 
 EXPOSE 80
 

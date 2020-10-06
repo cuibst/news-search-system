@@ -17,7 +17,7 @@
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
-          <el-button type="primary">登录</el-button>
+          <el-button type="primary" @click="sendlogin">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -25,11 +25,41 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
       username: '',
-      password: ''
+      password: '',
+      lastURL: '/home'
+    }
+  },
+  methods: {
+    sendlogin () {
+      console.log(this.password)
+      axios.post('/login', {
+        username: this.username,
+        password: this.password
+      }).then(ret => {
+        console.log(ret.status)
+        if (ret.status === '200') {
+          window.sessionStorage.setItem('token', ret.data.token)
+          document.location = this.lastURL
+          this.$message.success('登陆成功')
+        } else {
+          this.password = ''
+          this.$message.error('错误的用户名或密码')
+        }
+      }, error => {
+        console.log(error)
+        this.password = ''
+        this.$message.error('网络连接错误')
+      })
+    }
+  },
+  route: {
+    canActivate (transition) {
+      this.lastURL = transition.from.path
     }
   }
 }

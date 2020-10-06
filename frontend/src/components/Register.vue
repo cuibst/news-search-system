@@ -9,15 +9,27 @@
       <el-form class="login-form">
         <!--用户名-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-user" v-model="username"></el-input>
+          <el-input prefix-icon="el-icon-user" v-model="username" placeholder="请输入您的用户名"></el-input>
         </el-form-item>
         <!--密码-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-view" show-password v-model="password"></el-input>
+          <el-input prefix-icon="el-icon-view" show-password v-model="password" placeholder="请输入您的密码"></el-input>
+        </el-form-item>
+        <!--确认密码-->
+        <el-form-item>
+          <el-input prefix-icon="el-icon-view" show-password v-model="secondpassword" placeholder="请确认您的密码"></el-input>
+        </el-form-item>
+        <!--邮箱-->
+        <el-form-item>
+          <el-input prefix-icon="el-icon-s-promotion" v-model="email" placeholder="请输入您的邮箱"></el-input>
+        </el-form-item>
+        <!--手机号-->
+        <el-form-item>
+          <el-input prefix-icon="el-icon-phone" v-model="phonenumber" placeholder="请输入您的手机号"></el-input>
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
-          <el-button type="primary">登录</el-button>
+          <el-button type="primary">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -26,11 +38,14 @@
 
 <script>
 export default {
-  name: 'Login',
+  name: 'Register',
   data () {
     return {
       username: '',
-      password: ''
+      password: '',
+      email: '',
+      phonenumber: '',
+      secondpassword: ''
     }
   }
 }
@@ -45,7 +60,7 @@ export default {
 
 .login_box {
   width: 450px;
-  height: 300px;
+  height: 600px;
   background-color: aliceblue;
   border-radius: 30px;
   position: absolute;
@@ -84,7 +99,7 @@ export default {
 }
 .login-form {
   position: absolute;
-  bottom: 0;
+  top: 100px;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;

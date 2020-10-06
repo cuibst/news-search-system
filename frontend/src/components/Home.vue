@@ -9,8 +9,8 @@
                   <input class="btn" @click="search" value="搜索新闻">
             </div>
             <div style="float:right">
-              <a v-if="loginstate" href="/login">登录</a>
-              <span v-else>欢迎您，{{username}}</span>
+              <a v-if="loginstate" href="/login" style="color:gray">登录</a>
+              <span v-else>欢迎您，<a href="/user" style="color: gray">{{username}}</a></span>
             </div>
           </div>
           <div class="indexlist">
@@ -25,11 +25,16 @@
         </el-header>
         <el-container class = "home-main">
             <!---<router-view></router-view>--->
-            <el-aside width="40%">
-              最新新闻
+            <el-aside width="35%">
+              <li class="typelabel">
+                <span class="shorttypelabel">热点要闻</span>
+              </li>
+              <ul v-for="(item,index) in textnews" v-bind:key="index">
+                <a :class="item.importance?'impnews':'simnews'" :href="item.url"> {{item.title}} </a>
+              </ul>
             </el-aside>
             <el-main>
-              图片新闻
+              <li class="typelabel">图片新闻</li>
             </el-main>
         </el-container>
     </el-container>
@@ -49,17 +54,19 @@ export default {
         },
         {
           data: '历史',
-          url: '/history'
+          url: '/home/history'
         },
         {
           data: '国际',
-          url: '/global'
+          url: '/home/global'
         },
         {
           data: '国内',
-          url: '/domes'
+          url: '/home/domes'
         }],
-      nowindex: 0
+      nowindex: 0,
+      picnews: [],
+      textnews: []
     }
   },
   methods: {
@@ -70,13 +77,29 @@ export default {
     search () {
       this.$router.push('/search?' + this.searchitem)
     }
+  },
+  created () {
+    this.picnews = []
+    this.textnews = [
+      {
+        title: '习近平新时代中国特色社会思想进入高校思政课',
+        url: '/news/111',
+        importance: true
+      },
+      {
+        title: '特朗普夫妇确诊新冠肺炎',
+        url: '/news/112',
+        importance: false
+      }
+    ]
   }
 }
 </script>
 
 <style lang="less" scoped>
 .home-main{
-    height: 100%
+    height: 100%;
+    margin: 15px;
 }
 .el-header{
     align-items:center;
@@ -108,7 +131,7 @@ export default {
 .btn{
     background-color: #38f;
     width : 104px;
-    height : 40ox;
+    height : 42ox;
     line-height : 32px;
     font-size: 16px;
     cursor: pointer;
@@ -131,11 +154,43 @@ export default {
 .grid-content {
     border-radius: 4px;
     min-height: 36px;
+    line-height: 36px;
     color: #fff;
     text-align: center;
-    vertical-align: middle;
+    margin: 0 auto;
+    font-weight: bold;
 }
 .nowgrid{
   background-color: darkred;
+}
+.typelabel{
+  height : 36px;
+  line-height: 36px;
+  text-align: center;
+  list-style: none;
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid #e5e5e5;
+}
+.shorttypelabel{
+   float: left;
+   border-bottom: 2px solid #2f63ba;
+   color: #2f63ba;
+   font-size: 18px;
+   font-weight: 700;
+   padding: 0 20px;
+   vertical-align: baseline;
+}
+.impnews{
+  font-weight: bold;
+  font-size:20px;
+  color:black;
+  text-decoration: none;
+}
+.simnews{
+  font-weight:500;
+  font-size:auto;
+  color:black;
+  text-decoration: none;
 }
 </style>

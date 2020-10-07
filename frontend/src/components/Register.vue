@@ -9,33 +9,37 @@
       <el-form class="login-form">
         <!--用户名-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-user" v-model="username" placeholder="请输入您的用户名" id="username1">
+          <el-input class="input" prefix-icon="el-icon-user" v-model.lazy="username" placeholder="请输入您的用户名">
             <i class="el-icon-check" slot="append" v-if="username_valid"></i>
+            <!-- 当输入不为空且不和要求时反馈为错误符号 -->
+            <i class="el-icon-close" slot="append" v-if="username_valid===false && username_input===true"></i>
           </el-input>
         </el-form-item>
         <!--密码-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-view" show-password v-model="password" placeholder="请输入您的密码">
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="password" placeholder="请输入您的密码">
             <i class="el-icon-check" slot="append" v-if="passwordcheck"></i>
           </el-input>
         </el-form-item>
         <!--确认密码-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-view" show-password v-model="secondpassword" placeholder="请确认您的密码">
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="secondpassword" placeholder="请确认您的密码">
             <i class="el-icon-check" slot="append" v-if="passwordcheck"></i>
           </el-input>
-          <span v-if="passwordcheck===false" style="color: red;font-size:12px;">请输入相同密码!</span>
+          <span v-if="passwordcheck===false && password_input" style="color: red;font-size:12px;" class="errorPassword">请输入相同密码!</span>
         </el-form-item>
         <!--邮箱-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-s-promotion" v-model="email" placeholder="请输入您的邮箱" ref="email1">
+          <el-input class="input" prefix-icon="el-icon-s-promotion" v-model="email" placeholder="请输入您的邮箱">
             <i class="el-icon-check" slot="append" v-if="email_valid"></i>
+            <i class="el-icon-close" slot="append" v-if="email_valid===false && email_input"></i>
           </el-input>
         </el-form-item>
         <!--手机号-->
         <el-form-item>
-          <el-input v-if="phonenumber_valid===false" prefix-icon="el-icon-phone" v-model="phonenumber" placeholder="请输入您的手机号" ref="phonenumber1">
+          <el-input class="input" prefix-icon="el-icon-phone" v-model="phonenumber" placeholder="请输入您的手机号">
             <i class="el-icon-check" slot="append" v-if="phonenumber_valid"></i>
+            <i class="el-icon-close" slot="append" v-if="phonenumber_valid===false && phonenumber_input"></i>
           </el-input>
         </el-form-item>
         <!--按钮-->
@@ -58,9 +62,13 @@ export default {
       phonenumber: '',
       secondpassword: '',
       username_valid: false,
+      username_input: false,
       passwordcheck: false,
+      password_input: false,
       email_valid: false,
-      phonenumber_valid: false
+      email_input: false,
+      phonenumber_valid: false,
+      phonenumber_input: false
     }
   },
   watch: {
@@ -68,21 +76,30 @@ export default {
     username: {
       handler (newName) {
         this.username_valid = /^[A-Za-z\u4e00-\u9fa5][-A-Za-z0-9\u4e00-\u9fa5_]*$/.test(newName)
+        this.username_input = (this.username !== '')
       }
     },
     secondpassword: {
       handler () {
-        this.passwordcheck = (this.password === this.secondpassword)
+        this.passwordcheck = (this.password === this.secondpassword && this.password !== '')
+        this.password_input = (this.secondpassword !== '')
+      }
+    },
+    password: {
+      handler () {
+        this.passwordcheck = (this.password === this.secondpassword && this.password !== '')
       }
     },
     email: {
       handler (newEmail) {
         this.email_valid = /^([a-zA-Z0-9]+[_|_|.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|_|.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$/.test(newEmail)
+        this.email_input = (this.email !== '')
       }
     },
     phonenumber: {
       handler (newPhoneNumber) {
         this.phonenumber_valid = /^[1][3,4,5,7,8][0-9]{9}$/.test(newPhoneNumber)
+        this.phonenumber_input = (this.phonenumber !== '')
       }
     }
   },
@@ -141,6 +158,7 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
+
 .login-form {
   position: absolute;
   top: 100px;
@@ -148,4 +166,5 @@ export default {
   padding: 0 20px;
   box-sizing: border-box;
 }
+
 </style>

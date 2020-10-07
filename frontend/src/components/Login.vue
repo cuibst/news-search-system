@@ -26,6 +26,7 @@
 
 <script>
 import axios from 'axios'
+import '@/mock/index'
 export default {
   data () {
     return {
@@ -36,16 +37,15 @@ export default {
   },
   methods: {
     sendlogin () {
-      console.log(this.password)
-      axios.post('/login', {
+      axios.post('/api/login', {
         username: this.username,
         password: this.password
       }).then(ret => {
-        console.log(ret.status)
-        if (ret.status === '200') {
-          window.sessionStorage.setItem('token', ret.data.token)
-          document.location = this.lastURL
+        console.log(ret)
+        if (ret.data.code === '200') {
+          window.sessionStorage.setItem('token', ret.data.Token)
           this.$message.success('登陆成功')
+          // document.location = this.lastURL
         } else {
           this.password = ''
           this.$message.error('错误的用户名或密码')

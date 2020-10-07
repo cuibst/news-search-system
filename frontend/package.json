@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
+    "better-mock": "^0.2.8",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
     "unit": "^1.4.3-0",

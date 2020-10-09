@@ -1,8 +1,8 @@
-import * as Mock from 'better-mock'
+import * as Mock from 'mockjs'
 
-Mock.setup({ timeout: '200-400' })
+// Mock.setup({ timeout: '200-400' })
 
-Mock.mock('/api/login', 'POST', (rqst) => {
+Mock.mock('/api/login', 'post', (rqst) => {
   const info = JSON.parse(rqst.body)
   console.log(info)
   if (info.username === info.password) {

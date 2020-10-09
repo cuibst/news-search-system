@@ -1,14 +1,14 @@
 '''
 views for backend
 '''
+import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
-import json
 
 # Create your views here.
 
-def index(request):
+def index():
     '''
     render /api
     '''
@@ -23,7 +23,7 @@ def login(request):
     '''
     if request.method == 'POST':
         data = json.loads(request.body)
-        name = data['name']
+        name = data['username']
         password = data['password']
         print(name, password)
         user = User.objects.filter(name=name).first()
@@ -34,7 +34,7 @@ def login(request):
                 'token': 'WA1'
             }, status=200)
         password0 = user.password
-        print(password0 , password)
+        print(password0, password)
         if password0 == password:
             return JsonResponse({
                 'code': 200,

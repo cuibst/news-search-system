@@ -26,7 +26,7 @@
 
 <script>
 import axios from 'axios'
-import '@/mock/index'
+// import '@/mock/index'
 export default {
   data () {
     return {

@@ -8,5 +8,4 @@ Vue.use(Header)
 Vue.use(Input)
 Vue.use(Form)
 Vue.use(FormItem)
-Vue.use(Message)
 Vue.prototype.$message = Message

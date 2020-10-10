@@ -1,11 +1,11 @@
 from scrapy.spiders import CrawlSpider, Rule, Request, Spider
-from scrapy.linkextractors import LinkExtractor
-from scrapy.crawler import CrawlerRunner
-from scrapy.utils.log import configure_logging
-from scrapy.utils.project import get_project_settings
-from twisted.internet import reactor, defer
+#from scrapy.linkextractors import LinkExtractor
+#from scrapy.crawler import CrawlerRunner
+#from scrapy.utils.log import configure_logging
+#from scrapy.utils.project import get_project_settings
 import time
 import re
+
 
 # 导包包含上级目录
 import sys
@@ -14,6 +14,7 @@ fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ffpath = os.path.abspath(os.path.join(fpath, ".."))
 print(ffpath)
 sys.path.append(ffpath)
+
 
 from crawler.items import NewsItem
 import json
@@ -64,6 +65,9 @@ class QqIncSpider(Spider):
     allowed_domains = ['news.qq.com', 'new.qq.com']
     start_urls = ['https://www.qq.com/']
     total_error = 0
+
+    browser = webdriver.Chrome(executable_path='chromedriver.exe')
+    browser.set_page_load_timeout(10)
 
     def parse(self, response):
         href_list = response.xpath('//a/@href').extract()
@@ -130,7 +134,7 @@ class QqNewsInfoSpider(Spider):
     total_error = 0
 
     def parse(self, response):
-        # 爬取新闻信息列表，提取新闻的简要信息，存入data/news_brief_info/文件夹
+        # 爬取新闻信息列表，提取新闻的简要信息，存入data/qq/news_brief_info/文件夹
         try:
             list = json.loads(response.text)['data']['list']
         except:
@@ -142,14 +146,14 @@ class QqNewsInfoSpider(Spider):
                         'media_id', 'media_name', 'publish_time', 'title', 'url']
             for key in key_list:
                 dic[key] = data[key]
-            f = open('data/news_brief_info/' + dic['cms_id'] + '.json', 'w', encoding='utf-8')
+            f = open('data/qq/news_brief_info/' + dic['cms_id'] + '.json', 'w', encoding='utf-8')
             f.write(json.dumps(dic, indent=4, ensure_ascii=False))
             f.close()
             yield Request(dic['url'], callback=self.parse_item)
 
 
     def parse_item(self, response):
-        # 从新闻页爬取信息，存入data/news_info/文件夹
+        # 从新闻页爬取信息，存入data/qq/news_info/文件夹
         current_url = response.request.url
         script_list = response.xpath('/html/head//script/text()').extract()
         news_brief_info = None
@@ -183,6 +187,7 @@ class QqNewsInfoSpider(Spider):
             self.total_error += 1
 
 
+'''
 runner = CrawlerRunner(get_project_settings())
 configure_logging()
 
@@ -196,4 +201,5 @@ def qq_inc_crawl():
 
 qq_inc_crawl()
 reactor.run()
+'''
 

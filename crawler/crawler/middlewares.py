@@ -14,14 +14,14 @@ import time
 
 class SeleniumMiddleware(object):
     def process_request(self, request, spider):
-        if spider.name == 'qq':
+        if spider.name == 'qq_inc' and request.url == 'https://www.qq.com/':
             try:
                 spider.browser.get(request.url)
                 spider.browser.execute_script('var q=document.documentElement.scrollTop=10000')
             except TimeoutException as e:
                 print('超时')
                 spider.browser.execute_script('window.stop()')
-            time.sleep(2)
+            time.sleep(1)
             return HtmlResponse(url=spider.browser.current_url, body=spider.browser.page_source, encoding="utf-8",
                                 request=request)
 

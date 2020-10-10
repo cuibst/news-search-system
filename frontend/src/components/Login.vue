@@ -42,7 +42,7 @@ export default {
         password: this.password
       }).then(ret => {
         console.log(ret)
-        if (ret.data.code === '200') {
+        if (ret.data.code === 200) {
           window.sessionStorage.setItem('token', ret.data.Token)
           this.$message.success('登陆成功')
           document.location = this.lastURL

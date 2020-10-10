@@ -8,12 +8,13 @@ from .models import User
 
 # Create your views here.
 
-def index():
+def index(request):
     '''
     render /api
     '''
     mes = dict()
     mes['message'] = "Hello Software Engineering!"
+    mes['code'] = 200
     return JsonResponse(mes)
 
 @csrf_exempt
@@ -32,7 +33,7 @@ def login(request):
                 'code': 401,
                 'data': "invalid user",
                 'token': 'WA1'
-            }, status=200)
+            }, status=401)
         password0 = user.password
         print(password0, password)
         if password0 == password:
@@ -45,9 +46,9 @@ def login(request):
             'code': 401,
             'data': 'wrong password',
             'Token': 'WA2'
-        }, status=200)
+        }, status=401)
     return JsonResponse({
         'code': 405,
         'data': 'invalid method',
         'Token': 'WA3'
-    }, status=200)
+    }, status=405)

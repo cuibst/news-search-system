@@ -1,7 +1,7 @@
 import Login from '@/components/Login.vue'
 import Vue from 'vue'
 
-describe('HelloWorld.vue', () => {
+describe('Login.vue', () => {
   it('renders correctly with username and password', () => {
     const Constructor = Vue.extend(Login);
     const LoginComponent = new Constructor().$mount();

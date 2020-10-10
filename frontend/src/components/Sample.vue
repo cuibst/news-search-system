@@ -18,7 +18,7 @@ export default {
   methods: {
     sendRequest () {
       var Vue = this
-      axios.get('').then(function (response) {
+      axios.get('/api/').then(function (response) {
         // console.log(response.data.message)
         Vue.msg = response.data.message
       })

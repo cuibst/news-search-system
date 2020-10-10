@@ -66,8 +66,8 @@ class QqIncSpider(Spider):
     start_urls = ['https://www.qq.com/']
     total_error = 0
 
-    browser = webdriver.Chrome(executable_path='chromedriver.exe')
-    browser.set_page_load_timeout(10)
+    #browser = webdriver.Chrome(executable_path='chromedriver.exe')
+    #browser.set_page_load_timeout(10)
 
     def parse(self, response):
         href_list = response.xpath('//a/@href').extract()

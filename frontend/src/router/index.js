@@ -7,7 +7,7 @@ import '../assets/styles/global.css'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', redirect: '/sample' },
+  { path: '/', redirect: '/login' },
   { path: '/sample', component: Sample },
   { path: '/login', component: Login }
 ]

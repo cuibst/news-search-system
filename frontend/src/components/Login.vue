@@ -45,7 +45,7 @@ export default {
         if (ret.data.code === 200) {
           window.sessionStorage.setItem('token', ret.data.Token)
           this.$message.success('登陆成功')
-          document.location = this.lastURL
+          document.location = '/#/sample'
         } else {
           this.password = ''
           this.$message.error('错误的用户名或密码')

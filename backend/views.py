@@ -20,8 +20,10 @@ def login(request):
     '''
     login
     '''
+    print(request.method)
+    print("GET HERE")
     if request.method == 'POST':
-        name = request.POST.get('name')
+        name = request.POST.get('username')
         password = request.POST.get('password')
         print(name, password)
         user = User.objects.filter(name=name).first()

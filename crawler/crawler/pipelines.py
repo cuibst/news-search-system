@@ -20,6 +20,8 @@ class NewsPipeline:
             self.dir_path = 'data/qq/debug/'
         elif (spider.name == 'qq_news_info'):
             self.dir_path = 'data/qq/news_info/'
+        elif(spider.name == 'xinhua_news_info'):
+            self.dir_path = 'data/xinhua/news_info/'
         # 获取文件夹中的所有文件
         if(self.dir_path != ''):
             self.file_set = set(os.listdir(self.dir_path))

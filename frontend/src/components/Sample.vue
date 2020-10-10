@@ -21,6 +21,7 @@ export default {
       axios.get('').then(function (response) {
         // console.log(response.data.message)
         Vue.msg = response.data.message
+        this.$router.push('/login')
       })
     }
   }

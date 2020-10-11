@@ -12,8 +12,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.idea
-out
 
 # Unittest / Coverage report
 .coverage

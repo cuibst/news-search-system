@@ -52,7 +52,6 @@ export default {
         }
       }, error => {
         console.log(error)
-        this.password = ''
         this.$message.error('网络连接错误')
       })
     }

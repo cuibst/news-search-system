@@ -33,7 +33,7 @@ def login(request):
                 'code': 401,
                 'data': "invalid user",
                 'token': 'WA1'
-            }, status=401)
+            }, status=200)
         password0 = user.password
         print(password0, password)
         if password0 == password:
@@ -46,9 +46,9 @@ def login(request):
             'code': 401,
             'data': 'wrong password',
             'Token': 'WA2'
-        }, status=401)
+        }, status=200)
     return JsonResponse({
         'code': 405,
         'data': 'invalid method',
         'Token': 'WA3'
-    }, status=405)
+    }, status=404)

@@ -55,7 +55,7 @@ describe('Login.vue', () => {
     expect(wrapper.vm.username).toBe('12')
     expect(wrapper.vm.password).toBe('')
   })
-  it('Handle with wrong Form', async () => {
+  it('Handle with Network Failure', async () => {
     const wrapper = mount(Login)
     const button = wrapper.find('button')
     mockAxios.post.mockImplementationOnce(() => {

@@ -1,5 +1,9 @@
 import Login from '@/components/Login.vue'
 import Vue from 'vue'
+import '../../src/plugins/element.js'
+import flushPromises from 'flush-promises'
+import mockAxios from '../__mocks__/axios'
+import { mount } from '@vue/test-utils'
 
 describe('Login.vue', () => {
   it('renders correctly with username and password', () => {
@@ -7,37 +11,32 @@ describe('Login.vue', () => {
     const LoginComponent = new Constructor().$mount()
     LoginComponent.username = 'rzotgorz'
     LoginComponent.password = '123456'
-    const button = LoginComponent.$el.querySelector('el-button')
+    const button = LoginComponent.$el.querySelector('.el-button')
     const clickEvent = new window.Event('click')
     button.dispatchEvent(clickEvent)
     LoginComponent._watcher.run()
   })
-  it('Invalid username send correctly', async () => {
-    const wrapper = mount(Register)
+  it('User check successfully', async () => {
+    const wrapper = mount(Login)
     const button = wrapper.find('button')
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
-          code: 401
+          code: 200,
+          Token: 'Congratulations'
         },
         status: 200
       })
     })
     wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587'
-      }
+      username: '1',
+      password: '123'
     })
     button.trigger('click')
     await flushPromises()
-    expect(wrapper.vm.ruleForm.username).toBe('')
   })
-  it('Invalid username send correctly', async () => {
-    const wrapper = mount(Register)
+  it('Other Problems', async () => {
+    const wrapper = mount(Login)
     const button = wrapper.find('button')
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.resolve({
@@ -48,89 +47,27 @@ describe('Login.vue', () => {
       })
     })
     wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587'
-      }
+      username: '12',
+      password: '123'
     })
     button.trigger('click')
     await flushPromises()
-    expect(wrapper.vm.ruleForm.username).toBe('')
+    expect(wrapper.vm.username).toBe('12')
+    expect(wrapper.vm.password).toBe('')
   })
-
-  it('Invalid username send correctly', async () => {
-    const wrapper = mount(Register)
+  it('Handle with wrong Form', async () => {
+    const wrapper = mount(Login)
     const button = wrapper.find('button')
     mockAxios.post.mockImplementationOnce(() => {
-      return Promise.resolve({
-        data: {
-          code: 401
-        },
-        status: 200
-      })
+      return Promise.reject(Error('Network Failed'))
     })
     wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587'
-      }
+      username: '12',
+      password: '123'
     })
     button.trigger('click')
     await flushPromises()
-    expect(wrapper.vm.ruleForm.username).toBe('')
-  })
-  it('Invalid username send correctly', async () => {
-    const wrapper = mount(Register)
-    const button = wrapper.find('button')
-    mockAxios.post.mockImplementationOnce(() => {
-      return Promise.resolve({
-        data: {
-          code: 401
-        },
-        status: 200
-      })
-    })
-    wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587'
-      }
-    })
-    button.trigger('click')
-    await flushPromises()
-    expect(wrapper.vm.ruleForm.username).toBe('')
-  })
-  it('Invalid username send correctly', async () => {
-    const wrapper = mount(Register)
-    const button = wrapper.find('button')
-    mockAxios.post.mockImplementationOnce(() => {
-      return Promise.resolve({
-        data: {
-          code: 401
-        },
-        status: 200
-      })
-    })
-    wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587'
-      }
-    })
-    button.trigger('click')
-    await flushPromises()
-    expect(wrapper.vm.ruleForm.username).toBe('')
+    expect(wrapper.vm.username).toBe('12')
+    expect(wrapper.vm.password).toBe('123')
   })
 })

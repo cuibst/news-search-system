@@ -7,3 +7,4 @@ pytest-django==3.10.0
 coverage==4.5.4
 mysqlclient==2.0.1
 gunicorn==20.0.4
+psycopg2

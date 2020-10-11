@@ -22,11 +22,12 @@ def login(request):
     '''
     login
     '''
+    print(request.method)
+    print("GET HERE")
     if request.method == 'POST':
         data = json.loads(request.body)
         name = data['username']
         password = data['password']
-        print(name, password)
         user = User.objects.filter(name=name).first()
         if not user:
             return JsonResponse({

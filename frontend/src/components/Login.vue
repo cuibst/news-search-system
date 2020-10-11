@@ -32,7 +32,7 @@ export default {
     return {
       username: '',
       password: '',
-      lastURL: '/home'
+      lastURL: '/#/sample'
     }
   },
   methods: {

@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+import '@/mock/index'
 export default {
   name: 'Register',
   data () {
@@ -71,6 +73,8 @@ export default {
       }
     }
     return {
+      passwordcheck: false,
+      password_input: false,
       ruleForm: {
         username: '',
         password: '',
@@ -103,7 +107,28 @@ export default {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!!')
+          axios.post('/register/', {
+            username: this.ruleForm.username,
+            password: this.ruleForm.password,
+            email: this.ruleForm.email,
+            phonenumber: this.ruleForm.phonenumber
+          }).then(ret => {
+            console.log(ret)
+            if (ret.data.code === 200) {
+              window.document.cookie = 'user=' + this.ruleForm.username + ';'
+              this.$message.success('注册成功')
+              document.location = '/#/login'
+            } else if (ret.data.code === 401) {
+              this.$refs[formName].resetFields()
+              this.$message.error('账号已被注册')
+            } else {
+              this.$refs[formName].resetFields()
+              this.$message.error('出问题了...')
+            }
+          }, error => {
+            console.log(error)
+            this.$message.error('网络连接错误')
+          })
           // 请在这里实现数据合理时的向后端发送请求，也可以将上一行删掉
         } else {
           return false

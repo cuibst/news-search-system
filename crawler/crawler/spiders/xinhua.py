@@ -2,6 +2,7 @@ from scrapy import Spider, Request
 import json
 import re
 from crawler.items import NewsItem
+from urllib import parse
 
 
 class XinhuaNewsNodeSpider(Spider):
@@ -76,7 +77,7 @@ class XinhuaNewsInfoSpider(Spider):
             # 过滤掉不需要的url
             if(re.search(r'xinhuanet\.com', url) == None):
                 continue
-            if(re.search(r'french|arabic|portuguese|german|spanish', url) != None):
+            if(re.search(r'french|arabic|portuguese|german|spanish|jp', url) != None):
                 continue
             yield Request(url, callback=self.parse)
 
@@ -90,43 +91,85 @@ class XinhuaNewsInfoSpider(Spider):
             return
         item['news_id'] = 'xinhua_' + id_match_obj.group(1)
         item['source'] = 'xinhua'
-        # 定义新闻的标题和来源
-        title_full = response.xpath('//title/text()').extract()[0].strip()
-        title_name = title_full.split('-')[0].split('_')[0].strip()
-        title_media = ' '.join(title_full.lstrip(title_name).split('-'))
-        title_media = ' '.join(title_media.split('_'))
-        title_media = ' '.join(title_media.split())
-        item['title'] = title_name
-        item['media'] = title_media
-        item['news_url'] = url
-        # 定义新闻的分类，如果是地方新闻则定义为'local_{地方缩写}'，否则定义为新闻所在的标签名称
-        item['category'] = ''
-        local_pattern = r'www\.([a-z]+)\.xinhuanet.com'
-        local_match_obj = re.search(local_pattern, url)
-        cat_pattern = r'xinhuanet\.com/([a-z]+)/'
-        cat_match_obj = re.search(cat_pattern, url)
-        if(local_match_obj != None):
-            item['category'] = 'local_' + local_match_obj.group(1)
-        elif(cat_match_obj != None):
-            item['category'] = cat_match_obj.group(1)
-        item['tags'] = ''
         # 从两种新闻页面选择发布日期，一种是h-time，一种是time
-        item['pub_date'] = ''
         time = ''
         try:
             time = response.xpath("//*[@class='h-time']/text()").extract()[0].strip()
         except:
             pass
-        if(time == ''):
+        if (time == ''):
             try:
                 time = response.xpath("//*[@class='time']/text()").extract()[0].strip()
             except:
                 pass
             time_match_obj = re.match(r'20\d{2}年\d{2}月\d{2}日 \d{2}:\d{2}:\d{2}', time)
-            if(time_match_obj != None):
+            if (time_match_obj != None):
                 time = re.sub(r'[年月]', '-', time)
                 time = re.sub(r'日', '', time)
+        if (time == ''):
+            return
         item['pub_date'] = time
+        # 定义新闻的标题和来源
+        try:
+            title_full = response.xpath('//title/text()').extract()[0].strip()
+            title_name = title_full.split('-')[0].split('_')[0].strip()
+            title_media = ' '.join(title_full.lstrip(title_name).split('-'))
+            title_media = ' '.join(title_media.split('_'))
+            title_media = ' '.join(title_media.split())
+        except:
+            return
+        if(title_name == ''):
+            return
+        item['title'] = title_name
+        item['media'] = title_media
+        item['news_url'] = url
+        # 定义新闻的分类，如果是地方新闻则定义为'local_{地方缩写}'，否则定义为新闻所在的标签名称
+        cat = ''
+        local_pattern = r'www\.([a-z]+)\.xinhuanet.com'
+        local_match_obj = re.search(local_pattern, url)
+        cat_pattern = r'xinhuanet\.com/[/]?([a-z]+)/'
+        cat_match_obj = re.search(cat_pattern, url)
+        if(local_match_obj != None):
+            cat = 'local_' + local_match_obj.group(1)
+        elif(cat_match_obj != None):
+            cat = cat_match_obj.group(1)
+        if(cat != ''):
+            item['category'] = cat
+        # 定义新闻的标签，两种页面格式一样，非必需属性
+        tags = ''
+        try:
+            tags = response.xpath('//meta[@name="keywords"]/@content').extract()[0].strip()
+        except:
+            pass
+        if(tags != ''):
+            item['tags'] = tags
+        # 定义新闻的video，非必需属性
+        video_src = ''
+        try:
+            video_src = response.xpath('//video/@src').extract()[0]
+        except:
+            pass
+        if(video_src != ''):
+            item['video'] = video_src
+        # 定义新闻的内容content
+        p_list = []
+        try:
+            p_list = response.xpath('//*[@id="p-detail"]//p')
+        except:
+            pass
+        if(not p_list):
+            try:
+                p_list = response.xpath('//*[@class="article"]//p')
+            except:
+                pass
+        content = []
+        for one_p in p_list:
+            img = one_p.xpath('.//img/@src').extract()
+            if(len(img) == 0):
+                content += ['text_' + text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
+            else:
+                content.append("img_" + parse.urljoin(url, img[0]))
+        item['content'] = content
         yield item
 
 

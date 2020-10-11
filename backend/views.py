@@ -22,8 +22,6 @@ def login(request):
     '''
     login
     '''
-    print(request.method)
-    print("GET HERE")
     if request.method == 'POST':
         data = json.loads(request.body)
         name = data['username']

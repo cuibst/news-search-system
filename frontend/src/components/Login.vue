@@ -48,12 +48,18 @@ export default {
           document.location = '/#/sample'
         } else {
           this.password = ''
-          this.$message.error('错误的用户名或密码')
+          this.$message.error('其他错误')
         }
       }, error => {
-        console.log(error)
-        this.password = ''
-        this.$message.error('网络连接错误')
+        if (error.response.status === 404) {
+          this.$message.error('网络连接错误')
+        } else if (error.response.status === 401) {
+          this.password = ''
+          this.$message.error('错误的用户名或密码')
+        } else {
+          this.password = ''
+          this.$message.error('危险的访问')
+        }
       })
     }
   },

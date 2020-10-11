@@ -12,6 +12,7 @@ RUN npm install
 RUN npm run build
 
 # Second stage for the backend
+FROM postgres:12.4
 FROM python:3.8.5
 
 ENV HOME=/opt/app

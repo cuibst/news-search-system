@@ -50,4 +50,4 @@ def login(request):
         'code': 405,
         'data': 'invalid method',
         'Token': 'WA3'
-    }, status=404)
+    }, status=405)

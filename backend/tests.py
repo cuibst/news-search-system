@@ -39,7 +39,7 @@ class TestViews(TestCase):
             'username': '1',
             'password': '12'
         }, content_type='application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['code'], 401)
         self.assertEqual(data['data'], 'wrong password')
@@ -48,7 +48,7 @@ class TestViews(TestCase):
             'username': '12',
             'password': '12'
         }, content_type='application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['code'], 401)
         self.assertEqual(data['data'], 'invalid user')

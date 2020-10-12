@@ -32,7 +32,7 @@ export default {
     return {
       username: '',
       password: '',
-      lastURL: '/home'
+      lastURL: '/#/sample'
     }
   },
   methods: {
@@ -41,7 +41,6 @@ export default {
         username: this.username,
         password: this.password
       }).then(ret => {
-        console.log(ret)
         if (ret.data.code === 200) {
           window.sessionStorage.setItem('token', ret.data.Token)
           this.$message.success('登陆成功')
@@ -52,7 +51,6 @@ export default {
         }
       }, error => {
         console.log(error)
-        this.password = ''
         this.$message.error('网络连接错误')
       })
     }

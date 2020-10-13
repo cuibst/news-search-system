@@ -149,4 +149,4 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
 )
 
-from config.local_settings import *
+# from config.local_settings import *

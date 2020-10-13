@@ -1,11 +1,10 @@
 import Register from '@/components/Register.vue'
 import Vue from 'vue'
-import { mount,shallowMount} from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import mockAxios from '../__mocks__/axios'
-import { Button, Container, Header, Main, Input, Form, FormItem, Message} from 'element-ui'
+import ElementUI, { Button, Container, Header, Main, Input, Form, FormItem, Message } from 'element-ui'
 import axios from 'axios'
-import ElementUI from 'element-ui'
 
 axios.defaults.baseURL = 'api/'
 Vue.prototype.$http = axios
@@ -22,7 +21,7 @@ Vue.use(ElementUI)
 Vue.prototype.$message = Message
 
 describe('Register.vue', () => {
-  it('Invalie data to input',async () => {
+  it('Invalie data to input', async () => {
     const wrapper = mount(Register)
     wrapper.setData({
       ruleForm: {
@@ -37,7 +36,7 @@ describe('Register.vue', () => {
     button.trigger('click')
     await Vue.nextTick()
   })
-  it('Invalie data to other wrong input',async () => {
+  it('Invalie data to other wrong input', async () => {
     const wrapper = mount(Register)
     wrapper.setData({
       ruleForm: {

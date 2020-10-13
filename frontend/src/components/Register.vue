@@ -45,13 +45,14 @@ import axios from 'axios'
 export default {
   name: 'Register',
   data () {
-    var validatePass = (rule, value, callback) => {
+    var _that = this
+    var validatePass = function (rule, value, callback) {
       if (value === '') {
-        callback(new Error('请再次输入密码'))
-      } else if (value !== this.ruleForm.password) {
-        callback(new Error('两次输入密码不一致!'))
+        return callback(new Error('请再次输入密码'))
+      } else if (value !== _that.ruleForm.password) {
+        return callback(new Error('两次输入密码不一致!'))
       } else {
-        callback()
+        return callback()
       }
     }
     var validateEmail = (rule, value, callback) => {
@@ -113,7 +114,6 @@ export default {
             email: this.ruleForm.email,
             phonenumber: this.ruleForm.phonenumber
           }).then(ret => {
-            console.log(ret)
             if (ret.data.code === 200) {
               window.document.cookie = 'user=' + this.ruleForm.username + ';'
               this.$message.success('注册成功')

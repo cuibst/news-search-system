@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-#LoginPage {
+#RegisterPage {
   background-color: #66CCFF;
   height: 100%;
 }

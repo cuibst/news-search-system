@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { mount } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import mockAxios from '../__mocks__/axios'
-import { Button, Container, Main, Header, Input, Form, FormItem, Message } from 'element-ui'
+import ElementUI, { Button, Container, Header, Main, Input, Form, FormItem, Message } from 'element-ui'
 import axios from 'axios'
 
 axios.defaults.baseURL = 'api/'
@@ -17,25 +17,43 @@ Vue.use(Header)
 Vue.use(Input)
 Vue.use(Form)
 Vue.use(FormItem)
+Vue.use(ElementUI)
 Vue.prototype.$message = Message
 
 describe('Register.vue', () => {
-  it('renders correctly with these inputs', () => {
-    const Constructor = Vue.extend(Register)
-    const RegisterComponent = new Constructor().$mount()
-    RegisterComponent.ruleForm.username = 'rzotgorz'
-    RegisterComponent.ruleForm.password = '123456'
-    RegisterComponent.ruleForm.passwordCheck = '123456'
-    RegisterComponent.ruleForm.email = '123456@qq.com'
-    RegisterComponent.ruleForm.phonenumber = '18725846587'
-    const button = RegisterComponent.$el.querySelector('.el-button')
-    const clickEvent = new window.Event('click')
-    button.dispatchEvent(clickEvent)
-    RegisterComponent._watcher.run()
+  it('Invalie data to input', async () => {
+    const wrapper = mount(Register)
+    wrapper.setData({
+      ruleForm: {
+        username: '',
+        password: '123456',
+        passwordCheck: '12456',
+        email: '12346qq.com',
+        phonenumber: '1872546587'
+      }
+    })
+    const button = wrapper.findComponent(ElementUI.Button)
+    button.trigger('click')
+    await Vue.nextTick()
+  })
+  it('Invalie data to other wrong input', async () => {
+    const wrapper = mount(Register)
+    wrapper.setData({
+      ruleForm: {
+        username: '',
+        password: '',
+        passwordCheck: '',
+        email: '',
+        phonenumber: ''
+      }
+    })
+    const button = wrapper.findComponent(ElementUI.Button)
+    button.trigger('click')
+    await Vue.nextTick()
   })
   it('Invalid username send correctly', async () => {
     const wrapper = mount(Register)
-    const button = wrapper.find('button')
+    const button = wrapper.findComponent(ElementUI.Button)
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
@@ -59,7 +77,7 @@ describe('Register.vue', () => {
   })
   it('Valid username send correctly', async () => {
     const wrapper = mount(Register)
-    const button = wrapper.find('button')
+    const button = wrapper.findComponent(ElementUI.Button)
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
@@ -83,7 +101,7 @@ describe('Register.vue', () => {
   })
   it('Fail to check the information', async () => {
     const wrapper = mount(Register)
-    const button = wrapper.find('button')
+    const button = wrapper.findComponent(ElementUI.Button)
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
@@ -103,12 +121,11 @@ describe('Register.vue', () => {
     })
     button.trigger('click')
     await flushPromises()
-    console.log(wrapper.html)
     expect(wrapper.vm.ruleForm.username).toBe('')
   })
   it('Invalid network', async () => {
     const wrapper = mount(Register)
-    const button = wrapper.find('button')
+    const button = wrapper.findComponent(ElementUI.Button)
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.reject(new Error('Network error'))
     })
@@ -123,7 +140,6 @@ describe('Register.vue', () => {
     })
     button.trigger('click')
     await flushPromises()
-    console.log(wrapper.html)
     expect(wrapper.vm.ruleForm.username).toBe('1')
   })
 })

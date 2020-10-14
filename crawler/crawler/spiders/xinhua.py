@@ -1,7 +1,7 @@
 from scrapy import Spider, Request
 import json
 import re
-from crawler.crawler.items import NewsItem
+from crawler.items import NewsItem
 from urllib import parse
 from pathlib import Path
 

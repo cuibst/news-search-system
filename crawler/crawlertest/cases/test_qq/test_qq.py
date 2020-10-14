@@ -4,26 +4,52 @@ from crawler.crawlertest.cases.test_qq.conftest import resource_get
 import re
 
 
-class Test_QQ:
+class Test_qq_news_info_spider:
+    spider = QqNewsInfoSpider()
 
-    def test_qq_news_info_spider(self, resource_get):
-        spider = QqNewsInfoSpider()
+    def test_parse_valid_01(self, resource_get):
+        # 此测例检查正确的新闻列表url
+        test_url = 'https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id=24hours' \
+                    '&srv_id=pc&offset=0&limit=100&strategy=1&ext={%22pool%22:[%22high%22,%22top%22],%22is' \
+                    '_filter%22:10,%22check_type%22:true}'
+        responce = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse(responce)
+        for request in result:
+            print('##### check for ', request.url, ' started #####')
+            assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+\.html', request.url)
+
+    def test_parse_not_valid_01(self, resource_get):
+        # 此测例检查错误的新闻列表url，测试offset=200的情况
+        test_url = 'https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id=24hours' \
+                    '&srv_id=pc&offset=200&limit=100&strategy=1&ext={%22pool%22:[%22high%22,%22top%22],%22is' \
+                    '_filter%22:10,%22check_type%22:true}'
+        responce = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse(responce)
+        iter_num = 0
+        for item in result:
+            iter_num += 1
+        assert iter_num == 0
+
+
+    def test_parse_item_valid_01(self, resource_get):
+        # 此测例检查parse_item函数能否处理正确的新闻url
+        test_url = 'https://new.qq.com/omn/20201011/20201011A0BXRG00.html'
+        response = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse_item(response)
         key_list = ['title', 'category', 'media', 'pub_date', 'news_id', 'source', 'news_url', 'content']
-        for url in spider.start_urls:
-            response = resource_get(url)
-            result = spider.parse(response)
-            news_num = 0
-            for request in result:
-                news_num += 1
-                if(news_num >= 2):
-                    news_num = 0
-                    break
-                # 检查request url是否符合腾讯新闻形式
-                print('##### check for ', request.url, ' started #####')
-                assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+\.html', request.url)
-                response = resource_get(request.url)
-                parse_item_res = spider.parse(response)
-                for item in parse_item_res:
-                    for key in key_list:
-                        assert key in item
+        for item in result:
+            for key in key_list:
+                assert key in item
+
+    def test_parse_item_not_valid_01(self, resource_get):
+        # 此测例检查parse_item函数能否处理错误的新闻url
+        test_url = 'https://new.qq.com/notfound.htm?uri=http://new.qq.com/omn/20201014/20201014A09RRZ00.html'
+        response = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse_item(response)
+        iter_num = 0
+        for item in result:
+            iter_num += 1
+        assert iter_num == 0
+
+
 

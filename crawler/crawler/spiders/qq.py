@@ -2,7 +2,6 @@ from scrapy.spiders import CrawlSpider, Rule, Request, Spider
 import time
 import re
 from pathlib import Path
-
 from crawler.crawler.items import NewsItem
 import json
 from selenium import webdriver
@@ -90,7 +89,7 @@ class QqNewsInfoSpider(Spider):
         try:
             list = json.loads(response.text)['data']['list']
         except:
-            return
+            return None
         for data in list:
             dic = {}
             key_list = ['article_id', 'article_type', 'category_cn', 'create_time',

@@ -42,7 +42,10 @@ class XinhuaNewsUrlSpider(Spider):
     # 测试版本，此处使用的nid文件需要手动指定
     new_dir = current_dir_path / Path('data/xinhua/debug/')
     new_dir.mkdir(parents=True, exist_ok=True)
-    f = open(new_dir / Path('valid_node_11100000_11200000.txt'), 'r', encoding='utf-8')
+    try:
+        f = open(new_dir / Path('valid_node_11100000_11200000.txt'), 'r', encoding='utf-8')
+    except:
+        f = open(new_dir / Path('valid_node_11100000_11200000.txt'), 'w', encoding='utf-8')
     nid_list = f.read().split('\n')
     f.close()
     f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'a', encoding='utf-8')
@@ -77,7 +80,10 @@ class XinhuaNewsInfoSpider(Spider):
     current_dir_path = Path(__file__).parent
     new_dir = current_dir_path / Path('data/xinhua/debug/')
     new_dir.mkdir(parents=True, exist_ok=True)
-    f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'r', encoding='utf-8')
+    try:
+        f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'r', encoding='utf-8')
+    except:
+        f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'w', encoding='utf-8')
 
     def start_requests(self):
         # 循环读入news url，交给调度器爬取

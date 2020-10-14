@@ -3,9 +3,9 @@ views for backend
 '''
 import json
 from django.http import JsonResponse
-from .models import User
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
+from .models import User
 # Create your views here.
 
 def index(request):
@@ -53,16 +53,19 @@ def login(request):
 
 @csrf_exempt
 def register(request):
+    '''
+    register
+    '''
     data = json.loads(request.body)
     name = data['username']
     password = data['password']
     email = data['email']
-    phoneNumber = data['phonenumber']
+    phone_number = data['phonenumber']
     user = User.objects.filter(name=name).first()
     print(user)
     if not user:
         print(1)
-        user = User(name=name, password=password, email=email, phoneNumber=phoneNumber)
+        user = User(name=name, password=password, email=email, phoneNumber=phone_number)
         try:
             user.full_clean()
             user.save()

@@ -23,7 +23,7 @@ class TestViews(TestCase):
         '''
         Test /api/register
         '''
-        user = User(name='m', password='123', email='213423423@qq.com', phoneNumber='12584525566')
+        user = User(name='m', password='123', email='213423423@qq.com', phone_number='12584525566')
         user.save()
         response = self.client.post('/api/register/', data={
             'username': 'm',
@@ -57,6 +57,3 @@ class TestViews(TestCase):
         data = json.loads(response.content)
         self.assertEqual(data['code'], 200)
         self.assertEqual(data['data'], 'register successfully')
-
-
-

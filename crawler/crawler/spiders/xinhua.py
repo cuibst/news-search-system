@@ -1,7 +1,7 @@
 from scrapy import Spider, Request
 import json
 import re
-from crawler.items import NewsItem
+from crawler.crawler.items import NewsItem
 from urllib import parse
 from pathlib import Path
 
@@ -28,6 +28,8 @@ class XinhuaNewsNodeSpider(Spider):
     def parse(self, response, **kwargs):
         if(len(response.body) > 100):
             self.f.write(response.request.url[38:38+self.id_len] + '\n')
+            return response.request.url
+        return None
 
 
 class XinhuaNewsUrlSpider(Spider):

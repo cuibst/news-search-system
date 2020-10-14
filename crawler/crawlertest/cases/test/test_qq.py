@@ -1,10 +1,10 @@
-from crawler.crawler.spiders.qq import QqNewsInfoSpider
+from crawler.crawler.spiders.qq import QqNewsInfoSpider, QqIncSpider
 from scrapy.http import HtmlResponse, Request
-from crawler.crawlertest.cases.test_qq.conftest import resource_get
+from crawler.crawlertest.cases.test.conftest import resource_get
 import re
 
 
-class Test_qq_news_info_spider:
+class TestQqNewsInfoSpider:
     spider = QqNewsInfoSpider()
 
     def test_parse_valid_01(self, resource_get):
@@ -15,8 +15,7 @@ class Test_qq_news_info_spider:
         responce = resource_get(test_url, request=Request(url=test_url))
         result = self.spider.parse(responce)
         for request in result:
-            print('##### check for ', request.url, ' started #####')
-            assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+\.html', request.url)
+            assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+.*', request.url)
 
     def test_parse_not_valid_01(self, resource_get):
         # 此测例检查错误的新闻列表url，测试offset=200的情况
@@ -52,4 +51,33 @@ class Test_qq_news_info_spider:
         assert iter_num == 0
 
 
+class TestQqIncSpider:
+    spider = QqIncSpider()
 
+    def test_inc_parse_valid_01(self, resource_get):
+        # 此测例检查parse函数能否从起始url返回新闻链接
+        test_url = 'https://www.qq.com/'
+        response = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse(response)
+        for request in result:
+            assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+.*', request.url)
+
+    def test_inc_parse_item_valid_01(self, resource_get):
+        # 此测例检查parse_item函数能否处理正确的新闻url
+        test_url = 'https://new.qq.com/omn/20201011/20201011A0BXRG00.html'
+        response = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse_item(response)
+        key_list = ['title', 'category', 'media', 'pub_date', 'news_id', 'source', 'news_url', 'content']
+        for item in result:
+            for key in key_list:
+                assert key in item
+
+    def test_inc_parse_item_not_valid_01(self, resource_get):
+        # 此测例检查parse_item函数能否处理错误的新闻url
+        test_url = 'https://new.qq.com/notfound.htm?uri=http://new.qq.com/omn/20201014/20201014A09RRZ00.html'
+        response = resource_get(test_url, request=Request(url=test_url))
+        result = self.spider.parse_item(response)
+        iter_num = 0
+        for item in result:
+            iter_num += 1
+        assert iter_num == 0

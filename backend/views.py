@@ -65,7 +65,7 @@ def register(request):
     print(user)
     if not user:
         print(1)
-        user = User(name=name, password=password, email=email, phoneNumber=phone_number)
+        user = User(name=name, password=password, email=email, phone_number=phone_number)
         try:
             user.full_clean()
             user.save()

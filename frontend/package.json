@@ -13,6 +13,10 @@
     "better-mock": "^0.2.8",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
+    "flush-promises": "^1.0.2",
+    "jest": "^26.5.2",
+    "mockjs": "^1.1.0",
+    "parcel-bundler": "^1.12.4",
     "unit": "^1.4.3-0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0"
@@ -40,7 +44,8 @@
   "eslintConfig": {
     "root": true,
     "env": {
-      "node": true
+      "node": true,
+      "jest": true
     },
     "extends": [
       "plugin:vue/essential",

@@ -55,7 +55,9 @@ class QqIncSpider(Spider):
             yield item
         except:
             # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
-            error_f = open(self.current_dir_path / Path('data/error/error_url.txt'), 'a', encoding='utf-8')
+            new_dir = self.current_dir_path / Path('data/error/')
+            new_dir.mkdir(parents=True, exist_ok=True)
+            error_f = open(new_dir / Path('error_url.txt'), 'a', encoding='utf-8')
             error_f.write(str(self.total_error) + '_' + current_url + '\n')
             error_f.close()
             self.total_error += 1
@@ -97,7 +99,9 @@ class QqNewsInfoSpider(Spider):
             for key in key_list:
                 dic[key] = data[key]
             if(re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+\.html', dic['url'])):
-                f = open(self.current_dir_path / Path('data/qq/news_brief_info/' + dic['cms_id'] + '.json'), 'w', encoding='utf-8')
+                new_dir = self.current_dir_path / Path('data/qq/news_brief_info/')
+                new_dir.mkdir(parents=True, exist_ok=True)
+                f = open(new_dir / Path(dic['cms_id'] + '.json'), 'w', encoding='utf-8')
                 f.write(json.dumps(dic, indent=4, ensure_ascii=False))
                 f.close()
                 yield Request(dic['url'], callback=self.parse_item)
@@ -131,7 +135,9 @@ class QqNewsInfoSpider(Spider):
             yield item
         except:
             # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
-            error_f = open(self.current_dir_path / Path('data/error/error_url.txt'), 'a', encoding='utf-8')
+            new_dir = self.current_dir_path / Path('data/error/')
+            new_dir.mkdir(parents=True, exist_ok=True)
+            error_f = open(new_dir / Path('error_url.txt'), 'a', encoding='utf-8')
             error_f.write(str(self.total_error) + '_' + current_url + '\n')
             error_f.close()
             self.total_error += 1

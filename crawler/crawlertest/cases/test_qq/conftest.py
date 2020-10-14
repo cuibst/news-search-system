@@ -6,7 +6,7 @@ from betamax.fixtures.pytest import _betamax_recorder
 
 
 # betamax配置，设置betamax录像带的存储位置
-cassette_dir = pathlib.Path(__file__).cwd() / 'fixture' / 'cassettes'
+cassette_dir = pathlib.Path(__file__).parent.parent.parent / 'fixture' / 'cassettes'
 cassette_dir.mkdir(parents=True, exist_ok=True)
 with betamax.Betamax.configure() as config:
     config.cassette_library_dir = cassette_dir.resolve()

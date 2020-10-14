@@ -28,6 +28,7 @@
 import axios from 'axios'
 // import '@/mock/index'
 export default {
+  name: 'Login',
   data () {
     return {
       username: '',

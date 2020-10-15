@@ -5,7 +5,7 @@ import json
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
+from .models import User, News
 # Create your views here.
 
 def index(request):
@@ -85,3 +85,36 @@ def register(request):
             'code': 401,
             'data': 'username used'
         }, status=200)
+
+@csrf_exempt
+def upload_news(request):
+    '''
+        upload news
+    '''
+    data = json.loads(request.body)
+    source = data['source']
+    news_url = data['news_url']
+    category = data['category']
+    media = data['media']
+    tags = data['tags']
+    title = data['title']
+    news_id = data['news_id']
+    pub_date = data['pub_date']
+    content = data['content']
+    video = data['video']
+    news = News.objects.filter(news_id=news_id).first()
+    print(12)
+    if not news:
+        news = News(source=source, news_url=news_url, category=category,\
+                    media=media, tags=tags, title=title, news_id=news_id,\
+                    pub_date=pub_date, content=content, video=video)
+        news.full_clean()
+        news.save()
+        return JsonResponse({
+            'info': 'preserve successfully',
+            'code': 200
+        }, status=200)
+    return JsonResponse({
+        'info': 'repetitive news',
+        'code': 401
+    }, status=200)

@@ -12,8 +12,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.idea
 .vscode
-.idea/
+out
 
 # Unittest / Coverage report
 .coverage

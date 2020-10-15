@@ -1,9 +1,14 @@
-from scrapy import Spider, Request
+#pylint: disable=line-too-long
+#pylint: disable=fixme
+'''
+crawler for xinhuanet.com
+'''
 import json
 import re
-from ..items import NewsItem
 from urllib import parse
 from pathlib import Path
+from scrapy import Spider, Request
+from ..items import NewsItem
 
 
 class XinhuaNewsFullSpider(Spider):
@@ -68,18 +73,18 @@ class XinhuaNewsFullSpider(Spider):
         time = ''
         try:
             time = response.xpath("//*[@class='h-time']/text()").extract()[0].strip()
-        except:
+        except KeyboardInterrupt:
             pass
-        if (time == ''):
+        if time == '':
             try:
                 time = response.xpath("//*[@class='time']/text()").extract()[0].strip()
             except:
                 pass
             time_match_obj = re.match(r'20\d{2}年\d{2}月\d{2}日 \d{2}:\d{2}:\d{2}', time)
-            if (time_match_obj != None):
+            if time_match_obj is not None:
                 time = re.sub(r'[年月]', '-', time)
                 time = re.sub(r'日', '', time)
-        if (time == ''):
+        if time == '':
             return
         item['pub_date'] = time
         # 定义新闻的标题和来源
@@ -153,7 +158,3 @@ class XinhuaNewsFullSpider(Spider):
                 content.append("img_" + parse.urljoin(url, img[0]))
         item['content'] = content
         yield item
-
-
-
-

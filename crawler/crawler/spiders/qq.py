@@ -1,13 +1,24 @@
-from scrapy.spiders import CrawlSpider, Rule, Request, Spider
-import time
+#pylint: disable=line-too-long
+'''
+The crawler for news.qq.com
+'''
 import re
+<<<<<<< HEAD
 from pathlib import Path
 from ..items import NewsItem
+=======
+>>>>>>> master
 import json
-from selenium import webdriver
+from pathlib import Path
+from scrapy.spiders import Request, Spider
+from ..items import NewsItem
+
 
 
 class QqIncSpider(Spider):
+    '''
+    The increment spider for news.qq.com
+    '''
     name = "qq_inc"
     allowed_domains = ['news.qq.com', 'new.qq.com']
     start_urls = ['https://www.qq.com/']
@@ -18,20 +29,26 @@ class QqIncSpider(Spider):
     #browser.set_page_load_timeout(10)
 
     def parse(self, response, **kwargs):
+        '''
+        parse the url from the response
+        '''
         href_list = response.xpath('//a/@href').extract()
         pattern = '.+/omn/2020[0-9]{4}/(2020[0-9]{4}[A-za-z0-9]+).*'
         for href in href_list:
-            if(re.match(pattern, href) != None):
+            if re.match(pattern, href) is not None:
                 yield Request(href, callback=self.parse_item)
 
 
     def parse_item(self, response):
+        '''
+        parse the response page and save it into data/news_info
+        '''
         # 从新闻页爬取信息，存入data/news_info/文件夹
         current_url = response.request.url
         script_list = response.xpath('/html/head//script/text()').extract()
         news_brief_info = None
         for script in script_list:
-            if (script.find('window.DATA = ') >= 0):
+            if script.find('window.DATA = ') >= 0:
                 news_brief_info = json.loads(script.lstrip('window.DATA = '))
                 break
         item = NewsItem()
@@ -47,12 +64,12 @@ class QqIncSpider(Spider):
             item['content'] = []
             for one_p in response.xpath('//p[@class="one-p"]'):
                 img = one_p.xpath('.//img/@src').extract()
-                if (len(img) != 0):
+                if len(img) != 0:
                     item['content'] += ['img_' + src for src in img]
                 else:
                     item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
             yield item
-        except:
+        except (KeyError, TypeError, ValueError):
             # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
             new_dir = self.current_dir_path / Path('data/error/')
             new_dir.mkdir(parents=True, exist_ok=True)
@@ -64,6 +81,9 @@ class QqIncSpider(Spider):
 
 
 class QqNewsInfoSpider(Spider):
+    '''
+    The spider for qq news info
+    '''
     name = 'qq_news_info'
     allowed_domains = ['i.news.qq.com', 'new.qq.com']
     current_dir_path = Path(__file__).parent
@@ -85,33 +105,39 @@ class QqNewsInfoSpider(Spider):
     total_error = 0
 
     def parse(self, response, **kwargs):
+        '''
+        crawl the list of the news, and get summary
+        '''
         # 爬取新闻信息列表，提取新闻的简要信息，存入data/qq/news_brief_info/文件夹
         try:
-            list = json.loads(response.text)['data']['list']
-        except:
-            return None
-        for data in list:
+            data_list = json.loads(response.text)['data']['list']
+        except (ValueError, KeyError, TypeError):
+            return
+        for data in data_list:
             dic = {}
             key_list = ['article_id', 'article_type', 'category_cn', 'create_time',
                         'category_id', 'category_name', 'cms_id', 'img', 'img_exp_type',
                         'media_id', 'media_name', 'publish_time', 'title', 'url']
             for key in key_list:
                 dic[key] = data[key]
-            if(re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+\.html', dic['url'])):
+            if re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+\.html', dic['url']):
                 new_dir = self.current_dir_path / Path('data/qq/news_brief_info/')
                 new_dir.mkdir(parents=True, exist_ok=True)
-                f = open(new_dir / Path(dic['cms_id'] + '.json'), 'w', encoding='utf-8')
-                f.write(json.dumps(dic, indent=4, ensure_ascii=False))
-                f.close()
+                file = open(new_dir / Path(dic['cms_id'] + '.json'), 'w', encoding='utf-8')
+                file.write(json.dumps(dic, indent=4, ensure_ascii=False))
+                file.close()
                 yield Request(dic['url'], callback=self.parse_item)
 
     def parse_item(self, response):
+        '''
+        get the news detail from the news page
+        '''
         # 从新闻页爬取信息，存入data/qq/news_info/文件夹
         current_url = response.request.url
         script_list = response.xpath('/html/head//script/text()').extract()
         news_brief_info = None
         for script in script_list:
-            if(script.find('window.DATA = ') >= 0):
+            if script.find('window.DATA = ') >= 0:
                 news_brief_info = json.loads(script.lstrip('window.DATA = '))
                 break
         item = NewsItem()
@@ -127,12 +153,12 @@ class QqNewsInfoSpider(Spider):
             item['content'] = []
             for one_p in response.xpath('//p[@class="one-p"]'):
                 img = one_p.xpath('.//img/@src').extract()
-                if(len(img) != 0):
+                if len(img) != 0:
                     item['content'] += ['img_' + src for src in img]
                 else:
                     item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
             yield item
-        except:
+        except (KeyError, ValueError, TypeError):
             # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
             new_dir = self.current_dir_path / Path('data/error/')
             new_dir.mkdir(parents=True, exist_ok=True)
@@ -140,6 +166,3 @@ class QqNewsInfoSpider(Spider):
             error_f.write(str(self.total_error) + '_' + current_url + '\n')
             error_f.close()
             self.total_error += 1
-
-
-

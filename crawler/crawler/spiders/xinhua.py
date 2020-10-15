@@ -1,12 +1,20 @@
-from scrapy import Spider, Request
+#pylint: disable=line-too-long
+#pylint: disable=fixme
+'''
+crawler for xinhuanet.com
+'''
 import json
 import re
-from crawler.crawler.items import NewsItem
 from urllib import parse
 from pathlib import Path
+from scrapy import Spider, Request
+from ..items import NewsItem
 
 
 class XinhuaNewsNodeSpider(Spider):
+    '''
+    This crawler go through the node ids, and find all the pages contain news list api.
+    '''
     # 此爬虫遍历nodeid，寻找有新闻列表的api界面
     # http://qc.wa.news.cn/nodeart/list?nid=111444&pgnum=1&cnt=10
     name = 'xinhua_news_node'
@@ -26,13 +34,20 @@ class XinhuaNewsNodeSpider(Spider):
     f = open(new_dir / Path('valid_node_' + str(start) + '_' + str(end) + '.txt'), 'a', encoding='utf-8')
 
     def parse(self, response, **kwargs):
-        if(len(response.body) > 100):
+        '''
+        Parse the url collected from the node ids
+        '''
+        if len(response.body) > 100:
             self.f.write(response.request.url[38:38+self.id_len] + '\n')
             return response.request.url
         return None
 
 
 class XinhuaNewsUrlSpider(Spider):
+    '''
+    This crawler open node api file and crawl the list offered by api.
+    Moreover, it crawls the news pages.
+    '''
     # 此爬虫打开节点api文件，爬取api提供的新闻列表，进而爬取相应的新闻页面
     name = 'xinhua_news_url'
     allowed_domains = ['*']
@@ -44,7 +59,7 @@ class XinhuaNewsUrlSpider(Spider):
     new_dir.mkdir(parents=True, exist_ok=True)
     try:
         f = open(new_dir / Path('valid_node_11100000_11200000.txt'), 'r', encoding='utf-8')
-    except:
+    except FileNotFoundError:
         path = new_dir / Path('valid_node_11100000_11200000.txt')
         f = open(path, 'w', encoding='utf-8')
         f.close()
@@ -56,28 +71,35 @@ class XinhuaNewsUrlSpider(Spider):
                   '&pgnum=1&cnt=100' for nid in nid_list]
 
     def parse(self, response, **kwargs):
-        if(len(response.text) < 100):
+        '''
+        parse the url gotten from the api
+        '''
+        if len(response.text) < 100:
             return
         news_list = []
         try:
             news_list = json.loads(response.text[1:-1])['data']['list']
-        except:
+        except (KeyError, ValueError, TypeError):
             return
         for sub_dic in news_list:
-            if(sub_dic['LinkUrl'] != ''):
+            if sub_dic['LinkUrl'] != '':
                 self.f.write(sub_dic['LinkUrl'] + '\n')
-        if(len(news_list) >= 100):
+        if len(news_list) >= 100:
             pattern = r'http://qc\.wa\.news\.cn/nodeart/list\?nid=[0-9]+&pgnum=([0-9]+)&cnt=100'
             match_obj = re.match(pattern, response.request.url)
-            if(match_obj):
+            if match_obj:
                 pgnum = int(match_obj.group(1))
                 pgnum += 1
                 prefix_match_obj = re.match(r'(http://qc\.wa\.news\.cn/nodeart/list\?nid=[0-9]+)&pgnum=[0-9]+&cnt=100', response.request.url)
                 yield Request(prefix_match_obj.group(1) + '&pgnum=' + str(pgnum) + '&cnt=100', callback=self.parse, dont_filter=True)
 
 class XinhuaNewsInfoSpider(Spider):
+    '''
+    This crawler do the whole crawl from the news url file
+    '''
     # 此爬虫根据爬取到的news url文件进行全量新闻爬取
     name = "xinhua_news_info"
+    # TODO: add jjckb in the future
     # 之后可以加上jjckb
     allowed_domains = ['www.xinhuanet.com', 'news.xinhuanet.com', ]
     current_dir_path = Path(__file__).parent
@@ -85,7 +107,7 @@ class XinhuaNewsInfoSpider(Spider):
     new_dir.mkdir(parents=True, exist_ok=True)
     try:
         f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'r', encoding='utf-8')
-    except:
+    except FileNotFoundError:
         f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'w', encoding='utf-8')
         f.close()
         f = open(new_dir / Path('news_url_11100000_11200000.txt'), 'r', encoding='utf-8')
@@ -94,22 +116,22 @@ class XinhuaNewsInfoSpider(Spider):
         # 循环读入news url，交给调度器爬取
         while True:
             url = self.f.readline()
-            if(url == ''):
+            if url == '':
                 break
             # 过滤掉不需要的url
-            if(re.search(r'xinhuanet\.com', url) == None):
+            if re.search(r'xinhuanet\.com', url) is None:
                 continue
-            if(re.search(r'french|arabic|portuguese|german|spanish|jp', url) != None):
+            if re.search(r'french|arabic|portuguese|german|spanish|jp', url) is not None:
                 continue
             yield Request(url, callback=self.parse)
 
-
-    def parse(self, response, **kwargs):
+    #pylint: disable=bare-except
+    def parse(self, response, **kwargs): #pylint: disable=too-many-locals, too-many-branches, too-many-statements
         url = response.request.url
         item = NewsItem()
         id_pattern = r'c_([0-9]+)\.htm'
         id_match_obj = re.search(id_pattern, url)
-        if(id_match_obj == None):
+        if id_match_obj is None:
             return
         item['news_id'] = 'xinhua_' + id_match_obj.group(1)
         item['source'] = 'xinhua'
@@ -117,18 +139,18 @@ class XinhuaNewsInfoSpider(Spider):
         time = ''
         try:
             time = response.xpath("//*[@class='h-time']/text()").extract()[0].strip()
-        except:
+        except KeyboardInterrupt:
             pass
-        if (time == ''):
+        if time == '':
             try:
                 time = response.xpath("//*[@class='time']/text()").extract()[0].strip()
             except:
                 pass
             time_match_obj = re.match(r'20\d{2}年\d{2}月\d{2}日 \d{2}:\d{2}:\d{2}', time)
-            if (time_match_obj != None):
+            if time_match_obj is not None:
                 time = re.sub(r'[年月]', '-', time)
                 time = re.sub(r'日', '', time)
-        if (time == ''):
+        if time == '':
             return
         item['pub_date'] = time
         # 定义新闻的标题和来源
@@ -140,7 +162,7 @@ class XinhuaNewsInfoSpider(Spider):
             title_media = ' '.join(title_media.split())
         except:
             return
-        if(title_name == ''):
+        if title_name == '':
             return
         item['title'] = title_name
         item['media'] = title_media
@@ -151,11 +173,11 @@ class XinhuaNewsInfoSpider(Spider):
         local_match_obj = re.search(local_pattern, url)
         cat_pattern = r'xinhuanet\.com/[/]?([a-z]+)/'
         cat_match_obj = re.search(cat_pattern, url)
-        if(local_match_obj != None):
+        if local_match_obj is not None:
             cat = 'local_' + local_match_obj.group(1)
-        elif(cat_match_obj != None):
+        elif cat_match_obj is not None:
             cat = cat_match_obj.group(1)
-        if(cat != ''):
+        if cat != '':
             item['category'] = cat
         # 定义新闻的标签，两种页面格式一样，非必需属性
         tags = ''
@@ -163,7 +185,7 @@ class XinhuaNewsInfoSpider(Spider):
             tags = response.xpath('//meta[@name="keywords"]/@content').extract()[0].strip()
         except:
             pass
-        if(tags != ''):
+        if tags != '':
             item['tags'] = tags
         # 定义新闻的video，非必需属性
         video_src = ''
@@ -171,7 +193,7 @@ class XinhuaNewsInfoSpider(Spider):
             video_src = response.xpath('//video/@src').extract()[0]
         except:
             pass
-        if(video_src != ''):
+        if video_src != '':
             item['video'] = video_src
         # 定义新闻的内容content
         p_list = []
@@ -179,7 +201,7 @@ class XinhuaNewsInfoSpider(Spider):
             p_list = response.xpath('//*[@id="p-detail"]//p')
         except:
             pass
-        if(not p_list):
+        if not p_list:
             try:
                 p_list = response.xpath('//*[@class="article"]//p')
             except:
@@ -187,13 +209,9 @@ class XinhuaNewsInfoSpider(Spider):
         content = []
         for one_p in p_list:
             img = one_p.xpath('.//img/@src').extract()
-            if(len(img) == 0):
+            if len(img) == 0:
                 content += ['text_' + text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
             else:
                 content.append("img_" + parse.urljoin(url, img[0]))
         item['content'] = content
         yield item
-
-
-
-

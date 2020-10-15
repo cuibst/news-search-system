@@ -1,3 +1,4 @@
+# pylint: skip-file
 # Scrapy settings for crawler project
 #
 # For simplicity, this file contains only settings considered important or

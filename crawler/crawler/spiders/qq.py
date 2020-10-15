@@ -3,11 +3,6 @@
 The crawler for news.qq.com
 '''
 import re
-<<<<<<< HEAD
-from pathlib import Path
-from ..items import NewsItem
-=======
->>>>>>> master
 import json
 from pathlib import Path
 from scrapy.spiders import Request, Spider

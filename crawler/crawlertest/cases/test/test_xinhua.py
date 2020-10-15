@@ -11,10 +11,10 @@ class TestXinhuaNewsFullSpider:
         request = next(result)
         assert re.match(r'http://qc\.wa\.news\.cn/nodeart/list\?nid=\d+&pgnum=1&cnt=100', request.url)
 
-    def test_xinhua_full_parse_nid_valid_01(self, resource_get):
+    def test_xinhua_full_parse_valid_01(self, resource_get):
         test_url = 'http://qc.wa.news.cn/nodeart/list?nid=111444&pgnum=1&cnt=100'
         response = resource_get(test_url, request=Request(url=test_url))
-        result = self.spider.parse_nid(response)
+        result = self.spider.parse(response)
         request = next(result)
         assert re.match(r'http://qc\.wa\.news\.cn/nodeart/list\?nid=\d+&pgnum=1&cnt=100', request.url)
         request = next(result)

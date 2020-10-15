@@ -1,5 +1,4 @@
-#pylint: disable=line-too-long
-#pylint: disable=fixme
+# pylint: disable=line-too-long
 '''
 crawler for xinhuanet.com
 '''
@@ -12,6 +11,9 @@ from ..items import NewsItem
 
 
 class XinhuaNewsFullSpider(Spider):
+    '''
+    XinhuaNewsFullSpider
+    '''
     # 此爬虫是新华网全量爬虫
     # 爬取过程分为四步：扫描api接口得到有用的nid，根据nid获得新闻列表，根据新闻列表获得新闻url，根据新闻url爬取出news item
     # 新华网api格式： http://qc.wa.news.cn/nodeart/list?nid=111444&pgnum=1&cnt=100
@@ -21,51 +23,72 @@ class XinhuaNewsFullSpider(Spider):
 
     # 根据nid的起止号码，遍历这部分nid的api，构建初始爬取队列
     def start_requests(self):
+        '''
+        start_requests
+        :return:
+        '''
         nid_start = 11100000
         nid_end = 11200000
         url_prefix = 'http://qc.wa.news.cn/nodeart/list?nid='
         url_suffix = '&pgnum=1&cnt=100'
         for i in range(nid_start, nid_end):
             full_url = url_prefix + str(i) + url_suffix
-            yield Request(url=full_url, callback=self.parse_nid)
+            yield Request(url=full_url, callback=self.parse)
 
     # 根据start_urls，找出含有新闻列表的nid编号
-    def parse_nid(self, response, **kwargs):
-        if(len(response.body) > 100):
+    def parse(self, response, **kwargs):
+        '''
+        parse_nid
+        :param response:
+        :param kwargs:
+        :return:
+        '''
+        if len(response.body) > 100:
             # self.f.write(response.request.url[38:38+self.id_len] + '\n')
             yield Request(url=response.request.url, callback=self.parse_news_url, dont_filter=True)
             # 增加url中的pgnum参数，回调自身，检查是否含有新闻列表
             match_obj = re.match(r'http://qc\.wa\.news\.cn/nodeart/list\?nid=(\d+)&pgnum=(\d+)&cnt=100',
-                             response.request.url)
+                                 response.request.url)
             nid = match_obj.group(1)
             pgnum = int(match_obj.group(2))
             pgnum += 1
             next_url = 'http://qc.wa.news.cn/nodeart/list?nid=' + nid + '&pgnum=' + str(pgnum) + '&cnt=100'
-            yield Request(url=next_url, callback=self.parse_nid, dont_filter=True)
+            yield Request(url=next_url, callback=self.parse, dont_filter=True)
         else:
             return
 
     # 根据可用nid编号，从中爬取出新闻列表，进而筛选出可用的新闻url
-    def parse_news_url(self, response, **kwargs):
-        news_dic_list = news_list = json.loads(response.text[1:-1])['data']['list']
+    def parse_news_url(self, response):
+        '''
+        parse_news_url
+        :param response:
+        :param kwargs:
+        :return:
+        '''
+        news_dic_list = json.loads(response.text[1:-1])['data']['list']
         for news_dic in news_dic_list:
             news_url = news_dic['LinkUrl']
             # 检查news_url是否符合要求
-            if (re.search(r'xinhuanet\.com', news_url) == None):
+            if re.search(r'xinhuanet\.com', news_url) is None:
                 continue
-            if (re.search(r'french|arabic|portuguese|german|spanish|jp', news_url) != None):
+            if re.search(r'french|arabic|portuguese|german|spanish|jp', news_url) is not None:
                 continue
             # 以上代码块对news_url进行筛选，可能需要更改
             yield Request(url=news_url, callback=self.parse_news_item, dont_filter=True)
 
-
     # 根据可用的新闻页面url，爬取出新闻数据，返回news item
-    def parse_news_item(self, response, **kwargs):
+    def parse_news_item(self, response):  # pylint: disable=too-many-locals, no-self-use, too-many-branches, too-many-statements
+        '''
+        parse_news_item
+        :param response:
+        :param kwargs:
+        :return:
+        '''
         # 此部分代码最初版本的parse函数，未优化！
         url = response.request.url
         item = NewsItem()
         id_match_obj = re.search(r'c_([0-9]+)\.htm', url)
-        if (id_match_obj == None):
+        if id_match_obj is None:
             return
         item['news_id'] = 'xinhua_' + id_match_obj.group(1)
         item['source'] = 'xinhua'
@@ -73,12 +96,12 @@ class XinhuaNewsFullSpider(Spider):
         time = ''
         try:
             time = response.xpath("//*[@class='h-time']/text()").extract()[0].strip()
-        except KeyboardInterrupt:
+        except IndexError:
             pass
         if time == '':
             try:
                 time = response.xpath("//*[@class='time']/text()").extract()[0].strip()
-            except:
+            except IndexError:
                 pass
             time_match_obj = re.match(r'20\d{2}年\d{2}月\d{2}日 \d{2}:\d{2}:\d{2}', time)
             if time_match_obj is not None:
@@ -94,9 +117,9 @@ class XinhuaNewsFullSpider(Spider):
             title_media = ' '.join(title_full.lstrip(title_name).split('-'))
             title_media = ' '.join(title_media.split('_'))
             title_media = ' '.join(title_media.split())
-        except:
+        except IndexError:
             return
-        if (title_name == ''):
+        if title_name == '':
             return
         item['title'] = title_name
         item['media'] = title_media
@@ -107,16 +130,16 @@ class XinhuaNewsFullSpider(Spider):
         local_match_obj = re.search(local_pattern, url)
         cat_pattern = r'xinhuanet\.com/[/]?([a-z]+)/'
         cat_match_obj = re.search(cat_pattern, url)
-        if (local_match_obj != None):
+        if local_match_obj is not None:
             cat = 'local_' + local_match_obj.group(1)
-        elif (cat_match_obj != None):
+        elif cat_match_obj is not None:
             cat = cat_match_obj.group(1)
         item['category'] = cat
         # 定义新闻的标签，两种页面格式一样，非必需属性
         tags = ''
         try:
             tags = response.xpath('//meta[@name="keywords"]/@content').extract()[0].strip()
-        except:
+        except IndexError:
             pass
         item['tags'] = tags
         # 定义新闻的summary
@@ -124,35 +147,28 @@ class XinhuaNewsFullSpider(Spider):
         try:
             summary = response.xpath('//meta[@name="description"]/@content').extract()[0].strip()
             summary = summary.split('---')
-            if(len(summary) >= 1):
+            if len(summary) >= 1:
                 summary = summary[1]
             else:
                 summary = ''
-        except:
+        except IndexError:
             pass
         item['summary'] = summary
         # 定义新闻的video，非必需属性
         video_src = ''
         try:
             video_src = response.xpath('//video/@src').extract()[0]
-        except:
+        except IndexError:
             pass
         item['video'] = video_src
         # 定义新闻的内容content
-        p_list = []
-        try:
-            p_list = response.xpath('//*[@id="p-detail"]//p')
-        except:
-            pass
-        if (not p_list):
-            try:
-                p_list = response.xpath('//*[@class="article"]//p')
-            except:
-                pass
+        p_list = response.xpath('//*[@id="p-detail"]//p')
+        if not p_list:
+            p_list = response.xpath('//*[@class="article"]//p')
         content = []
         for one_p in p_list:
             img = one_p.xpath('.//img/@src').extract()
-            if (len(img) == 0):
+            if len(img) == 0:
                 content += ['text_' + text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
             else:
                 content.append("img_" + parse.urljoin(url, img[0]))

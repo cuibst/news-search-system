@@ -30,7 +30,7 @@ class NewsPipeline:
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/debug/')
         elif spider.name == 'qq_news_info':
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif(spider.name == 'xinhua_news_full'):
+        elif spider.name == 'xinhua_news_full':
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
         if self.dir_path is not None:

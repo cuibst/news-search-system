@@ -102,12 +102,13 @@ def upload_news(request):
     pub_date = data['pub_date']
     content = data['content']
     video = data['video']
+    summary = data['summary']
     news = News.objects.filter(news_id=news_id).first()
     print(12)
     if not news:
         news = News(source=source, news_url=news_url, category=category,\
                     media=media, tags=tags, title=title, news_id=news_id,\
-                    pub_date=pub_date, content=content, video=video)
+                    pub_date=pub_date, content=content, video=video,summary=summary)
         news.full_clean()
         news.save()
         return JsonResponse({

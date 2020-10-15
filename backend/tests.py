@@ -120,7 +120,8 @@ class TestViews(TestCase):
             "pub_date": "255",
             "content": "2333",
             "video": "233",
-            "news": "1"
+            "news": "1",
+            "summary": "9080"
         }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -138,7 +139,8 @@ class TestViews(TestCase):
             "pub_date": "255",
             "content": "2333",
             "video": "233",
-            "news": "1"
+            "news": "1",
+            "summary": "908"
         }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)

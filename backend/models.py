@@ -22,6 +22,6 @@ class News(models.Model):
     pub_date = models.CharField(max_length=100)
     content = models.CharField(max_length=10000)
     video = models.CharField(max_length=100)
-
+    summary = models.CharField(max_length=500)
 
 # Create your models here.

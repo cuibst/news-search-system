@@ -108,7 +108,7 @@ export default {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          axios.post('/register/', {
+          axios.post('/api/register/', {
             username: this.ruleForm.username,
             password: this.ruleForm.password,
             email: this.ruleForm.email,

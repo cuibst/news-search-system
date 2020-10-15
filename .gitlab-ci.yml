@@ -54,7 +54,7 @@ style-test:
   extends: .test
   # allow_failure: true
   script:
-    - pylint --load-plugins=pylint_django backend NewsSearchSystem
+    - pylint --load-plugins=pylint_django backend NewsSearchSystem crawler/crawler
     - BACKEND_RET=$?
     - cd frontend/
     - npm run lint
@@ -68,4 +68,5 @@ deploy:
     - deployer dyno replace $CI_PROJECT_NAME "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$REGISTRY_USER" "$REGISTRY_PWD"
   only:
     - master
-    - deployment
+    - dev
+    - database

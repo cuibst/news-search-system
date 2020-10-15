@@ -12,8 +12,11 @@ class TestViews(TestCase):
         '''
         Test / get
         Test /favicon.ico get
+        Test illegal get
         '''
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         response = self.client.get('/favicon.ico')
         self.assertEqual(response.status_code, 200)
+        response = self.client.get('/123.py')
+        self.assertEqual(response.status_code, 404)

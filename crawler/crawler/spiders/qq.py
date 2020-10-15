@@ -2,7 +2,7 @@ from scrapy.spiders import CrawlSpider, Rule, Request, Spider
 import time
 import re
 from pathlib import Path
-from crawler.crawler.items import NewsItem
+from ..items import NewsItem
 import json
 from selenium import webdriver
 

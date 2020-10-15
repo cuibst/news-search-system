@@ -22,7 +22,7 @@ class NewsPipeline:
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/debug/')
         elif (spider.name == 'qq_news_info'):
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif(spider.name == 'xinhua_news_info'):
+        elif(spider.name == 'xinhua_news_full'):
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
         if(self.dir_path != None):
@@ -32,7 +32,7 @@ class NewsPipeline:
         current_file_name = item['news_id'] + '.json'
         if(current_file_name not in self.file_set):
             self.file_set.add(current_file_name)
-            f = open(str(self.dir_path) + current_file_name, 'w', encoding="utf-8")
+            f = open(self.dir_path / Path(current_file_name), 'w', encoding="utf-8")
             content = json.dumps(dict(item), indent=4, ensure_ascii=False)
             f.write(content)
             f.close()

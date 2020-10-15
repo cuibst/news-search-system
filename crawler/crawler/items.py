@@ -18,4 +18,5 @@ class NewsItem(scrapy.Item):
     news_id = scrapy.Field()
     pub_date = scrapy.Field()
     content = scrapy.Field()
+    video = scrapy.Field()
 

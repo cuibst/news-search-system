@@ -31,8 +31,8 @@ class TestXinhuaNewsFullSpider:
         test_url = 'http://www.xinhuanet.com//world/2014-11/13/c_1113239219.htm'
         response = resource_get(test_url, request=Request(url=test_url))
         result = self.spider.parse_news_item(response)
-        key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media', 'tags', 'pub_date', 'summary',
-                    'video', 'content']
+        key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media',
+                    'tags', 'pub_date', 'summary', 'img', 'content']
         for item in result:
             for key in key_list:
                 assert key in item

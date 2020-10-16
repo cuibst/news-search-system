@@ -33,8 +33,8 @@ class NewsPipeline:
         elif spider.name == 'xinhua_news_full':
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
-        if self.dir_path is not None:
-            self.file_set = set(os.listdir(str(self.dir_path)))
+        # if self.dir_path is not None:
+        #     self.file_set = set(os.listdir(str(self.dir_path)))
 
     def process_item(self, item, spider): #pylint: disable=unused-argument
         '''
@@ -43,6 +43,7 @@ class NewsPipeline:
         current_file_name = item['news_id'] + '.json'
         if current_file_name not in self.file_set:
             self.file_set.add(current_file_name)
+            self.dir_path.mkdir(parents=True, exist_ok=True)
             file = open(self.dir_path / Path(current_file_name), 'w', encoding="utf-8")
             content = json.dumps(dict(item), indent=4, ensure_ascii=False)
             file.write(content)

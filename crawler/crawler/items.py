@@ -13,8 +13,6 @@ class NewsItem(scrapy.Item): # pylint: disable=too-many-ancestors
     '''
     The Scrapy item for news.
     '''
-    # define the fields for your item here like:
-    # name = scrapy.Field()
     news_id = scrapy.Field()
     news_url = scrapy.Field()
     title = scrapy.Field()
@@ -24,5 +22,5 @@ class NewsItem(scrapy.Item): # pylint: disable=too-many-ancestors
     tags = scrapy.Field()
     pub_date = scrapy.Field()
     summary = scrapy.Field()
-    video = scrapy.Field()
+    img = scrapy.Field()
     content = scrapy.Field()

@@ -44,7 +44,6 @@ class XinhuaNewsFullSpider(Spider):
         :return:
         '''
         if len(response.body) > 100:
-            # self.f.write(response.request.url[38:38+self.id_len] + '\n')
             yield Request(url=response.request.url, callback=self.parse_news_url, dont_filter=True)
             # 增加url中的pgnum参数，回调自身，检查是否含有新闻列表
             match_obj = re.match(r'http://qc\.wa\.news\.cn/nodeart/list\?nid=(\d+)&pgnum=(\d+)&cnt=100',
@@ -154,23 +153,17 @@ class XinhuaNewsFullSpider(Spider):
         except IndexError:
             pass
         item['summary'] = summary
-        # 定义新闻的video，非必需属性
-        video_src = ''
-        try:
-            video_src = response.xpath('//video/@src').extract()[0]
-        except IndexError:
-            pass
-        item['video'] = video_src
-        # 定义新闻的内容content
+        # 定义新闻的内容content和img
         p_list = response.xpath('//*[@id="p-detail"]//p')
         if not p_list:
             p_list = response.xpath('//*[@class="article"]//p')
+        img_src = ''
         content = []
         for one_p in p_list:
             img = one_p.xpath('.//img/@src').extract()
-            if len(img) == 0:
-                content += ['text_' + text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
-            else:
-                content.append("img_" + parse.urljoin(url, img[0]))
+            if len(img) > 0 and img_src == '':
+                img_src = parse.urljoin(url, img[0])
+            content += [text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
+        item['img'] = img_src
         item['content'] = content
         yield item

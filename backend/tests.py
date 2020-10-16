@@ -107,7 +107,7 @@ class TestViews(TestCase):
         '''
         news = News(source='1', news_url='2', category='3',\
                     media='7', tags='6', title='5', news_id='4',\
-                    pub_date='8', content='9', video='10')
+                    pub_date='8', content='9', summary='10')
         news.save()
         response = self.client.post('/api/uploadnews/', data={
             "source": "1",
@@ -119,9 +119,8 @@ class TestViews(TestCase):
             "news_id": "4",
             "pub_date": "255",
             "content": "2333",
-            "video": "233",
-            "news": "1",
-            "summary": "9080"
+            "summary": "9080",
+            "img": "9878"
         }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -138,9 +137,8 @@ class TestViews(TestCase):
             "news_id": "45",
             "pub_date": "255",
             "content": "2333",
-            "video": "233",
-            "news": "1",
-            "summary": "908"
+            "summary": "908",
+            "img": "98009"
         }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)

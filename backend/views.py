@@ -92,23 +92,56 @@ def upload_news(request):
         upload news
     '''
     data = json.loads(request.body)
-    source = data['source']
-    news_url = data['news_url']
-    category = data['category']
-    media = data['media']
-    tags = data['tags']
-    title = data['title']
-    news_id = data['news_id']
-    pub_date = data['pub_date']
-    content = data['content']
-    video = data['video']
-    summary = data['summary']
+    if 'source' in data:
+        source = data['source']
+    else:
+        source = 'unknown source'
+    if 'news_url' in data:
+        news_url = data['news_url']
+    else:
+        news_url = 'unknown news_url'
+    if 'category' in data:
+        category = data['category']
+    else:
+        category = 'unknown category'
+    if 'media' in data:
+        media = data['media']
+    else:
+        media = 'unknown media'
+    if 'tags' in data:
+        tags = data['tags']
+    else:
+        tags = 'unknown tags'
+    if 'title' in data:
+        title = data['title']
+    else:
+        title = 'unknown title'
+    if 'news_id' in data:
+        news_id = data['news_id']
+    else:
+        news_id = 'unknown news_id'
+    if 'pub_date' in data:
+        pub_date = data['pub_date']
+    else:
+        pub_date = 'unknown pub_date'
+    if 'content' in data:
+        content = data['content']
+    else:
+        content = 'empty'
+    if 'summary' in data:
+        summary = data['summary']
+    else:
+        summary = 'empty'
+    if 'img' in data:
+        img = data['img']
+    else:
+        img = 'empty'
     news = News.objects.filter(news_id=news_id).first()
     print(12)
     if not news:
         news = News(source=source, news_url=news_url, category=category,\
                     media=media, tags=tags, title=title, news_id=news_id,\
-                    pub_date=pub_date, content=content, video=video, summary=summary)
+                    img=img, pub_date=pub_date, content=content, summary=summary)
         news.full_clean()
         news.save()
         return JsonResponse({

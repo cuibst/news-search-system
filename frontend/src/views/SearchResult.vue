@@ -1,6 +1,6 @@
 <template>
   <div id="SearchResult" >
-    <Search :infolist="infolist" @search="lookingfor"/>
+    <Search :infolist="infolist" :key="$router.fullpath"/>
   </div>
 </template>
 

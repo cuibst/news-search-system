@@ -59,9 +59,8 @@ export default {
     }
   },
   mounted () {
-    this.keyword = this.$route.query.keyword
+    this.keyword = this.$route.params.keyword
     this.ssindex()
-    console.log('@@@@')
   },
   methods: {
     goto (url) {
@@ -86,11 +85,55 @@ export default {
       })
     },
     search () {
-      this.$router.push({ path: '/searchresult', query: { keyword: this.keyword } })
+      this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.searchlogo {
+  height: 50px;
+}
+.nav{
+  padding:15px 0px;
+}
+.mg2{
+  margin-right:10px;
+  color:#626675;
+  padding:3px 0;
+  cursor: pointer;
+}
+.totalinfo{
+  padding:1rem 0;
+}
+
+.box{
+  line-height: 25px;
+  overflow: hidden;
+}
+.titles{
+  text-decoration:underline;
+  color: #2440b3;
+  font-weight: 500;
+  font-size: 20px;
+  font-family: "微软雅黑";
+  margin: 12px 5px;
+  cursor: pointer;
+}
+.news_img{
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+}
+.news_info{
+  padding:0 10px;
+}
+.publish_time{
+  color: #9194a0;
+  margin-left: 30px;
+}
+.active_nav{
+  border-bottom: 2px solid #38f;
+}
 </style>

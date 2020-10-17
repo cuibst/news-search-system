@@ -55,11 +55,11 @@ export default {
     }
   },
   mounted () {
-    this.keyword = this.$route.query.keyword
+    this.keyword = this.$route.params.keyword
   },
   methods: {
     search () {
-      this.$router.push({ path: '/searchresult', query: { keyword: this.keyword } })
+      this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
     }
   }
 }

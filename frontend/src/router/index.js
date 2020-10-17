@@ -22,7 +22,7 @@ const routes = [
     component: RegisterPage
   },
   {
-    path: '/searchresult',
+    path: '/searchresult/:keyword',
     name: 'SearchResult',
     component: SearchResult
   }

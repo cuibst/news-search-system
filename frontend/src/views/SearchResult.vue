@@ -1,6 +1,6 @@
 <template>
   <div id="SearchResult" >
-    <Search :infolist="infolist"/>
+    <Search :infolist="infolist" @search="lookingfor"/>
   </div>
 </template>
 

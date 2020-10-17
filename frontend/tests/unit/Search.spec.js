@@ -1,16 +1,14 @@
 import Search from '@/components/Search.vue'
-import Vue from 'vue'
-import VueRouter from 'vue-router';
+import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
-import ElementUI from 'element-ui'
 import '../../src/plugins/element.js'
 
-describe('Detail.vue',() => {
-  it('renders correctly with these news data',async () => {
+describe('Detail.vue', () => {
+  it('renders correctly with these news data', async () => {
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const router = new VueRouter()
-    const wrapper = shallowMount(Search,{
+    const wrapper = shallowMount(Search, {
       router,
       localVue,
       propsData: {
@@ -32,8 +30,8 @@ describe('Detail.vue',() => {
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const router = new VueRouter()
-    router.push({ name: 'SearchResult', params: { keyword: '解放军'} })
-    const wrapper = shallowMount(Search,{
+    router.push({ name: 'SearchResult', params: { keyword: '解放军' } })
+    const wrapper = shallowMount(Search, {
       router,
       localVue,
       propsData: {
@@ -56,8 +54,8 @@ describe('Detail.vue',() => {
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const router = new VueRouter()
-    router.push({ name: 'SearchResult', params: { keyword: '解放军'} })
-    const wrapper = shallowMount(Search,{
+    router.push({ name: 'SearchResult', params: { keyword: '解放军' } })
+    const wrapper = shallowMount(Search, {
       router,
       localVue
     })
@@ -67,13 +65,12 @@ describe('Detail.vue',() => {
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const router = new VueRouter()
-    router.push({ name: 'SearchResult', params: { keyword: ''} })
-    const wrapper = mount(Search,{
+    router.push({ name: 'SearchResult', params: { keyword: '' } })
+    const wrapper = mount(Search, {
       router,
       localVue
     })
     const button = wrapper.find('button')
     button.trigger('click')
-
   })
 })

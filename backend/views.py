@@ -1,3 +1,5 @@
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 '''
 views for backend
 '''

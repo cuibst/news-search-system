@@ -3,7 +3,7 @@ Test suite for backend
 '''
 import json
 from django.test import TestCase
-from backend.models import User
+from backend.models import User, News
 
 # Create your tests here.
 class TestViews(TestCase):
@@ -100,3 +100,47 @@ class TestViews(TestCase):
         data = json.loads(response.content)
         self.assertEqual(data['code'], 200)
         self.assertEqual(data['data'], 'register successfully')
+
+    def test_upload_news(self):
+        '''
+            Test /api/uploadnews/
+        '''
+        news = News(source='1', news_url='2', category='3',\
+                    media='7', tags='6', title='5', news_id='4',\
+                    pub_date='8', content='9', summary='10')
+        news.save()
+        response = self.client.post('/api/uploadnews/', data={
+            "source": "1",
+            "news_url": "d",
+            "category": "a",
+            "media": "11",
+            "tags": "12",
+            "title": "112",
+            "news_id": "4",
+            "pub_date": "255",
+            "content": "2333",
+            "summary": "9080",
+            "img": "9878"
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 401)
+        self.assertEqual(data['info'], 'repetitive news')
+
+        response = self.client.post('/api/uploadnews/', data={
+            "source": "1",
+            "news_url": "d",
+            "category": "a",
+            "media": "11",
+            "tags": "12",
+            "title": "112",
+            "news_id": "45",
+            "pub_date": "255",
+            "content": "2333",
+            "summary": "908",
+            "img": "98009"
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        self.assertEqual(data['info'], 'preserve successfully')

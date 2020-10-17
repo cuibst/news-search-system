@@ -1,12 +1,20 @@
 <template>
 <div style="padding:  1rem;" class="news">
-    {{keyword}}
+  <div v-for="(item,index) in infolist" :key="index">
+    {{item.title}}
+  </div>
 </div>
 </template>
 
 <script>
 export default {
   name: 'Search',
+  props: {
+    infolist: {
+      type: Array,
+      default: () => []
+    }
+  },
   data () {
     return {
       keyword: ''

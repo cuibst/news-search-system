@@ -93,6 +93,7 @@ def upload_news(request):
     '''
         upload news
     '''
+    print('in')
     data = json.loads(request.body)
     if 'source' in data:
         source = data['source']
@@ -139,12 +140,12 @@ def upload_news(request):
     else:
         img = 'empty'
     news = News.objects.filter(news_id=news_id).first()
-    print(12)
     if not news:
-        news = News(source=source, news_url=news_url, category=category,\
-                    media=media, tags=tags, title=title, news_id=news_id,\
+        news = News(source=source, news_url=news_url, category=category,
+                    media=media, tags=tags, title=title, news_id=news_id,
                     img=img, pub_date=pub_date, content=content, summary=summary)
         news.full_clean()
+        print(news.img)
         news.save()
         return JsonResponse({
             'info': 'preserve successfully',

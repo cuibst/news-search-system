@@ -1,3 +1,5 @@
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 '''
 views for backend
 '''
@@ -5,7 +7,7 @@ import json
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
+from .models import User, News
 # Create your views here.
 
 def index(request):
@@ -85,3 +87,71 @@ def register(request):
             'code': 401,
             'data': 'username used'
         }, status=200)
+
+@csrf_exempt
+def upload_news(request):
+    '''
+        upload news
+    '''
+    print('in')
+    data = json.loads(request.body)
+    if 'source' in data and data['source'] != '':
+        source = data['source']
+    else:
+        source = 'unknown source'
+    if 'news_url' in data and data['news_url'] != '':
+        news_url = data['news_url']
+    else:
+        news_url = 'unknown news_url'
+    if 'category' in data and data['category'] != '':
+        category = data['category']
+    else:
+        category = 'unknown category'
+    if 'media' in data and data['media'] != '':
+        media = data['media']
+    else:
+        media = 'unknown media'
+    if 'tags' in data and data['tags'] != '':
+        tags = data['tags']
+    else:
+        tags = 'unknown tags'
+    if 'title' in data and data['title'] != '':
+        title = data['title']
+    else:
+        title = 'unknown title'
+    if 'news_id' in data and data['news_id'] != '':
+        news_id = data['news_id']
+    else:
+        news_id = 'unknown news_id'
+    if 'pub_date' in data and data['pub_date'] != '':
+        pub_date = data['pub_date']
+    else:
+        pub_date = 'unknown pub_date'
+    if 'content' in data and data['content'] != '':
+        content = data['content']
+    else:
+        content = 'empty'
+    if 'summary' in data and data['summary'] != '':
+        summary = data['summary']
+    else:
+        summary = 'empty'
+    if 'img' in data and data['img'] != '':
+        img = data['img']
+    else:
+        img = 'empty'
+    news = News.objects.filter(news_id=news_id).first()
+    if not news:
+        news = News(source=source, news_url=news_url, category=category,
+                    media=media, tags=tags, title=title, news_id=news_id,
+                    img=img, pub_date=pub_date, content=content, summary=summary)
+        news.full_clean()
+        print('ok')
+        news.save()
+        return JsonResponse({
+            'info': 'preserve successfully',
+            'code': 200
+        }, status=200)
+    return JsonResponse({
+        'info': 'repetitive news',
+        'code': 401
+    }, status=200)

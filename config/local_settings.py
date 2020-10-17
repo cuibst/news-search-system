@@ -9,7 +9,6 @@ DEBUG = False
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql',

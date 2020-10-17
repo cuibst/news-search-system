@@ -6,15 +6,15 @@
 The pipelines for scrapy crawler
 '''
 
-
 # useful for handling different item types with a single interface
 import json
 import os
 from pathlib import Path
+from requests import post
 
 class NewsPipeline:
     '''
-    The pipeline for crawling news.
+    pipeline for post news
     '''
     # 以后要将查重工作提前到爬取之前
     file_set = set()
@@ -27,10 +27,10 @@ class NewsPipeline:
         '''
         # 确定要保存的文件夹路径
         if spider.name == 'qq_inc':
-            self.dir_path = self.current_dir_path / Path('spiders/data/qq/debug/')
+            self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
         elif spider.name == 'qq_news_info':
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif spider.name == 'xinhua_news_info':
+        elif spider.name == 'xinhua_news_full':
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
         if self.dir_path is not None:
@@ -43,8 +43,11 @@ class NewsPipeline:
         current_file_name = item['news_id'] + '.json'
         if current_file_name not in self.file_set:
             self.file_set.add(current_file_name)
-            file = open(str(self.dir_path) + current_file_name, 'w', encoding="utf-8")
+            self.dir_path.mkdir(parents=True, exist_ok=True)
+            file = open(self.dir_path / Path(current_file_name), 'w', encoding="utf-8")
             content = json.dumps(dict(item), indent=4, ensure_ascii=False)
+            post(url='https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/',
+                 data=content.encode('utf-8'))
             file.write(content)
             file.close()
             return item

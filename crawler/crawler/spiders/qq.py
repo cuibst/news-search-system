@@ -4,10 +4,55 @@ The crawler for news.qq.com
 '''
 import re
 import json
+from urllib import parse
 from pathlib import Path
 from scrapy.spiders import Request, Spider
 from ..items import NewsItem
 
+
+def parse_item(response):
+    '''
+    input response from nes url, yield news item
+    :param response:
+    :return:
+    '''
+    # 从新闻页爬取信息，存入data/qq/news_info/文件夹
+    url = response.request.url
+    script_list = response.xpath('/html/head//script/text()').extract()
+    news_brief_info = None
+    for script in script_list:
+        if script.find('window.DATA = ') >= 0:
+            news_brief_info = json.loads(script.lstrip('window.DATA = '))
+            break
+    item = NewsItem()
+    try:
+        item['title'] = news_brief_info['title']
+        item['category'] = news_brief_info['catalog1']
+        item['media'] = news_brief_info['media']
+        item['pub_date'] = news_brief_info['pubtime']
+        item['tags'] = news_brief_info['tags']
+        item['news_id'] = 'qq_' + news_brief_info['cms_id']
+        item['source'] = 'qq'
+        item['news_url'] = url
+        # summary
+        summary = response.xpath('//meta[@name="description"]/@content').extract()
+        if summary:
+            item['summary'] = summary[0].strip()
+        else:
+            item['summary'] = ''
+        item['content'] = []
+        img_src = ''
+        for one_p in response.xpath('//p[@class="one-p"]'):
+            img = one_p.xpath('.//img/@src').extract()
+            if len(img) > 0:
+                if img_src == '':
+                    img_src = parse.urljoin(url, img[0])
+            item['content'] += [text for text in one_p.xpath('./text()').extract() if text.strip() != '']
+        item['img'] = img_src
+        yield item
+    except (KeyError, ValueError, TypeError):
+        # 删除了记录错误url的功能
+        return
 
 
 class QqIncSpider(Spider):
@@ -31,48 +76,7 @@ class QqIncSpider(Spider):
         pattern = '.+/omn/2020[0-9]{4}/(2020[0-9]{4}[A-za-z0-9]+).*'
         for href in href_list:
             if re.match(pattern, href) is not None:
-                yield Request(href, callback=self.parse_item)
-
-
-    def parse_item(self, response):
-        '''
-        parse the response page and save it into data/news_info
-        '''
-        # 从新闻页爬取信息，存入data/news_info/文件夹
-        current_url = response.request.url
-        script_list = response.xpath('/html/head//script/text()').extract()
-        news_brief_info = None
-        for script in script_list:
-            if script.find('window.DATA = ') >= 0:
-                news_brief_info = json.loads(script.lstrip('window.DATA = '))
-                break
-        item = NewsItem()
-        try:
-            item['title'] = news_brief_info['title']
-            item['category'] = news_brief_info['catalog1']
-            item['media'] = news_brief_info['media']
-            item['pub_date'] = news_brief_info['pubtime']
-            item['tags'] = news_brief_info['tags']
-            item['news_id'] = news_brief_info['cms_id']
-            item['source'] = self.name.split('_')[0]
-            item['news_url'] = current_url
-            item['content'] = []
-            for one_p in response.xpath('//p[@class="one-p"]'):
-                img = one_p.xpath('.//img/@src').extract()
-                if len(img) != 0:
-                    item['content'] += ['img_' + src for src in img]
-                else:
-                    item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
-            yield item
-        except (KeyError, TypeError, ValueError):
-            # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
-            new_dir = self.current_dir_path / Path('data/error/')
-            new_dir.mkdir(parents=True, exist_ok=True)
-            error_f = open(new_dir / Path('error_url.txt'), 'a', encoding='utf-8')
-            error_f.write(str(self.total_error) + '_' + current_url + '\n')
-            error_f.close()
-            self.total_error += 1
-
+                yield Request(href, callback=parse_item)
 
 
 class QqNewsInfoSpider(Spider):
@@ -121,43 +125,4 @@ class QqNewsInfoSpider(Spider):
                 file = open(new_dir / Path(dic['cms_id'] + '.json'), 'w', encoding='utf-8')
                 file.write(json.dumps(dic, indent=4, ensure_ascii=False))
                 file.close()
-                yield Request(dic['url'], callback=self.parse_item)
-
-    def parse_item(self, response):
-        '''
-        get the news detail from the news page
-        '''
-        # 从新闻页爬取信息，存入data/qq/news_info/文件夹
-        current_url = response.request.url
-        script_list = response.xpath('/html/head//script/text()').extract()
-        news_brief_info = None
-        for script in script_list:
-            if script.find('window.DATA = ') >= 0:
-                news_brief_info = json.loads(script.lstrip('window.DATA = '))
-                break
-        item = NewsItem()
-        try:
-            item['title'] = news_brief_info['title']
-            item['category'] = news_brief_info['catalog1']
-            item['media'] = news_brief_info['media']
-            item['pub_date'] = news_brief_info['pubtime']
-            item['tags'] = news_brief_info['tags']
-            item['news_id'] = news_brief_info['cms_id']
-            item['source'] = self.name.split('_')[0]
-            item['news_url'] = current_url
-            item['content'] = []
-            for one_p in response.xpath('//p[@class="one-p"]'):
-                img = one_p.xpath('.//img/@src').extract()
-                if len(img) != 0:
-                    item['content'] += ['img_' + src for src in img]
-                else:
-                    item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
-            yield item
-        except (KeyError, ValueError, TypeError):
-            # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
-            new_dir = self.current_dir_path / Path('data/error/')
-            new_dir.mkdir(parents=True, exist_ok=True)
-            error_f = open(new_dir / Path('error_url.txt'), 'a', encoding='utf-8')
-            error_f.write(str(self.total_error) + '_' + current_url + '\n')
-            error_f.close()
-            self.total_error += 1
+                yield Request(dic['url'], callback=parse_item)

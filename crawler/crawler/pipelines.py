@@ -6,7 +6,6 @@
 The pipelines for scrapy crawler
 '''
 
-
 # useful for handling different item types with a single interface
 import json
 import os
@@ -27,14 +26,14 @@ class NewsPipeline:
         '''
         # 确定要保存的文件夹路径
         if spider.name == 'qq_inc':
-            self.dir_path = self.current_dir_path / Path('spiders/data/qq/debug/')
+            self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
         elif spider.name == 'qq_news_info':
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
         elif spider.name == 'xinhua_news_full':
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
-        # if self.dir_path is not None:
-        #     self.file_set = set(os.listdir(str(self.dir_path)))
+        if self.dir_path is not None:
+            self.file_set = set(os.listdir(str(self.dir_path)))
 
     def process_item(self, item, spider): #pylint: disable=unused-argument
         '''

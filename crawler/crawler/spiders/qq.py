@@ -126,4 +126,3 @@ class QqNewsInfoSpider(Spider):
                 file.write(json.dumps(dic, indent=4, ensure_ascii=False))
                 file.close()
                 yield Request(dic['url'], callback=parse_item)
-

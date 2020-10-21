@@ -1,13 +1,16 @@
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-locals
 '''
 views for backend
 '''
 import json
+import requests
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, News
+
 # Create your views here.
 
 def index(request):
@@ -147,10 +150,36 @@ def upload_news(request):
         news.full_clean()
         print('ok')
         news.save()
-        return JsonResponse({
-            'info': 'preserve successfully',
-            'code': 200
-        }, status=200)
+        tmp_dict = {"news_id": news_id}
+        url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
+
+        ret = requests.post(url, data=json.dumps(tmp_dict),
+                            headers={'Content-Type': 'application/json'})
+        dic = ret.json()
+        print(dic['data'])
+        if dic['code'] == 200:
+            return JsonResponse({
+                'info': 'preserve successfully',
+                'code': 200
+            }, status=200)
+        if dic['data'] == 'Invalid news id':
+            news.delete()
+            return JsonResponse({
+                'info': 'Invalid news id',
+                'code': 401
+            }, status=401)
+        if dic['data'] == 'No news found with given id':
+            news.delete()
+            return JsonResponse({
+                'info': 'no such news',
+                'code': 401
+            }, status=401)
+        if dic['data'] == 'News Already Exists' + news_id:
+            news.delete()
+            return JsonResponse({
+                'info': 'repetitive news',
+                'code': 401
+            }, status=200)
     return JsonResponse({
         'info': 'repetitive news',
         'code': 401

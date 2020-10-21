@@ -1,7 +1,9 @@
 '''
 Test suite for backend
 '''
+# pylint: disable=line-too-long
 import json
+import requests
 from django.test import TestCase
 from backend.models import User, News
 
@@ -122,6 +124,7 @@ class TestViews(TestCase):
             "summary": "9080",
             "img": "9878"
         }, content_type='application/json')
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['code'], 401)
@@ -144,3 +147,9 @@ class TestViews(TestCase):
         data = json.loads(response.content)
         self.assertEqual(data['code'], 200)
         self.assertEqual(data['info'], 'preserve successfully')
+        dic1 = {'id': "45"}
+        dic2 = {'id': "4"}
+        requests.post("https://news-search-lucene-rzotgorz.app.secoder.net/index/delete", data=json.dumps(dic1),
+                      header={'Content-Type': 'application/json'})
+        requests.post("https://news-search-lucene-rzotgorz.app.secoder.net/index/delete", data=json.dumps(dic2),
+                      header={'Content-Type': 'application/json'})

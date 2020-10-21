@@ -17,6 +17,9 @@ DATABASES = {
        'PASSWORD': '12345678',
        'HOST': 'postgres.rzotgorz.secoder.local',
        'PORT': '5432',
+       'TEST': {
+           'NAME': 'news'
+       }
    }
 }
 

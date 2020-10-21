@@ -8,6 +8,7 @@ from urllib import parse
 from pathlib import Path
 from scrapy import Spider, Request
 from ..items import NewsItem
+from .lib.itemparser import cat_gen
 
 
 class XinhuaNewsFullSpider(Spider):
@@ -75,6 +76,7 @@ class XinhuaNewsFullSpider(Spider):
             # 以上代码块对news_url进行筛选，可能需要更改
             yield Request(url=news_url, callback=self.parse_news_item, dont_filter=True)
 
+
     # 根据可用的新闻页面url，爬取出新闻数据，返回news item
     def parse_news_item(self, response):  # pylint: disable=too-many-locals, no-self-use, too-many-branches, too-many-statements
         '''
@@ -133,6 +135,19 @@ class XinhuaNewsFullSpider(Spider):
             cat = 'local_' + local_match_obj.group(1)
         elif cat_match_obj is not None:
             cat = cat_match_obj.group(1)
+        cat_dic = {
+            'politics': ['politics', 'world', 'legal', 'tw', 'gangao'],
+            'finance': ['money', 'fortune', 'caipiao'],
+            'tech': ['auto', 'tech', 'info'],
+            'military': ['mil'],
+            'social': ['energy', 'local', 'culture', 'gongyi'],
+            'edu': [],
+            'sports': ['sports'],
+            'ent': ['ent'],
+            'life': ['health', 'food', 'fashion', 'travel'],
+            'house': ['house']
+        }
+        cat = cat_gen(cat, cat_dic)
         item['category'] = cat
         # 定义新闻的标签，两种页面格式一样，非必需属性
         tags = ''

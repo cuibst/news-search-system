@@ -34,9 +34,11 @@
         </ul>
       </div>
       <div class="right">
-        <el-carousel :interval="5000" arrow="always">
-          <el-carousel-item v-for="item in imgnews" :key="item">
-            <img :src="item.img" class="image">
+        <el-carousel :interval="5000" arrow="always" indicator-position="outside">
+          <el-carousel-item v-for="(item,index) in imgnews" :key="index" :label="item.title">
+            <a :href="item.url">
+              <img :src="item.img" class="image">
+            </a>
           </el-carousel-item>
          </el-carousel>
       </div>
@@ -81,6 +83,28 @@ export default {
         {
           name: '时尚',
           url: ''
+        }
+      ],
+      imgnews: [
+        {
+          title: '安徽歙县古城“非遗”夜市再现“徽府盛景”',
+          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/745182300a228b634d993bc3b834b806.jpeg?x-bce-process=image/crop,x_0,y_0,w_930,h_506',
+          url: 'https://3w.huanqiu.com/a/58ef16/40N35LsSG8S?agt=8'
+        },
+        {
+          title: '实拍英国波特利文海浪拍岸',
+          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/0e69174619eb516c62cee299ea4f3a05.jpeg?x-bce-process=image/crop,x_0,y_0,w_2048,h_1114',
+          url: 'https://3w.huanqiu.com/a/0d8d78/40N367RpL7e?agt=8'
+        },
+        {
+          title: '安徽歙县古城“非遗”夜市再现“徽府盛景”',
+          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/745182300a228b634d993bc3b834b806.jpeg?x-bce-process=image/crop,x_0,y_0,w_930,h_506',
+          url: 'https://3w.huanqiu.com/a/58ef16/40N35LsSG8S?agt=8'
+        },
+        {
+          title: '实拍英国波特利文海浪拍岸',
+          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/0e69174619eb516c62cee299ea4f3a05.jpeg?x-bce-process=image/crop,x_0,y_0,w_2048,h_1114',
+          url: 'https://3w.huanqiu.com/a/0d8d78/40N367RpL7e?agt=8'
         }
       ],
       textnews: [
@@ -155,7 +179,7 @@ export default {
 .content .right{
   float:right;
   width:50%;
-  padding:50px 4rem;
+  padding:0px 4rem;
 }
 .content .left{
   float:left;
@@ -168,7 +192,9 @@ export default {
 .news .imgs{
   text-align: center;
 }
-
+.nav{
+  padding: 20px 0 0 0;
+}
 .navbar {
   overflow: hidden;
   padding:20px 0px;
@@ -219,4 +245,18 @@ export default {
   cursor: pointer;
 }
 
+.el-carousel__item{
+  width: 500px;
+  float: left;
+}
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+.el-carousel__item:nth-child(2n+1) {
+  background-color: #d3dce6;
+}
+.image{
+  height: 100%;
+  width: 100%;
+}
 </style>

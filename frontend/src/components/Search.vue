@@ -24,8 +24,9 @@
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
               <h4 class="titles" v-html="item.title" @click="goto(item.news_url)">{{item.title}}</h4>
-              <el-col :span="6" v-if="item.img!=''">
-                <img :src="item.img" class="news_img" >
+              <!-- Do not show anything if no image in the web -->
+              <el-col :span="6" v-if="item.img!='empty'">
+                <img :src="item.img" class="news_img">
               </el-col>
               <el-col :span="item.img==''?24:18" class="news_info">
                 <div>
@@ -60,8 +61,6 @@ export default {
   },
   mounted () {
     // 此处调用高亮函数，当在此页面继续搜索时可能不会起作用，因为是相同url下的params变换跳转
-    console.log(this.infolist)
-    console.log(typeof (this.infolist))
     this.keyword = this.$route.params.keyword
     this.ssindex()
     console.log(this.keyword)
@@ -69,12 +68,12 @@ export default {
 
   watch: {
     '$route' (to, from) {
+      // Send new search content to the parent
       this.$emit('keychange', to.params.keyword)
     },
     infolist (to, from) {
       this.keyword = this.$route.params.keyword
       this.ssindex()
-      console.log(this.keyword)
     }
   },
   methods: {
@@ -100,9 +99,8 @@ export default {
       })
     },
     search () {
-      // 注意，这里是在同一个url下的不同的params的变换，变换后页面不会直接刷新，希望在我上面函数监测route时向父组件触发事件进行父组件内的储存列表的更换
+      // 此处变更搜索路径
       this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
-      // document.location = '/#/searchresult/' + this.keyword
     }
   }
 }

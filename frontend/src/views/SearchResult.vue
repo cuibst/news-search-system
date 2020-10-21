@@ -7,7 +7,7 @@
 <script>
 import Search from '@/components/Search.vue'
 import axios from 'axios'
-import '@/mock/index'
+// import '@/mock/index'
 export default {
   name: 'SearchResult',
   components: {
@@ -17,30 +17,24 @@ export default {
     return {
       activeindex: 0,
       infolist: {
-        type: Array
+        type: Array,
+        default: () => []
       }
     }
   },
   created () {
-    axios.get('/index/search', {
-      params: {
-        query: encodeURI(this.$route.params.keyword)
-      }
-    }).then(ret => {
-      this.infolist = ret.data.infolist
-    }, error => {
-      console.log(error)
-      alert('服务器忙')
-    })
+    this.KeyChange(this.$route.params.keyword)
   },
   methods: {
     KeyChange: function (newkey) {
-      axios.get('/index/search', {
-        params: {
-          query: encodeURI(newkey)
-        }
-      }).then(ret => {
+      axios.get('/index/search',
+        {
+          params: {
+            query: newkey
+          }
+        }).then(ret => {
         this.infolist = ret.data.infolist
+        console.log(ret.data.infolist)
       }, error => {
         console.log(error)
         alert('服务器忙')

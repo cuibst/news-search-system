@@ -34,8 +34,9 @@
         </ul>
       </div>
       <div class="right">
-        <el-carousel :interval="5000" arrow="always" indicator-position="outside">
-          <el-carousel-item v-for="(item,index) in imgnews" :key="index" :label="item.title">
+        <el-carousel :interval="5000" arrow="always" indicator-position="outside" type="card">
+          <el-carousel-item v-for="(item,index) in imgnews" :key="index">
+            <span class="imgtext">{{item.title}}</span>
             <a :href="item.url">
               <img :src="item.img" class="image">
             </a>
@@ -258,5 +259,8 @@ export default {
 .image{
   height: 100%;
   width: 100%;
+}
+.imgtext{
+  font: 1em sans-serif;
 }
 </style>

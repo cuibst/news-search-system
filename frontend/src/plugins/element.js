@@ -13,4 +13,3 @@ Vue.use(Input)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.prototype.$message = Message
-

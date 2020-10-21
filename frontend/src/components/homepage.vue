@@ -18,14 +18,27 @@
           </div>
         </el-col>
       </el-row>
+    </div>
+    <div class="navbar">
       <ul class="type">
         <li v-for="(item, index) in navlist" :key="index" class="nav">{{item.name}}</li>
       </ul>
     </div>
     <div class="content">
-      <div :class="left">
+      <div class="left">
+        <div class="typelabel">
+          <span class="shorttypelabel">热点要闻</span>
+        </div>
+        <ul class="hotnews">
+          <li v-for="(item,index) in textnews" :key="index" @click="goto(item.url)" class="detail">{{item.title}}</li>
+        </ul>
       </div>
       <div class="right">
+        <el-carousel :interval="5000" arrow="always">
+          <el-carousel-item v-for="item in imgnews" :key="item">
+            <img :src="item.img" class="image">
+          </el-carousel-item>
+         </el-carousel>
       </div>
     </div>
   </div>
@@ -38,6 +51,11 @@ export default {
     news: {
       type: Object,
       default: () => {}
+    }
+  },
+  methods: {
+    goto (url) {
+      window.location.href = url
     }
   },
   data () {
@@ -64,8 +82,57 @@ export default {
           name: '时尚',
           url: ''
         }
+      ],
+      textnews: [
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        },
+        {
+          title: '《为了和平》第五集：万众一心',
+          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
+        }
       ]
-
     }
   }
 }
@@ -87,47 +154,40 @@ export default {
 }
 .content .right{
   float:right;
-  width:90%;
-  padding:0 4rem;
+  width:50%;
+  padding:50px 4rem;
 }
 .content .left{
   float:left;
-  width:10%;
-  border-right: 1px solid #ccc;
-  text-align: center;
+  width:20%;
+  text-align: left;
   position: relative;
   top:0;
-}
-.content .left2{
-  float:left;
-  width:10%;
-  border-right: 1px solid #ccc;
-  text-align: center;
-  position: fixed;
-  top:0;
+  left: 20%;
 }
 .news .imgs{
   text-align: center;
 }
 
-.nav {
+.navbar {
   overflow: hidden;
-  padding:20px;
+  padding:20px 0px;
 }
-.nav ul{
+.navbar ul{
   list-style: none;
   overflow: hidden;
   padding: 0;
 }
-.nav ul li{
+.navbar ul li{
   float:left;
   height:50px;
   line-height: 50px;
   padding:0px 25px;
+  color: #ccc;
 }
 
-.nav ul li:hover{
-  color:rgb(33, 88, 207);
+.navbar ul li:hover{
+  color:rgb(207, 33, 33);
   cursor: pointer;
 }
 .logo{
@@ -137,4 +197,26 @@ export default {
   background-color: #01204f;
   width: 100%;
 }
+.typelabel{
+  width: 100%;
+  float: left;
+  border-bottom: 1px solid gray;
+  padding: 0px 20px;
+  vertical-align: baseline;
+}
+.shorttypelabel{
+  float: left;
+  border-bottom: 2px solid #2f63ba;
+  color: #2f63ba;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 0px;
+  vertical-align: baseline;
+}
+
+.content ul li:hover{
+  color:rgb(207, 33, 33);
+  cursor: pointer;
+}
+
 </style>

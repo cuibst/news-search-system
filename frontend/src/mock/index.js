@@ -1,5 +1,3 @@
-<<<<<<< HEAD
 import '@/mock/Login.mock.js'
-=======
 import '@/mock/RegisterPage.mock'
->>>>>>> resgister
+import '@/mock/SearchResult.mock'

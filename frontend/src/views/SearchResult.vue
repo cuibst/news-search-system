@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     KeyChange: function (newkey) {
-      axios.get('/index/search',
+      axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
             query: newkey

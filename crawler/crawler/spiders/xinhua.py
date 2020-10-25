@@ -154,9 +154,8 @@ class XinhuaNewsFullSpider(Spider):
         start_requests
         :return:
         '''
-        # 113352
-        nid_start = 113000
-        nid_end = 114000
+        nid_start = 0
+        nid_end = 20000000
         url_prefix = 'http://qc.wa.news.cn/nodeart/list?nid='
         url_suffix = '&pgnum=1&cnt=100'
         for i in range(nid_start, nid_end):

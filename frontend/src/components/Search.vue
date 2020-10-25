@@ -60,7 +60,7 @@ export default {
     }
   },
   mounted () {
-    // 此处调用高亮函数，当在此页面继续搜索时可能不会起作用，因为是相同url下的params变换跳转
+    // 此处调用高亮函数
     this.keyword = this.$route.params.keyword
     this.ssindex()
     console.log(this.keyword)

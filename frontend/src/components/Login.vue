@@ -32,8 +32,7 @@ export default {
   data () {
     return {
       username: '',
-      password: '',
-      lastURL: '/#/sample'
+      password: ''
     }
   },
   methods: {
@@ -45,7 +44,7 @@ export default {
         if (ret.data.code === 200) {
           this.$store.commit('set_token', ret.data.Token)
           this.$message.success('登陆成功')
-          document.location = '/#/sample'
+          this.$emit('succeed')
         } else {
           this.password = ''
           this.$message.error('错误的用户名或密码')
@@ -54,11 +53,6 @@ export default {
         console.log(error)
         this.$message.error('网络连接错误')
       })
-    }
-  },
-  route: {
-    canActivate (transition) {
-      this.lastURL = transition.from.path
     }
   }
 }

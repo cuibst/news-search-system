@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Sample from '../components/Sample.vue'
-import Home from '../components/homepage.vue'
+import Home from '../components/home.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import '../assets/styles/global.css'

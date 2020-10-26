@@ -2,7 +2,7 @@
   <div style="padding: 0 15px;" class="news">
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
-        <el-col :span="6"  :offset="18" style="text-align:right;">
+        <el-col :span="6"  :offset="22" style="text-align:right;">
           <el-col :span="4"  class="head_nav_h"  >
             <div >用户名称</div>
           </el-col>
@@ -30,12 +30,11 @@
           </div>
         </el-col>
       </el-row>
-      <el-row :class="headcss" >
+      <el-row :class="headcss">
         <el-col :span="16" :offset="4" style="overflow:hidden;height:47px;line-height:47px;">
-          <div :class="(activenav==index|| selactive==index)?'nav_active':'nav_tab'"
-            @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
+          <div :class="(activenav==index || selactive==index)?'nav_active':'nav_tab'"
            v-for="(item,index) in navlist" :key="index" >
-            <div @click="selclass(index)" >
+            <div @click="selectclass(index)" class="type">
               <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
           </div>
         </el-col>
@@ -76,7 +75,22 @@ export default {
   methods: {
     goto (url) {
       window.location.href = url
+    },
+    handleScrollx () {
+      var height = window.pageYOffset
+      if (height > 222) {
+        this.headcss = 'nav2'
+      } else {
+        this.headcss = 'nav'
+      }
+    },
+    selectclass (index) {
+      this.activenav = index
     }
+  },
+  mounted () {
+    window.addEventListener('scroll', this.handleScrollx, true)
+    this.init()
   },
   data () {
     return {
@@ -214,22 +228,24 @@ export default {
 .news .imgs{
   text-align: center;
 }
-.nav{
-  padding: 20px 0 0 0;
-}.btn_search{
+.btn_search{
       background-color: #4e6ef2 !important;
       color:#fff !important;
       border-radius: 0;
       padding: 14px 15px !important;
       border: none !important;
 }
+.search{
+  padding:20px 0px;
+  margin-top:20px;
+}
 #logo{
   width:100px;
   height:30px;
 }
-.type{
-  background-color: #01204f;
-  width: 100%;
+.type:hover{
+  background-color: crimson;
+  cursor: pointer;
 }
 .typelabel{
   width: 100%;

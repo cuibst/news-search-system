@@ -8,6 +8,133 @@ from urllib import parse
 from pathlib import Path
 from scrapy import Spider, Request
 from ..items import NewsItem
+from .lib.itemparser import cat_gen
+
+
+# 根据可用的新闻页面url，爬取出新闻数据，返回news item
+def parse_news_item(response):  # pylint: disable=too-many-locals, no-self-use, too-many-branches, too-many-statements
+    '''
+    parse_news_item
+    :param response:
+    :return:
+    '''
+    # 此部分代码最初版本的parse函数，未优化！
+    url = response.request.url
+    item = NewsItem()
+    id_match_obj = re.search(r'c_([0-9]+)\.htm', url)
+    if id_match_obj is None:
+        return
+    item['news_id'] = 'xinhua_' + id_match_obj.group(1)
+    item['source'] = 'xinhua'
+    # 从两种新闻页面选择发布日期，一种是h-time，一种是time
+    time = ''
+    try:
+        time = response.xpath("//*[@class='h-time']/text()").extract()[0].strip()
+    except IndexError:
+        pass
+    if time == '':
+        try:
+            time = response.xpath("//*[@class='time']/text()").extract()[0].strip()
+        except IndexError:
+            pass
+        time_match_obj = re.match(r'20\d{2}年\d{2}月\d{2}日 \d{2}:\d{2}:\d{2}', time)
+        if time_match_obj is not None:
+            time = re.sub(r'[年月]', '-', time)
+            time = re.sub(r'日', '', time)
+    if time == '':
+        return
+    item['pub_date'] = time
+    # 定义新闻的标题和来源
+    try:
+        title_full = response.xpath('//title/text()').extract()[0].strip()
+        title_name = title_full.split('-')[0].split('_')[0].strip()
+        title_media = ' '.join(title_full.lstrip(title_name).split('-'))
+        title_media = ' '.join(title_media.split('_'))
+        title_media = ' '.join(title_media.split())
+    except IndexError:
+        return
+    if title_name == '':
+        return
+    item['title'] = title_name
+    item['media'] = title_media
+    item['news_url'] = url
+    # 定义新闻的分类，如果是地方新闻则定义为'local_{地方缩写}'，否则定义为新闻所在的标签名称
+    cat = ''
+    local_pattern = r'www\.([a-z]+)\.xinhuanet.com'
+    local_match_obj = re.search(local_pattern, url)
+    cat_pattern = r'xinhuanet\.com/[/]?([a-z]+)/'
+    cat_match_obj = re.search(cat_pattern, url)
+    if local_match_obj is not None:
+        cat = 'local_' + local_match_obj.group(1)
+    elif cat_match_obj is not None:
+        cat = cat_match_obj.group(1)
+    cat_dic = {
+        'politics': ['politics', 'world', 'legal', 'tw', 'gangao'],
+        'finance': ['money', 'fortune', 'caipiao'],
+        'tech': ['auto', 'tech', 'info'],
+        'military': ['mil'],
+        'social': ['energy', 'local', 'culture', 'gongyi'],
+        'edu': [],
+        'sports': ['sports'],
+        'ent': ['ent'],
+        'life': ['health', 'food', 'fashion', 'travel'],
+        'house': ['house']
+    }
+    cat = cat_gen(cat, cat_dic)
+    item['category'] = cat
+    # 定义新闻的标签，两种页面格式一样，非必需属性
+    tags = ''
+    try:
+        tags = response.xpath('//meta[@name="keywords"]/@content').extract()[0].strip()
+    except IndexError:
+        pass
+    item['tags'] = tags
+    # 定义新闻的summary
+    summary = ''
+    try:
+        summary = response.xpath('//meta[@name="description"]/@content').extract()[0].strip()
+        summary = summary.split('---')
+        if len(summary) >= 1:
+            summary = summary[1]
+        else:
+            summary = ''
+    except IndexError:
+        pass
+    item['summary'] = summary
+    # 定义新闻的内容content和img
+    p_list = response.xpath('//*[@id="p-detail"]//p')
+    if not p_list:
+        p_list = response.xpath('//*[@class="article"]//p')
+    img_src = ''
+    content = []
+    for one_p in p_list:
+        img = one_p.xpath('.//img/@src').extract()
+        if len(img) > 0 and img_src == '':
+            img_src = parse.urljoin(url, img[0])
+        content += [text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
+    item['img'] = img_src
+    item['content'] = content
+    yield item
+
+
+# 根据可用nid编号，从中爬取出新闻列表，进而筛选出可用的新闻url
+def parse_news_url(response):
+    '''
+    parse_news_url
+    :param response:
+    :param kwargs:
+    :return:
+    '''
+    news_dic_list = json.loads(response.text[1:-1])['data']['list']
+    for news_dic in news_dic_list:
+        news_url = news_dic['LinkUrl']
+        # 检查news_url是否符合要求
+        if re.search(r'xinhuanet\.com', news_url) is None:
+            continue
+        if re.search(r'french|arabic|portuguese|german|spanish|jp', news_url) is not None:
+            continue
+        # 以上代码块对news_url进行筛选，可能需要更改
+        yield Request(url=news_url, callback=parse_news_item, dont_filter=True)
 
 
 class XinhuaNewsFullSpider(Spider):
@@ -27,13 +154,13 @@ class XinhuaNewsFullSpider(Spider):
         start_requests
         :return:
         '''
-        nid_start = 11100000
-        nid_end = 11200000
+        nid_start = 0
+        nid_end = 20000000
         url_prefix = 'http://qc.wa.news.cn/nodeart/list?nid='
         url_suffix = '&pgnum=1&cnt=100'
         for i in range(nid_start, nid_end):
             full_url = url_prefix + str(i) + url_suffix
-            yield Request(url=full_url, callback=self.parse)
+            yield Request(url=full_url, callback=self.parse, dont_filter=True)
 
     # 根据start_urls，找出含有新闻列表的nid编号
     def parse(self, response, **kwargs):
@@ -44,7 +171,7 @@ class XinhuaNewsFullSpider(Spider):
         :return:
         '''
         if len(response.body) > 100:
-            yield Request(url=response.request.url, callback=self.parse_news_url, dont_filter=True)
+            yield Request(url=response.request.url, callback=parse_news_url, dont_filter=True)
             # 增加url中的pgnum参数，回调自身，检查是否含有新闻列表
             match_obj = re.match(r'http://qc\.wa\.news\.cn/nodeart/list\?nid=(\d+)&pgnum=(\d+)&cnt=100',
                                  response.request.url)
@@ -56,114 +183,33 @@ class XinhuaNewsFullSpider(Spider):
         else:
             return
 
-    # 根据可用nid编号，从中爬取出新闻列表，进而筛选出可用的新闻url
-    def parse_news_url(self, response):
-        '''
-        parse_news_url
-        :param response:
-        :param kwargs:
-        :return:
-        '''
-        news_dic_list = json.loads(response.text[1:-1])['data']['list']
-        for news_dic in news_dic_list:
-            news_url = news_dic['LinkUrl']
-            # 检查news_url是否符合要求
-            if re.search(r'xinhuanet\.com', news_url) is None:
-                continue
-            if re.search(r'french|arabic|portuguese|german|spanish|jp', news_url) is not None:
-                continue
-            # 以上代码块对news_url进行筛选，可能需要更改
-            yield Request(url=news_url, callback=self.parse_news_item, dont_filter=True)
 
-    # 根据可用的新闻页面url，爬取出新闻数据，返回news item
-    def parse_news_item(self, response):  # pylint: disable=too-many-locals, no-self-use, too-many-branches, too-many-statements
+class XinhuaIncSpider(Spider):
+    '''
+    Crawl xinhua news incrementally from index page and sub site index pages.
+    '''
+    name = 'xinhua_news_inc'
+    allowed_domains = ['*']
+    current_dir_path = Path(__file__).parent
+
+    def start_requests(self):
         '''
-        parse_news_item
-        :param response:
-        :param kwargs:
-        :return:
+        make requests to index page and sub site index pages
         '''
-        # 此部分代码最初版本的parse函数，未优化！
-        url = response.request.url
-        item = NewsItem()
-        id_match_obj = re.search(r'c_([0-9]+)\.htm', url)
-        if id_match_obj is None:
-            return
-        item['news_id'] = 'xinhua_' + id_match_obj.group(1)
-        item['source'] = 'xinhua'
-        # 从两种新闻页面选择发布日期，一种是h-time，一种是time
-        time = ''
-        try:
-            time = response.xpath("//*[@class='h-time']/text()").extract()[0].strip()
-        except IndexError:
-            pass
-        if time == '':
-            try:
-                time = response.xpath("//*[@class='time']/text()").extract()[0].strip()
-            except IndexError:
-                pass
-            time_match_obj = re.match(r'20\d{2}年\d{2}月\d{2}日 \d{2}:\d{2}:\d{2}', time)
-            if time_match_obj is not None:
-                time = re.sub(r'[年月]', '-', time)
-                time = re.sub(r'日', '', time)
-        if time == '':
-            return
-        item['pub_date'] = time
-        # 定义新闻的标题和来源
-        try:
-            title_full = response.xpath('//title/text()').extract()[0].strip()
-            title_name = title_full.split('-')[0].split('_')[0].strip()
-            title_media = ' '.join(title_full.lstrip(title_name).split('-'))
-            title_media = ' '.join(title_media.split('_'))
-            title_media = ' '.join(title_media.split())
-        except IndexError:
-            return
-        if title_name == '':
-            return
-        item['title'] = title_name
-        item['media'] = title_media
-        item['news_url'] = url
-        # 定义新闻的分类，如果是地方新闻则定义为'local_{地方缩写}'，否则定义为新闻所在的标签名称
-        cat = ''
-        local_pattern = r'www\.([a-z]+)\.xinhuanet.com'
-        local_match_obj = re.search(local_pattern, url)
-        cat_pattern = r'xinhuanet\.com/[/]?([a-z]+)/'
-        cat_match_obj = re.search(cat_pattern, url)
-        if local_match_obj is not None:
-            cat = 'local_' + local_match_obj.group(1)
-        elif cat_match_obj is not None:
-            cat = cat_match_obj.group(1)
-        item['category'] = cat
-        # 定义新闻的标签，两种页面格式一样，非必需属性
-        tags = ''
-        try:
-            tags = response.xpath('//meta[@name="keywords"]/@content').extract()[0].strip()
-        except IndexError:
-            pass
-        item['tags'] = tags
-        # 定义新闻的summary
-        summary = ''
-        try:
-            summary = response.xpath('//meta[@name="description"]/@content').extract()[0].strip()
-            summary = summary.split('---')
-            if len(summary) >= 1:
-                summary = summary[1]
-            else:
-                summary = ''
-        except IndexError:
-            pass
-        item['summary'] = summary
-        # 定义新闻的内容content和img
-        p_list = response.xpath('//*[@id="p-detail"]//p')
-        if not p_list:
-            p_list = response.xpath('//*[@class="article"]//p')
-        img_src = ''
-        content = []
-        for one_p in p_list:
-            img = one_p.xpath('.//img/@src').extract()
-            if len(img) > 0 and img_src == '':
-                img_src = parse.urljoin(url, img[0])
-            content += [text.strip() for text in one_p.xpath('./text()').extract() if text.strip() != '']
-        item['img'] = img_src
-        item['content'] = content
-        yield item
+        index_url = 'http://www.xinhuanet.com/'
+        tag_list = ['', 'politics/', 'local/', 'legal/', 'world/', 'mil/', 'fortune/',
+                    'auto/', 'house/', 'comments/', 'ent/', 'money/', 'info/', 'culture/',
+                    'gangao/', 'tw/', 'tech/', 'energy/', 'finance/', 'caipiao/',
+                    'food/', 'enterprise/', 'health/', 'gongyi/', 'travel/', 'silkroad/']
+        for tag in tag_list:
+            yield Request(url=index_url + tag, callback=self.parse, dont_filter=True)
+
+
+    def parse(self, response, **kwargs):
+        '''
+        parse all news url in index pages.
+        '''
+        link_list = response.xpath('//a/@href').extract()
+        for link in link_list:
+            if re.match(r'http://www\.xinhuanet\.com/\w+/20\d{2}-\d{2}/\d{2}/c_\d+\.htm', link):
+                yield Request(url=link, callback=parse_news_item, dont_filter=True)

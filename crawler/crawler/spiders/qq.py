@@ -8,7 +8,7 @@ from urllib import parse
 from pathlib import Path
 from scrapy.spiders import Request, Spider
 from ..items import NewsItem
-
+from .lib.itemparser import cat_gen
 
 def parse_item(response):
     '''
@@ -27,7 +27,20 @@ def parse_item(response):
     item = NewsItem()
     try:
         item['title'] = news_brief_info['title']
-        item['category'] = news_brief_info['catalog1']
+        cat_dic = {
+            'politics': ['politics', 'law'],
+            'finance': ['finance', 'lottery'],
+            'tech': ['tech', 'science', 'auto', 'digital'],
+            'military': ['mil'],
+            'social': ['social', 'society', 'cul'],
+            'edu': ['edu', 'history'],
+            'sports': ['sports'],
+            'ent': ['ent', 'game', 'funny', 'comic'],
+            'life': ['life', 'photography', 'baby', 'pet',
+                     'lifestyle', 'weather', 'travel', 'food', 'health'],
+            'house': ['house', 'houseliving']
+        }
+        item['category'] = cat_gen(news_brief_info['catalog1'], cat_dic)
         item['media'] = news_brief_info['media']
         item['pub_date'] = news_brief_info['pubtime']
         item['tags'] = news_brief_info['tags']

@@ -1,28 +1,45 @@
 <template>
   <div style="padding: 0 15px;" class="news">
-    <div class="nav">
-      <el-row>
-        <el-col :span="24">
+    <div>
+      <el-row style="padding:10px; border-bottom:1px solid #ccc;">
+        <el-col :span="6"  :offset="18" style="text-align:right;">
+          <el-col :span="4"  class="head_nav_h"  >
+            <div >用户名称</div>
+          </el-col>
+          <el-col :span="4"  class="head_nav_h"  >
+            <div >首页</div>
+          </el-col>
+        </el-col>
+      </el-row>
+      <el-row class="search">
+        <el-col :span="24" >
           <div>
             <el-col :span="2" :offset="6">
-              <img src="@/assets/logo2.jpg" class="logo" alt="">
+              <img src="@/assets/logo2.jpg" id="logo" alt="">
             </el-col>
             <el-col :span="10">
               <el-input
                 placeholder="请输入内容"
-                suffix-icon="el-icon-search"
                 v-model="keyword">
-                <el-button slot="append" class="btn_search" @click="search">百度一下</el-button>
+                <el-button slot="append" class="btn_search">click me!</el-button>
               </el-input>
+            </el-col>
+            <el-col :span="2" class="help">
+              <span>帮助</span>
             </el-col>
           </div>
         </el-col>
       </el-row>
-    </div>
-    <div class="navbar">
-      <ul class="type">
-        <li v-for="(item, index) in navlist" :key="index" class="nav">{{item.name}}</li>
-      </ul>
+      <el-row :class="headcss" >
+        <el-col :span="16" :offset="4" style="overflow:hidden;height:47px;line-height:47px;">
+          <div :class="(activenav==index|| selactive==index)?'nav_active':'nav_tab'"
+            @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
+           v-for="(item,index) in navlist" :key="index" >
+            <div @click="selclass(index)" >
+              <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
+          </div>
+        </el-col>
+      </el-row>
     </div>
     <div class="content">
       <div class="left">
@@ -64,6 +81,10 @@ export default {
   data () {
     return {
       left: 'left',
+      keyword: '',
+      headcss: 'nav',
+      headindex_active: 1,
+      activenav: 0,
       navlist: [
         {
           name: '要闻',
@@ -195,30 +216,16 @@ export default {
 }
 .nav{
   padding: 20px 0 0 0;
+}.btn_search{
+      background-color: #4e6ef2 !important;
+      color:#fff !important;
+      border-radius: 0;
+      padding: 14px 15px !important;
+      border: none !important;
 }
-.navbar {
-  overflow: hidden;
-  padding:20px 0px;
-}
-.navbar ul{
-  list-style: none;
-  overflow: hidden;
-  padding: 0;
-}
-.navbar ul li{
-  float:left;
-  height:50px;
-  line-height: 50px;
-  padding:0px 25px;
-  color: #ccc;
-}
-
-.navbar ul li:hover{
-  color:rgb(207, 33, 33);
-  cursor: pointer;
-}
-.logo{
-  height: 50px;
+#logo{
+  width:100px;
+  height:30px;
 }
 .type{
   background-color: #01204f;
@@ -262,5 +269,49 @@ export default {
 }
 .imgtext{
   font: 1em sans-serif;
+}
+.btn_search{
+      background-color: #4e6ef2 !important;
+      color:#fff !important;
+      border-radius: 0;
+      padding: 14px 15px !important;
+      border: none !important;
+}
+.nav_tab{
+  float:left;
+  width:60px;
+  text-align: center;
+  padding:0px 2px;
+  background:#01204f;
+}
+.nav_active{
+  float:left;
+  width:60px;
+  text-align: center;
+  padding:0px 2px;
+  background:crimson;
+}
+.nav{
+  background:#01204f;
+  color:#fff;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.nav2{
+  background:#01204f;
+  color:#fff;
+  font-weight: bold;
+  margin-bottom: 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.help{
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    text-decoration: underline;
 }
 </style>

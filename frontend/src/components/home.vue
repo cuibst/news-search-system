@@ -11,6 +11,7 @@
           </el-col>
         </el-col>
       </el-row>
+
       <el-row class="search">
         <el-col :span="24" >
           <div>
@@ -30,10 +31,12 @@
           </div>
         </el-col>
       </el-row>
+
       <el-row :class="headcss">
         <el-col :span="16" :offset="4" style="overflow:hidden;height:47px;line-height:47px;">
-          <div :class="(activenav==index || selactive==index)?'nav_active':'nav_tab'"
-           v-for="(item,index) in navlist" :key="index" >
+          <div :class="(activenav==index|| selactive==index)?'nav_active':'nav_tab'"
+            @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
+            v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
               <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
           </div>
@@ -48,10 +51,9 @@
             <h2 class="news_tit">热点要闻</h2>
             <div class="box">
               <ul v-for="(item,index) in textnews" :key="index" >
-                <li>
-                  <i :class="dot"></i>
-                  <h3 v-if="index%5==0">{{item.title}}</h3> 
-                  <span v-else>{{item.title}}</span>
+                <li @click="goto(item.url)">
+                  <i class="dot"></i>
+                  <span>{{item.title}}</span>
                 </li>
               </ul>
             </div>
@@ -84,19 +86,17 @@
           <el-col :span="24">
             <h3 class="tit2">猜你喜欢 <span>LIKE</span></h3>
           </el-col>
-
           <el-col :span="24">
             <el-col :span="10">
               <div class="imgs">
-                <img src="@/assets/home/imgs.jpg" style="width:100%;height:100%;" alt="" srcset="">
+                <img src="@/assets/imgs.jpg" style="width:100%;height:100%;" alt="" srcset="">
                 <h5 class="img_tit1">Iphone 12</h5>
               </div>
             </el-col>
             <el-col :span="14" class="box2">
               <ul>
-                <li v-for="(item,index) in tempArr2[0]" :key="index">
-                  <h3 v-if="item.istit">{{item.name}}</h3> 
-                  <span v-else class="child_tit">{{item.name}}</span>
+                <li v-for="(item,index) in textnews" :key="index">
+                  <span class="child_tit">{{item.title}}</span>
                 </li>
               </ul>
             </el-col>
@@ -105,22 +105,21 @@
             <el-col :span="10">
               <el-col :span="11">
                 <div class="imgs">
-                  <img src="@/assets/home/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
+                  <img src="@/assets/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
                   <h5 class="img_tit">Iphone 12</h5>
                 </div>
               </el-col>
               <el-col :span="11" :offset="2">
                 <div class="imgs">
-                  <img src="@/assets/home/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
+                  <img src="@/assets/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
                   <h5 class="img_tit">Iphone 12</h5>
                 </div>
               </el-col>
             </el-col>
             <el-col :span="14" class="box2">
               <ul>
-                <li v-for="(item,index) in tempArr2[1]" :key="index">
-                  <h3 v-if="item.istit">{{item.name}}</h3> 
-                  <span v-else class="child_tit">{{item.name}}</span>
+                <li v-for="(item,index) in textnews" :key="index">
+                  <span class="child_tit">{{item.title}}</span>
                 </li>
               </ul>
             </el-col>
@@ -144,8 +143,12 @@ export default {
     goto (url) {
       window.location.href = url
     },
-    handleScrollx () {
+    // he是为了方便单元测试 默认传参不影响
+    handleScrollx (event, he = -1) {
       var height = window.pageYOffset
+      if (he !== -1) {
+        height = 300
+      }
       if (height > 222) {
         this.headcss = 'nav2'
       } else {
@@ -154,11 +157,18 @@ export default {
     },
     selectclass (index) {
       this.activenav = index
+    },
+    selectStyle (index) {
+      if (index !== this.selactive) {
+        this.selactive = index
+      }
+    },
+    outStyle (index) {
+      this.selactive = -1
     }
   },
   mounted () {
     window.addEventListener('scroll', this.handleScrollx, true)
-    this.init()
   },
   data () {
     return {
@@ -167,6 +177,7 @@ export default {
       headcss: 'nav',
       headindex_active: 1,
       activenav: 0,
+      selactive: 0,
       navlist: [
         {
           name: '要闻',
@@ -280,22 +291,6 @@ export default {
   font-family:"微软雅黑";
   overflow: hidden;
 }
-.content .right{
-  float:right;
-  width:50%;
-  padding:0px 4rem;
-}
-.content .left{
-  float:left;
-  width:20%;
-  text-align: left;
-  position: relative;
-  top:0;
-  left: 20%;
-}
-.news .imgs{
-  text-align: center;
-}
 .btn_search{
       background-color: #4e6ef2 !important;
       color:#fff !important;
@@ -315,22 +310,6 @@ export default {
   background-color: crimson;
   cursor: pointer;
 }
-.typelabel{
-  width: 100%;
-  float: left;
-  border-bottom: 1px solid gray;
-  padding: 0px 20px;
-  vertical-align: baseline;
-}
-.shorttypelabel{
-  float: left;
-  border-bottom: 2px solid #2f63ba;
-  color: #2f63ba;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 0px;
-  vertical-align: baseline;
-}
 
 .content ul li:hover{
   color:rgb(207, 33, 33);
@@ -338,11 +317,11 @@ export default {
 }
 
 .btn_search{
-      background-color: #4e6ef2 !important;
-      color:#fff !important;
-      border-radius: 0;
-      padding: 14px 15px !important;
-      border: none !important;
+  background-color: #4e6ef2 !important;
+  color:#fff !important;
+  border-radius: 0;
+  padding: 14px 15px !important;
+  border: none !important;
 }
 .nav_tab{
   float:left;
@@ -364,6 +343,7 @@ export default {
   width:30%;
   padding:5px;
   color: #2f63ba;
+  vertical-align: baseline;
 }
 .nav{
   background:#01204f;
@@ -417,5 +397,79 @@ export default {
     height: 40px;
     line-height: 40px;
     text-decoration: underline;
+}
+.tit2{
+      color: #254282;
+      border-bottom: 1px solid #ccc;
+      padding:4px 0px;
+}
+.tit2 span{
+      position: relative;
+    top: 1px;
+    padding-left: 5px;
+    font: 500 12px/18px arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #999;
+}
+.img_tit1{
+  padding: 0px;
+    margin: 0 !important;
+    text-align: center;
+    font-weight: normal;
+    color: #fff;
+    position: relative;
+    top:-25px;
+    background:#000;
+    opacity: 0.8;
+    padding:2px 0px;
+}
+.img_tit1:hover{
+  opacity: 1;
+}
+.img_tit{
+  padding: 0px;
+  margin: 0 !important;
+  text-align: center;
+  font-weight: normal;
+  padding:2px 0px;
+
+}
+.img_tit:hover{
+  background:rgb(79, 125, 192);
+  color: #fff;
+}
+.child_tit{
+  display: block;
+  font-size: 1.17em;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}
+.news_word{
+    font-size: 18px;
+    background: #3064bb;
+    padding:20px 12px;
+    border:1px solid #fff;
+    height:100px;
+    color: #fff;
+    text-align: center;
+}
+.news_word:hover{
+  background-color: green;
+  cursor: pointer;
+}
+.news_word_small{
+    font-size: 14px;
+    background: #3064bb;
+    padding:20px 12px;
+    border:1px solid #fff;
+    height:100px;
+    color: #fff;
+    text-align: center;
+}
+.news_word_small:hover{
+  background-color: green;
+  cursor: pointer;
 }
 </style>

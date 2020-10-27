@@ -150,6 +150,11 @@ def upload_news(request):
         news.full_clean()
         print('ok')
         news.save()
+        if 'test' in data:
+            return JsonResponse({
+                'info': 'preserve successfully',
+                'code': 200
+            }, status=200)
         tmp_dict = {"news_id": news_id}
         url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
 

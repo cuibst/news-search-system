@@ -4,10 +4,10 @@
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
         <el-col :span="6"  :offset="22" style="text-align:right;">
           <el-col :span="4"  class="head_nav_h"  >
-            <div >用户名称</div>
+            <div >登录</div>
           </el-col>
           <el-col :span="4"  class="head_nav_h"  >
-            <div >首页</div>
+            <div >注册</div>
           </el-col>
         </el-col>
       </el-row>
@@ -40,25 +40,93 @@
         </el-col>
       </el-row>
     </div>
+
     <div class="content">
-      <div class="left">
-        <div class="typelabel">
-          <span class="shorttypelabel">热点要闻</span>
-        </div>
-        <ul class="hotnews">
-          <li v-for="(item,index) in textnews" :key="index" @click="goto(item.url)" class="detail">{{item.title}}</li>
-        </ul>
-      </div>
-      <div class="right">
-        <el-carousel :interval="5000" arrow="always" indicator-position="outside" type="card">
-          <el-carousel-item v-for="(item,index) in imgnews" :key="index">
-            <span class="imgtext">{{item.title}}</span>
-            <a :href="item.url">
-              <img :src="item.img" class="image">
-            </a>
-          </el-carousel-item>
-         </el-carousel>
-      </div>
+      <el-row>
+        <el-col :span="7" :offset="4">
+          <el-col :span="24">
+            <h2 class="news_tit">热点要闻</h2>
+            <div class="box">
+              <ul v-for="(item,index) in textnews" :key="index" >
+                <li>
+                  <i :class="dot"></i>
+                  <h3 v-if="index%5==0">{{item.title}}</h3> 
+                  <span v-else>{{item.title}}</span>
+                </li>
+              </ul>
+            </div>
+          </el-col>
+        </el-col>
+
+        <el-col :span="10">
+          <el-col :span="24">
+            <div class="imgs">
+              <img src="@/assets/imgs.jpg" style="width:100%;height:100%;" alt="" srcset="">
+            </div>
+          </el-col>
+
+          <el-col :span="24">
+            <h3 class="tit2">热搜新闻词 <span>HOT WORDS</span></h3>
+          </el-col>
+          <el-col :span="24">
+            <el-col :span="8" class="news_word">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="8" class="news_word">中共中央政治局召开会议习近平主持</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+          </el-col>
+
+          <el-col :span="24">
+            <h3 class="tit2">猜你喜欢 <span>LIKE</span></h3>
+          </el-col>
+
+          <el-col :span="24">
+            <el-col :span="10">
+              <div class="imgs">
+                <img src="@/assets/home/imgs.jpg" style="width:100%;height:100%;" alt="" srcset="">
+                <h5 class="img_tit1">Iphone 12</h5>
+              </div>
+            </el-col>
+            <el-col :span="14" class="box2">
+              <ul>
+                <li v-for="(item,index) in tempArr2[0]" :key="index">
+                  <h3 v-if="item.istit">{{item.name}}</h3> 
+                  <span v-else class="child_tit">{{item.name}}</span>
+                </li>
+              </ul>
+            </el-col>
+          </el-col>
+          <el-col :span="24" style="margin-top:5px;">
+            <el-col :span="10">
+              <el-col :span="11">
+                <div class="imgs">
+                  <img src="@/assets/home/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
+                  <h5 class="img_tit">Iphone 12</h5>
+                </div>
+              </el-col>
+              <el-col :span="11" :offset="2">
+                <div class="imgs">
+                  <img src="@/assets/home/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
+                  <h5 class="img_tit">Iphone 12</h5>
+                </div>
+              </el-col>
+            </el-col>
+            <el-col :span="14" class="box2">
+              <ul>
+                <li v-for="(item,index) in tempArr2[1]" :key="index">
+                  <h3 v-if="item.istit">{{item.name}}</h3> 
+                  <span v-else class="child_tit">{{item.name}}</span>
+                </li>
+              </ul>
+            </el-col>
+          </el-col>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -269,23 +337,6 @@ export default {
   cursor: pointer;
 }
 
-.el-carousel__item{
-  width: 500px;
-  float: left;
-}
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-.el-carousel__item:nth-child(2n+1) {
-  background-color: #d3dce6;
-}
-.image{
-  height: 100%;
-  width: 100%;
-}
-.imgtext{
-  font: 1em sans-serif;
-}
 .btn_search{
       background-color: #4e6ef2 !important;
       color:#fff !important;
@@ -307,6 +358,13 @@ export default {
   padding:0px 2px;
   background:crimson;
 }
+.news_tit{
+  border-bottom: 2px solid rgb(48, 101, 201);
+  text-align: center;
+  width:30%;
+  padding:5px;
+  color: #2f63ba;
+}
 .nav{
   background:#01204f;
   color:#fff;
@@ -323,7 +381,37 @@ export default {
   width: 100%;
   z-index: 999;
 }
-
+.dot{
+    position: absolute;
+    top: 12px;
+    left: 0;
+    display: block;
+    width: 5px;
+    height: 5px;
+    background: #da4453;
+    *font-size: 0;
+}
+.box{
+  line-height: 30px;
+  overflow: hidden;
+}
+.box h3{
+  margin:4px;
+}
+.box2{
+  padding-left: 20px;
+  font-size: 14px;
+}
+.box ul ,.box2 ul{
+  list-style-type: none;
+  padding:0px;
+}
+.box ul li{
+  position: relative;
+}
+.box ul li h3,.box ul li span{
+  margin-left: 8px;;
+}
 .help{
     text-align: center;
     height: 40px;

@@ -189,4 +189,3 @@ def upload_news(request):
         'info': 'repetitive news',
         'code': 401
     }, status=200)
-

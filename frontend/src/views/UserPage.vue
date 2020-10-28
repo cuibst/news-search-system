@@ -1,40 +1,34 @@
 <template>
   <div id="SearchResult" >
-    <Search :infolist="Array.from(infolist)" :key="$router.fullpath" @keychange="KeyChange"/>
+    <User :user="user" />
   </div>
 </template>
 
 <script>
-import Search from '@/components/Search.vue'
+import User from '@/components/User.vue'
 import axios from 'axios'
-// import '@/mock/index'
+import '@/mock/index'
 export default {
-  name: 'SearchResult',
+  name: 'UserPage',
   components: {
-    Search
+    User
   },
   data () {
     return {
-      activeindex: 0,
-      infolist: {
-        type: Array,
-        default: () => []
+      user: {
+        type: Object,
+        default: () => {}
       }
     }
   },
   created () {
-    this.KeyChange(this.$route.params.keyword)
+    this.getUser()
   },
   methods: {
-    KeyChange: function (newkey) {
-      axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
-        {
-          params: {
-            query: newkey
-          }
-        }).then(ret => {
-        this.infolist = ret.data.infolist
-        console.log(ret.data.infolist)
+    getUser: function () {
+      axios.get('/api/user').then(ret => {
+        console.log(typeof (ret.data.user))
+        this.user = ret.data.user
       }, error => {
         console.log(error)
         alert('服务器忙')

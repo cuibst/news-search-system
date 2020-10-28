@@ -9,30 +9,30 @@
       <el-form status-icon :model="ruleForm" :rules="rules" ref="ruleForm" class="login-form">
         <!--用户名-->
         <el-form-item prop = 'username'>
-          <el-input class="input" prefix-icon="el-icon-user" v-model="ruleForm.username" placeholder="请输入您的用户名"></el-input>
+          <el-input class="input" prefix-icon="el-icon-user" v-model="ruleForm.username"></el-input>
         </el-form-item>
         <!--密码-->
         <el-form-item prop = 'password'>
-          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.password" placeholder="请输入您的密码"></el-input>
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.password" placeholder="请输入新的密码"></el-input>
         </el-form-item>
         <!--确认密码-->
         <el-form-item prop = 'passwordCheck'>
-          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.passwordCheck" placeholder="请确认您的密码">
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.passwordCheck" placeholder="请确认您的新密码">
             <i class="el-icon-check" slot="append" v-if="passwordcheck"></i>
           </el-input>
           <span v-if="passwordcheck===false && password_input" style="color: red;font-size:12px;" class="errorPassword">请输入相同密码!</span>
         </el-form-item>
         <!--邮箱-->
         <el-form-item prop = 'email'>
-          <el-input class="input" prefix-icon="el-icon-s-promotion" v-model="ruleForm.email" placeholder="请输入您的邮箱"></el-input>
+          <el-input class="input" prefix-icon="el-icon-s-promotion" v-model="ruleForm.email"></el-input>
         </el-form-item>
         <!--手机号-->
         <el-form-item prop = 'phonenumber'>
-          <el-input class="input" prefix-icon="el-icon-phone" v-model="ruleForm.phonenumber" placeholder="请输入您的手机号"></el-input>
+          <el-input class="input" prefix-icon="el-icon-phone" v-model="ruleForm.phonenumber"></el-input>
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
-          <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">确认</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -43,7 +43,13 @@
 import axios from 'axios'
 // import '@/mock/index'
 export default {
-  name: 'Register',
+  name: 'User',
+  props: {
+    user: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     var _that = this
     var validatePass = function (rule, value, callback) {
@@ -90,7 +96,7 @@ export default {
         ],
         password: [
           { required: true, message: '请输入用户密码', trigger: 'blur' },
-          { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
+          { min: 0, max: 20, message: '长度不超过20个字符', trigger: 'blur' }
         ],
         passwordCheck: [
           { validator: validatePass, trigger: 'blur' }
@@ -104,11 +110,19 @@ export default {
       }
     }
   },
+  created () {
+    this.ruleForm.username = this.user.username
+    this.ruleForm.email = this.user.email
+    this.ruleForm.phonenumber = this.user.phonenumber
+  },
   methods: {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          axios.post('/api/register/', {
+          if (this.ruleForm.password === '') {
+            this.ruleForm.password = this.user.password
+          }
+          axios.post('/api/userchange/', {
             username: this.ruleForm.username,
             password: this.ruleForm.password,
             email: this.ruleForm.email,
@@ -116,11 +130,11 @@ export default {
           }).then(ret => {
             if (ret.data.code === 200) {
               window.document.cookie = 'user=' + this.ruleForm.username + ';'
-              this.$message.success('注册成功')
-              document.location = '/#/login'
+              this.$message.success('信息更改成功')
+              document.location = '/sample'
             } else if (ret.data.code === 401) {
               this.$refs[formName].resetFields()
-              this.$message.error('账号已被注册')
+              this.$message.error('用户名已被使用')
             } else {
               this.$refs[formName].resetFields()
               this.$message.error('信息核验失败')

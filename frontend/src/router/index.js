@@ -4,6 +4,7 @@ import Sample from '../components/Sample.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import SearchResult from '../views/SearchResult.vue'
+import UserPage from '../views/UserPage.vue'
 import '../assets/styles/global.css'
 
 Vue.use(VueRouter)
@@ -25,6 +26,11 @@ const routes = [
     path: '/searchresult/:keyword',
     name: 'SearchResult',
     component: SearchResult
+  },
+  {
+    path: '/user',
+    name: 'UserPage',
+    component: UserPage
   }
 ]
 

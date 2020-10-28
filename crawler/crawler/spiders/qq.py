@@ -71,33 +71,9 @@ def parse_item(response):
 
 class QqIncSpider(Spider):
     '''
-    The increment spider for news.qq.com
-    '''
-    name = "qq_inc"
-    allowed_domains = ['news.qq.com', 'new.qq.com']
-    start_urls = ['https://www.qq.com/']
-    total_error = 0
-    current_dir_path = Path(__file__).parent
-
-    #browser = webdriver.Chrome(executable_path='chromedriver.exe')
-    #browser.set_page_load_timeout(10)
-
-    def parse(self, response, **kwargs):
-        '''
-        parse the url from the response
-        '''
-        href_list = response.xpath('//a/@href').extract()
-        pattern = '.+/omn/2020[0-9]{4}/(2020[0-9]{4}[A-za-z0-9]+).*'
-        for href in href_list:
-            if re.match(pattern, href) is not None:
-                yield Request(href, callback=parse_item)
-
-
-class QqNewsInfoSpider(Spider):
-    '''
     The spider for qq news info
     '''
-    name = 'qq_news_info'
+    name = 'qq_inc'
     allowed_domains = ['i.news.qq.com', 'new.qq.com']
     current_dir_path = Path(__file__).parent
     # 以下是腾讯新闻的不同新闻标签
@@ -140,6 +116,7 @@ class QqNewsInfoSpider(Spider):
                 file.write(json.dumps(dic, indent=4, ensure_ascii=False))
                 file.close()
                 yield Request(dic['url'], callback=parse_item)
+
 
 class QqFullSpider(Spider):
     '''

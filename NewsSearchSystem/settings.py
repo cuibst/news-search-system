@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -150,3 +151,4 @@ CORS_ALLOW_HEADERS = (
 )
 
 from config.local_settings import *
+

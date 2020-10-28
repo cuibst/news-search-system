@@ -1,4 +1,4 @@
-from crawler.crawler.spiders.qq import QqNewsInfoSpider, QqIncSpider, parse_item
+from crawler.crawler.spiders.qq import QqNewsInfoSpider, QqIncSpider, QqFullSpider, parse_item
 from scrapy.http import HtmlResponse, Request
 from crawler.crawlertest.cases.test.conftest import resource_get
 import re
@@ -65,3 +65,10 @@ class TestQqIncSpider:
         for request in result:
             assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+.*', request.url)
 
+class TestQqFullSpider:
+    spider = QqFullSpider()
+
+    def test_full_start_requests_01(self):
+        result = self.spider.start_requests()
+        request = next(result)
+        assert re.search(r'A0000000', request.url)

@@ -9,6 +9,7 @@ The pipelines for scrapy crawler
 # useful for handling different item types with a single interface
 import json
 import os
+import re
 from pathlib import Path
 from requests import post
 
@@ -26,13 +27,9 @@ class NewsPipeline:
         Initialize the crawler
         '''
         # 确定要保存的文件夹路径
-        if spider.name == 'qq_inc':
+        if re.match(r'qq_.+', spider.name):
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif spider.name == 'qq_news_info':
-            self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif spider.name == 'xinhua_news_full':
-            self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
-        elif spider.name == 'xinhua_news_inc':
+        elif re.match(r'xinhua_.+', spider.name):
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
         if self.dir_path is not None:

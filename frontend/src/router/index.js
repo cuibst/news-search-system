@@ -40,7 +40,7 @@ const routes = [
   {
     path: '/user',
     name: 'UserPage',
-    component: UserPage
+    component: UserPage,
     meta: { requiredAuth: true }
   }
 ]

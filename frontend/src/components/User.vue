@@ -53,9 +53,7 @@ export default {
   data () {
     var _that = this
     var validatePass = function (rule, value, callback) {
-      if (value === '') {
-        return callback(new Error('请再次输入密码'))
-      } else if (value !== _that.ruleForm.password) {
+      if (value !== _that.ruleForm.password) {
         return callback(new Error('两次输入密码不一致!'))
       } else {
         return callback()
@@ -95,7 +93,7 @@ export default {
           { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入用户密码', trigger: 'blur' },
+          { required: false, message: '请输入用户密码', trigger: 'blur' },
           { min: 0, max: 20, message: '长度不超过20个字符', trigger: 'blur' }
         ],
         passwordCheck: [

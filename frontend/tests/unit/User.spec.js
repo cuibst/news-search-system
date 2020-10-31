@@ -32,7 +32,6 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
           email: 'a@at.com'
         }
@@ -44,7 +43,8 @@ describe('User.vue', () => {
         password: '123456',
         passwordCheck: '12456',
         email: '12346qq.com',
-        phonenumber: '1872546587'
+        phonenumber: '1872546587',
+        oldpasswd: '123456789101112131415161718'
       }
     })
     const button = wrapper.findComponent(ElementUI.Button)
@@ -61,7 +61,6 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
           email: 'a@at.com'
         }
@@ -73,7 +72,8 @@ describe('User.vue', () => {
         password: '',
         passwordCheck: '',
         email: '',
-        phonenumber: ''
+        phonenumber: '',
+        oldpasswd: ''
       }
     })
     const button = wrapper.findComponent(ElementUI.Button)
@@ -90,7 +90,6 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
           email: 'a@at.com'
         }
@@ -111,7 +110,8 @@ describe('User.vue', () => {
         password: '123456',
         passwordCheck: '123456',
         email: '123456@qq.com',
-        phonenumber: '18725846587'
+        phonenumber: '18725846587',
+        oldpasswd: '123'
       }
     })
     button.trigger('click')
@@ -128,7 +128,6 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
           email: 'a@at.com'
         }
@@ -149,7 +148,8 @@ describe('User.vue', () => {
         password: '123456',
         passwordCheck: '123456',
         email: '123456@qq.com',
-        phonenumber: '18725846587'
+        phonenumber: '18725846587',
+        oldpasswd: '123'
       }
     })
     button.trigger('click')
@@ -166,9 +166,8 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
-          email: 'a@at.com'
+          email: 'a@at.com',
         }
       }
     })
@@ -187,7 +186,8 @@ describe('User.vue', () => {
         password: '',
         passwordCheck: '',
         email: '123456@qq.com',
-        phonenumber: '18725846587'
+        phonenumber: '18725846587',
+        oldpasswd: '123'
       }
     })
     button.trigger('click')
@@ -204,7 +204,6 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
           email: 'a@at.com'
         }
@@ -225,7 +224,8 @@ describe('User.vue', () => {
         password: '123456',
         passwordCheck: '123456',
         email: '123456@qq.com',
-        phonenumber: '18725846587'
+        phonenumber: '18725846587',
+        oldpasswd: '###'
       }
     })
     button.trigger('click')
@@ -242,7 +242,6 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          password: '123',
           phonenumber: '13333333333',
           email: 'a@at.com'
         }

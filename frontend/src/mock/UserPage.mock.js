@@ -6,7 +6,6 @@ Mock.mock('/api/user', 'get', (rqst) => {
     code: 200,
     user: {
       username: '1',
-      password: '123',
       phonenumber: '13333333333',
       email: 'a@at.com'
     }

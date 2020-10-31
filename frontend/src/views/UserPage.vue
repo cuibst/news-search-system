@@ -7,7 +7,7 @@
 <script>
 import User from '@/components/User.vue'
 import axios from 'axios'
-import '@/mock/index'
+// import '@/mock/index'
 export default {
   name: 'UserPage',
   components: {
@@ -21,13 +21,12 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     this.getUser()
   },
   methods: {
     getUser: function () {
       axios.get('/api/user').then(ret => {
-        console.log(typeof (ret.data.user))
         this.user = ret.data.user
       }, error => {
         console.log(error)

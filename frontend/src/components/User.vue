@@ -11,9 +11,9 @@
         <el-form-item prop = 'username'>
           <el-input class="input" prefix-icon="el-icon-user" v-model="ruleForm.username"></el-input>
         </el-form-item>
-        <!--密码-->
+        <!--新的密码-->
         <el-form-item prop = 'password'>
-          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.password" placeholder="请输入新的密码"></el-input>
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.password" placeholder="请输入新的密码（不修改请留空）"></el-input>
         </el-form-item>
         <!--确认密码-->
         <el-form-item prop = 'passwordCheck'>
@@ -29,6 +29,10 @@
         <!--手机号-->
         <el-form-item prop = 'phonenumber'>
           <el-input class="input" prefix-icon="el-icon-phone" v-model="ruleForm.phonenumber"></el-input>
+        </el-form-item>
+        <!--旧密码-->
+        <el-form-item prop = 'oldpasswd'>
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.oldpasswd" placeholder="请输入当前密码"></el-input>
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
@@ -77,6 +81,13 @@ export default {
         callback()
       }
     }
+    var validateOldpass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('旧密码不能为空'))
+      } else {
+        callback()
+      }
+    }
     return {
       passwordcheck: false,
       password_input: false,
@@ -93,7 +104,7 @@ export default {
           { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
         ],
         password: [
-          { required: false, message: '请输入用户密码', trigger: 'blur' },
+          { required: false, message: '请输入新的密码', trigger: 'blur' },
           { min: 0, max: 20, message: '长度不超过20个字符', trigger: 'blur' }
         ],
         passwordCheck: [
@@ -104,38 +115,46 @@ export default {
         ],
         phonenumber: [
           { validator: validatePhonenumber, trigger: 'blur' }
+        ],
+        oldpasswd: [
+          { required: true, message: '请输入您原先的密码', trigger: 'blur' },
+          { validator: validateOldpass, trigger: 'blur' }
         ]
       }
     }
   },
-  created () {
-    this.ruleForm.username = this.user.username
-    this.ruleForm.email = this.user.email
-    this.ruleForm.phonenumber = this.user.phonenumber
+  watch: {
+    user (to, from) {
+      this.getback()
+    }
   },
   methods: {
+    getback () {
+      this.ruleForm.username = this.user.username
+      this.ruleForm.email = this.user.email
+      this.ruleForm.phonenumber = this.user.phonenumber
+    },
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.ruleForm.password === '') {
-            this.ruleForm.password = this.user.password
-          }
           axios.post('/api/userchange/', {
             username: this.ruleForm.username,
             password: this.ruleForm.password,
             email: this.ruleForm.email,
-            phonenumber: this.ruleForm.phonenumber
+            phonenumber: this.ruleForm.phonenumber,
+            oldpasswd: this.ruleForm.oldpasswd
           }).then(ret => {
             if (ret.data.code === 200) {
-              window.document.cookie = 'user=' + this.ruleForm.username + ';'
               this.$message.success('信息更改成功')
-              document.location = '/sample'
+              document.location = '#/sample'
             } else if (ret.data.code === 401) {
               this.$refs[formName].resetFields()
-              this.$message.error('用户名已被使用')
+              this.$message.error('新用户名已被使用')
+              this.getback()
             } else {
               this.$refs[formName].resetFields()
               this.$message.error('信息核验失败')
+              this.getback()
             }
           }, error => {
             console.log(error)
@@ -151,14 +170,14 @@ export default {
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
 .login_container {
-  background-color: #66CCFF;
+  background-color: lightgray;
   height: 100%;
 }
 
 .login_box {
   width: 450px;
-  height: 500px;
-  background-color: aliceblue;
+  height: 540px;
+  background-color: lightgray;
   border-radius: 30px;
   position: absolute;
   left: 50%;
@@ -167,7 +186,7 @@ export default {
   .avatar_box{
     height: 130px;
     width: 130px;
-    background-color: aliceblue;
+    background-color: lightgray;
     border: 1px solid #eeeeee;
     border-radius: 50%;
     padding: 10px;

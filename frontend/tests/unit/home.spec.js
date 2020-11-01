@@ -10,11 +10,11 @@ describe('homepage.vue', () => {
     localVue.use(VueRouter)
     const router = new VueRouter()
     const wrapper = mount(home, {
-        router,
-        localVue
-      })
-      const button = wrapper.find('button')
-      button.trigger('click')  
+      router,
+      localVue
+    })
+    const button = wrapper.find('button')
+    button.trigger('click')
   })
   it('renders correctly with these news data', async () => {
     const localVue = createLocalVue()
@@ -22,7 +22,7 @@ describe('homepage.vue', () => {
     const router = new VueRouter()
     const wrapper = shallowMount(home, {
       router,
-      localVue,
+      localVue
     })
     wrapper.vm.goto('www.baidu.com')
     wrapper.vm.handleScrollx()
@@ -36,5 +36,4 @@ describe('homepage.vue', () => {
     wrapper.vm.outStyle(2)
     expect(wrapper.vm.selactive).toBe(-1)
   })
-
 })

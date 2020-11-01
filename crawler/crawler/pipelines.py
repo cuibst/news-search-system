@@ -10,9 +10,9 @@ The pipelines for scrapy crawler
 import json
 import os
 import re
-import ahttp
 from pathlib import Path
-from requests import post
+import ahttp
+
 
 class NewsPipeline:
     '''
@@ -51,8 +51,8 @@ class NewsPipeline:
             if len(self.tasks) >= 100:
                 ahttp.run(self.tasks, pool=100)
                 self.tasks.clear()
-            self.tasks.append(ahttp.post('https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/',
-                                         json=dict(item)))
+            backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
+            self.tasks.append(ahttp.post(backend_url, json=dict(item)))
             file.write(content)
             file.close()
             return item

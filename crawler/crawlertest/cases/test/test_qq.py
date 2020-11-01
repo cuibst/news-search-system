@@ -6,7 +6,7 @@ import re
 
 def test_qq_parse_item_valid_01(resource_get):
     # 此测例检查parse_item函数能否处理正确的新闻url
-    test_url = 'https://new.qq.com/omn/20201011/20201011A0BXRG00.html'
+    test_url = 'https://new.qq.com/omn/TWF20201/TWF2020102801385000.html'
     response = resource_get(test_url, request=Request(url=test_url))
     result = parse_item(response)
     # 还没有summary

@@ -10,6 +10,7 @@ The pipelines for scrapy crawler
 import json
 import os
 import re
+import ahttp
 from pathlib import Path
 from requests import post
 
@@ -21,6 +22,7 @@ class NewsPipeline:
     file_set = set()
     dir_path = None
     current_dir_path = Path(__file__).parent
+    tasks = []
 
     def open_spider(self, spider):
         '''
@@ -46,8 +48,11 @@ class NewsPipeline:
             file = open(self.dir_path / Path(current_file_name), 'w', encoding="utf-8")
             content = json.dumps(dict(item), indent=4, ensure_ascii=False)
             # 向django后端发送post请求添加新闻
-            post(url='https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/',
-                 data=content.encode('utf-8'))
+            if len(self.tasks) >= 100:
+                ahttp.run(self.tasks, pool=100)
+                self.tasks.clear()
+            self.tasks.append(ahttp.post('https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/',
+                                         json=dict(item)))
             file.write(content)
             file.close()
             return item

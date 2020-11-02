@@ -62,7 +62,6 @@ export default {
   },
   mounted () {
     this.keyword = this.$route.params.keyword
-    console.log(this.keyword)
     this.KeyChange(this.keyword)
   },
 
@@ -82,13 +81,14 @@ export default {
             query: newkey
           }
         }).then(ret => {
-        console.log(ret)
+        console.log(this.infolist)
         this.infolist = ret.data.infolist
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
       }, error => {
         console.log(error)
+        this.infolist = []
         alert('服务器忙')
       })
     },
@@ -108,6 +108,7 @@ export default {
         this.infolist = ret.data.infolist
       }, error => {
         console.log(error)
+        this.infolist = []
         alert('服务器忙')
       })
       scrollTo(0, 0)

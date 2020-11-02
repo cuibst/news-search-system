@@ -12,4 +12,4 @@ Scrapy==2.4.0
 betamax==0.8.1
 selenium==3.141.0
 requests==2.24.0
-ahttp=1.1.1
+ahttp==1.1.1

@@ -10,7 +10,6 @@ import time
 import hashlib
 import requests
 from django.core import signing
-from django.core.cache import cache
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
@@ -52,7 +51,6 @@ def create_token(username):
     md5.update(("%s.%s" % (header, payload)).encode())
     signature = md5.hexdigest()
     token = "%s.%s.%s" % (header, payload, signature)
-    cache.set(username, token, TIME_OUT)
     return token
 
 
@@ -80,7 +78,6 @@ def index(request):
     mes['message'] = "Hello Software Engineering!"
     mes['code'] = 200
     return JsonResponse(mes)
-
 
 
 @csrf_exempt

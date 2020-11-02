@@ -17,25 +17,26 @@ from .models import User, News
 
 # Create your views here.
 HEADER = {'typ': 'JWP', 'alg': 'default'}
+KEY = "rzotgorz"
 SALT = 'www.lanou3g.com'
 TIME_OUT = 60*60*2
 
 
-def encrypt(obj, username):
+def encrypt(obj):
     '''
     encrypt the user
     '''
-    value = signing.dumps(obj, key=username, salt=SALT)
+    value = signing.dumps(obj, key=KEY, salt=SALT)
     value = signing.b64_encode(value.encode()).decode()
     return value
 
 
-def decrypt(src, username):
+def decrypt(src):
     '''
     decrypt the token
     '''
     src = signing.b64_decode(src.encode()).decode()
-    raw = signing.loads(src, key=username, salt=SALT)
+    raw = signing.loads(src, key=KEY, salt=SALT)
     print(type(raw))
     return raw
 
@@ -44,12 +45,17 @@ def create_token(username):
     '''
     generate token information
     '''
-    header = encrypt(HEADER, username=username)
+
+    header = encrypt(HEADER)
+
     payload = {'username': username, 'iat': time.time()}
     payload = encrypt(payload)
+
     md5 = hashlib.md5()
+
     md5.update(("%s.%s" % (header, payload)).encode())
     signature = md5.hexdigest()
+
     token = "%s.%s.%s" % (header, payload, signature)
     return token
 
@@ -86,10 +92,14 @@ def login(request):
     login
     '''
     if request.method == 'POST':
+
         data = json.loads(request.body)
         name = data['username']
         password = data['password']
         user = User.objects.filter(name=name).first()
+
+        token = create_token(name)
+
         if not user:
             return JsonResponse({
                 'code': 401,
@@ -102,7 +112,7 @@ def login(request):
             return JsonResponse({
                 'code': 200,
                 'data': 'login successfully',
-                'Token': 'AC'
+                'Token': token
             }, status=200)
         return JsonResponse({
             'code': 401,

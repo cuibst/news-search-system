@@ -41,66 +41,76 @@
           </el-col>
         </el-col>
       </el-row>
+      <el-pagination background layout="prev, pager, next" :page-count="pages" @current-change="handleCurrent" :current-page.sync="currentpage">
+      </el-pagination>
     </div>
 </div>
 </template>
 
 <script>
+import axios from 'axios'
+// import '@/mock/index'
 export default {
   name: 'Search',
-  props: {
-    infolist: {
-      type: Array,
-      default: () => []
-    }
-  },
   data () {
     return {
-      keyword: ''
+      keyword: '',
+      infolist: [],
+      currentpage: 1,
+      pages: 0
     }
   },
   mounted () {
-    // 此处调用高亮函数
     this.keyword = this.$route.params.keyword
-    this.ssindex()
     console.log(this.keyword)
+    this.KeyChange(this.keyword)
   },
 
   watch: {
     '$route' (to, from) {
-      // Send new search content to the parent
-      this.$emit('keychange', to.params.keyword)
-    },
-    infolist (to, from) {
-      this.keyword = this.$route.params.keyword
-      this.ssindex()
+      this.KeyChange(to.params.keyword)
     }
   },
   methods: {
     goto (url) {
-      window.location.href = url
+      window.open(url, '_blank')
     },
-    ssindex () {
-      if (this.keyword === '') {
-        return
-      }
-      this.infolist.forEach(item => {
-        if (item.title.indexOf(this.keyword) !== -1) {
-          // 检索标题
-          const reg = new RegExp(this.keyword)
-          var str = ''
-          str = item.title.replace(reg, `<span style="color:#F96600">${this.keyword}</span>`)
-          item.title = str
-          // 检索内容
-          str = ''
-          str = item.summary.replace(reg, `<span style="color:#F96600">${this.keyword}</span>`)
-          item.summary = str
-        }
+    KeyChange: async function (newkey) {
+      await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+        {
+          params: {
+            query: newkey
+          }
+        }).then(ret => {
+        console.log(ret)
+        this.infolist = ret.data.infolist
+        this.count = ret.data.count
+        this.pages = Math.ceil(this.count / 20)
+        this.currentpage = 1
+      }, error => {
+        console.log(error)
+        alert('服务器忙')
       })
     },
     search () {
       // 此处变更搜索路径
       this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
+    },
+    // 此处处理页码变更
+    handleCurrent: async function (currentPage) {
+      await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+        {
+          params: {
+            query: this.keyword,
+            start: (currentPage - 1) * 20
+          }
+        }).then(ret => {
+        this.infolist = ret.data.infolist
+      }, error => {
+        console.log(error)
+        alert('服务器忙')
+      })
+      scrollTo(0, 0)
     }
   }
 }

@@ -1,17 +1,76 @@
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-locals
+# pylint: disable=no-value-for-parameter
 '''
 views for backend
 '''
 import json
+import time
+import hashlib
 import requests
+from django.core import signing
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, News
 
 # Create your views here.
+HEADER = {'typ': 'JWP', 'alg': 'default'}
+SALT = 'www.lanou3g.com'
+TIME_OUT = 60*60*2
+
+
+def encrypt(obj, username):
+    '''
+    encrypt the user
+    '''
+    value = signing.dumps(obj, key=username, salt=SALT)
+    value = signing.b64_encode(value.encode()).decode()
+    return value
+
+
+def decrypt(src, username):
+    '''
+    decrypt the token
+    '''
+    src = signing.b64_decode(src.encode()).decode()
+    raw = signing.loads(src, key=username, salt=SALT)
+    print(type(raw))
+    return raw
+
+
+def create_token(username):
+    '''
+    generate token information
+    '''
+    header = encrypt(HEADER, username=username)
+    payload = {'username': username, 'iat': time.time()}
+    payload = encrypt(payload)
+    md5 = hashlib.md5()
+    md5.update(("%s.%s" % (header, payload)).encode())
+    signature = md5.hexdigest()
+    token = "%s.%s.%s" % (header, payload, signature)
+    cache.set(username, token, TIME_OUT)
+    return token
+
+
+def get_payload(token):
+    '''
+    get the token of payload
+    '''
+    payload = str(token).split('.')[1]
+    payload = decrypt(payload)
+    return payload
+
+
+def get_username(token):
+    '''
+    get the token of username
+    '''
+    payload = get_payload(token)
+    return payload['username']
 
 def index(request):
     '''
@@ -21,6 +80,8 @@ def index(request):
     mes['message'] = "Hello Software Engineering!"
     mes['code'] = 200
     return JsonResponse(mes)
+
+
 
 @csrf_exempt
 def login(request):
@@ -57,6 +118,7 @@ def login(request):
         'Token': 'WA3'
     }, status=405)
 
+
 @csrf_exempt
 def register(request):
     '''
@@ -90,6 +152,7 @@ def register(request):
             'code': 401,
             'data': 'username used'
         }, status=200)
+
 
 @csrf_exempt
 def upload_news(request):

@@ -11,6 +11,7 @@ Vue.prototype.$http = axios
 Vue.prototype.$store = store
 Vue.config.productionTip = false
 
+axios.defaults.timeout = 100000
 axios.defaults.headers.common['Authentication-Token'] = store.state.token
 // 添加请求拦截器，每次请求加入Token
 axios.interceptors.request.use(config => {

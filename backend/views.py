@@ -124,19 +124,20 @@ def upload_news(request):
             news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
                         media=data['media'], tags=data['tags'], title=data['title'],
                         news_id=['news_id'], img=data['img'], pub_date=data['pub_date'],
-                        content=data['content'], summary=data['summary'])
+                        content=str(data['content']), summary=data['summary'])
             news.full_clean()
             news.save()
             total_success += 1
         else:
             total_repetitive += 1
     lucene_url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
-    requests.post(url=lucene_url, data=json.dumps(news_id_dict, ensure_ascii=False),
+    requests.post(url=lucene_url, json=news_id_dict,
                   headers={'Content-Type': 'application/json'})
     return JsonResponse({
         'info': 'Preserve process finished.',
         'code': 200,
         'total_news': total_news,
+        'total_success': total_success,
         'total_repetitive': total_repetitive,
         'total_error': total_error,
         'error_list': error_list

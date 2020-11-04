@@ -11,7 +11,7 @@ import json
 import os
 import re
 from pathlib import Path
-import ahttp
+import requests
 
 
 class NewsPipeline:
@@ -22,7 +22,8 @@ class NewsPipeline:
     file_set = set()
     dir_path = None
     current_dir_path = Path(__file__).parent
-    tasks = []
+    news_pack = dict()
+    total_news = 0
 
     def open_spider(self, spider):
         '''
@@ -43,17 +44,28 @@ class NewsPipeline:
         '''
         current_file_name = item['news_id'] + '.json'
         if current_file_name not in self.file_set:
+            # 储存文件到本地
             self.file_set.add(current_file_name)
             self.dir_path.mkdir(parents=True, exist_ok=True)
             file = open(self.dir_path / Path(current_file_name), 'w', encoding="utf-8")
             content = json.dumps(dict(item), indent=4, ensure_ascii=False)
-            # 向django后端发送post请求添加新闻
-            if len(self.tasks) >= 100:
-                ahttp.run(self.tasks, pool=100)
-                self.tasks.clear()
-            backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
-            self.tasks.append(ahttp.post(backend_url, json=dict(item)))
             file.write(content)
             file.close()
+            # 向django后端发送post请求添加新闻
+            backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
+            if len(self.news_pack.keys()) >= 100:
+                requests.post(url=backend_url, data=json.dumps(self.news_pack, ensure_ascii=False))
+                self.news_pack.clear()
+                self.total_news = 0
+            self.news_pack[self.total_news] = dict(item)
+            self.total_news += 1
             return item
         return None
+
+    def close_spider(self, spider):
+        '''
+        post remain news in self.news_pack
+        '''
+        print(spider.name, 'closed')
+        backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
+        requests.post(url=backend_url, data=json.dumps(self.news_pack, ensure_ascii=False))

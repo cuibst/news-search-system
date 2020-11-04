@@ -63,7 +63,11 @@
         <el-col :span="10">
           <el-col :span="24">
             <div class="imgs">
-              <img src="@/assets/imgs.jpg" style="width:100%;height:100%;" alt="" srcset="">
+              <el-carousel :interval="5000" arrow="always" indicator-position="outside">
+                <el-carousel-item v-for="(item,index) in imgnews" :key="index">
+                  <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
+                </el-carousel-item>
+              </el-carousel>
             </div>
           </el-col>
 
@@ -471,5 +475,20 @@ export default {
 .news_word_small:hover{
   background-color: green;
   cursor: pointer;
+}
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 18px;
+  opacity: 0.75;
+  line-height: 300px;
+  margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+  background-color: #d3dce6;
 }
 </style>

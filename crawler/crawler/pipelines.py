@@ -54,7 +54,7 @@ class NewsPipeline:
             # 向django后端发送post请求添加新闻
             backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
             if len(self.news_pack.keys()) >= 100:
-                requests.post(url=backend_url, data=json.dumps(self.news_pack, ensure_ascii=False))
+                requests.post(url=backend_url, json=self.news_pack)
                 self.news_pack.clear()
                 self.total_news = 0
             self.news_pack[self.total_news] = dict(item)
@@ -68,4 +68,4 @@ class NewsPipeline:
         '''
         print(spider.name, 'closed')
         backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
-        requests.post(url=backend_url, data=json.dumps(self.news_pack, ensure_ascii=False))
+        requests.post(url=backend_url, json=self.news_pack)

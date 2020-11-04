@@ -137,14 +137,14 @@ def parse_news_url(response):
         yield Request(url=news_url, callback=parse_news_item, dont_filter=True)
 
 
-class XinhuaNewsFullSpider(Spider):
+class XinhuaFullSpider(Spider):
     '''
     XinhuaNewsFullSpider
     '''
     # 此爬虫是新华网全量爬虫
     # 爬取过程分为四步：扫描api接口得到有用的nid，根据nid获得新闻列表，根据新闻列表获得新闻url，根据新闻url爬取出news item
     # 新华网api格式： http://qc.wa.news.cn/nodeart/list?nid=111444&pgnum=1&cnt=100
-    name = 'xinhua_news_full'
+    name = 'xinhua_full'
     allowed_domains = ['*']
     current_dir_path = Path(__file__).parent
 
@@ -188,7 +188,7 @@ class XinhuaIncSpider(Spider):
     '''
     Crawl xinhua news incrementally from index page and sub site index pages.
     '''
-    name = 'xinhua_news_inc'
+    name = 'xinhua_inc'
     allowed_domains = ['*']
     current_dir_path = Path(__file__).parent
 

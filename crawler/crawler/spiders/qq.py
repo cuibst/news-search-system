@@ -4,6 +4,7 @@ The crawler for news.qq.com
 '''
 import re
 import json
+from datetime import datetime, timedelta
 from urllib import parse
 from pathlib import Path
 from scrapy.spiders import Request, Spider
@@ -70,33 +71,9 @@ def parse_item(response):
 
 class QqIncSpider(Spider):
     '''
-    The increment spider for news.qq.com
-    '''
-    name = "qq_inc"
-    allowed_domains = ['news.qq.com', 'new.qq.com']
-    start_urls = ['https://www.qq.com/']
-    total_error = 0
-    current_dir_path = Path(__file__).parent
-
-    #browser = webdriver.Chrome(executable_path='chromedriver.exe')
-    #browser.set_page_load_timeout(10)
-
-    def parse(self, response, **kwargs):
-        '''
-        parse the url from the response
-        '''
-        href_list = response.xpath('//a/@href').extract()
-        pattern = '.+/omn/2020[0-9]{4}/(2020[0-9]{4}[A-za-z0-9]+).*'
-        for href in href_list:
-            if re.match(pattern, href) is not None:
-                yield Request(href, callback=parse_item)
-
-
-class QqNewsInfoSpider(Spider):
-    '''
     The spider for qq news info
     '''
-    name = 'qq_news_info'
+    name = 'qq_inc'
     allowed_domains = ['i.news.qq.com', 'new.qq.com']
     current_dir_path = Path(__file__).parent
     # 以下是腾讯新闻的不同新闻标签
@@ -139,3 +116,41 @@ class QqNewsInfoSpider(Spider):
                 file.write(json.dumps(dic, indent=4, ensure_ascii=False))
                 file.close()
                 yield Request(dic['url'], callback=parse_item)
+
+
+class QqFullSpider(Spider):
+    '''
+    This spider generate all possible news urls and try to crawl them
+    '''
+    name = 'qq_full'
+    allowed_domains = ['*']
+    # 爬取2020全年10月28日及以前的新闻
+    start_date = datetime(2020, 10, 28)
+    end_date = datetime(2019, 12, 31)
+    # https://new.qq.com/omn/20201020/20201020A0G0KM00.html
+
+    def start_requests(self):
+        '''
+        Generate all possible news urls within the date range.
+        '''
+        date = self.start_date
+        alphabet = [chr(i) for i in range(48, 58)] + [chr(i) for i in range(65, 91)]
+        while date != self.end_date:
+            # TO DO
+            year = str(date.year)
+            month = str(date.month).rjust(2, '0')
+            day = str(date.day).rjust(2, '0')
+            date_string = year + month + day
+            iden_list = [0, 0, 0, 0]
+            for iden in range(20*36**3):
+                for i in range(4):
+                    iden_list[3 - i] = iden % 36
+                    iden //= 36
+                iden_string = ''.join([alphabet[iden_list[i]] for i in range(4)])
+                target_url = 'https://new.qq.com/omn/' + date_string + '/' + date_string + \
+                    'A0' + iden_string + '00.html'
+                yield Request(url=target_url, callback=parse_item)
+            date = date - timedelta(days=1)
+
+    def parse(self, response, **kwargs):
+        pass

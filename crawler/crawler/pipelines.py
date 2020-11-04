@@ -9,8 +9,10 @@ The pipelines for scrapy crawler
 # useful for handling different item types with a single interface
 import json
 import os
+import re
 from pathlib import Path
-from requests import post
+import ahttp
+
 
 class NewsPipeline:
     '''
@@ -20,19 +22,16 @@ class NewsPipeline:
     file_set = set()
     dir_path = None
     current_dir_path = Path(__file__).parent
+    tasks = []
 
     def open_spider(self, spider):
         '''
         Initialize the crawler
         '''
         # 确定要保存的文件夹路径
-        if spider.name == 'qq_inc':
+        if re.match(r'qq_.+', spider.name):
             self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif spider.name == 'qq_news_info':
-            self.dir_path = self.current_dir_path / Path('spiders/data/qq/news_info/')
-        elif spider.name == 'xinhua_news_full':
-            self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
-        elif spider.name == 'xinhua_news_inc':
+        elif re.match(r'xinhua_.+', spider.name):
             self.dir_path = self.current_dir_path / Path('spiders/data/xinhua/news_info/')
         # 获取文件夹中的所有文件
         if self.dir_path is not None:
@@ -49,8 +48,11 @@ class NewsPipeline:
             file = open(self.dir_path / Path(current_file_name), 'w', encoding="utf-8")
             content = json.dumps(dict(item), indent=4, ensure_ascii=False)
             # 向django后端发送post请求添加新闻
-            post(url='https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/',
-                 data=content.encode('utf-8'))
+            if len(self.tasks) >= 100:
+                ahttp.run(self.tasks, pool=100)
+                self.tasks.clear()
+            backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
+            self.tasks.append(ahttp.post(backend_url, json=dict(item)))
             file.write(content)
             file.close()
             return item

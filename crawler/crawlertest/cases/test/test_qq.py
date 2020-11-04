@@ -1,4 +1,4 @@
-from crawler.crawler.spiders.qq import QqNewsInfoSpider, QqIncSpider, parse_item
+from crawler.crawler.spiders.qq import QqIncSpider, QqFullSpider, parse_item
 from scrapy.http import HtmlResponse, Request
 from crawler.crawlertest.cases.test.conftest import resource_get
 import re
@@ -6,7 +6,7 @@ import re
 
 def test_qq_parse_item_valid_01(resource_get):
     # 此测例检查parse_item函数能否处理正确的新闻url
-    test_url = 'https://new.qq.com/omn/20201011/20201011A0BXRG00.html'
+    test_url = 'https://new.qq.com/omn/TWF20201/TWF2020102801385000.html'
     response = resource_get(test_url, request=Request(url=test_url))
     result = parse_item(response)
     # 还没有summary
@@ -28,8 +28,8 @@ def test_qq_parse_item_not_valid_01(resource_get):
     assert iter_num == 0
 
 
-class TestQqNewsInfoSpider:
-    spider = QqNewsInfoSpider()
+class TestQqIncSpider:
+    spider = QqIncSpider()
 
     def test_parse_valid_01(self, resource_get):
         # 此测例检查正确的新闻列表url
@@ -54,14 +54,10 @@ class TestQqNewsInfoSpider:
         assert iter_num == 0
 
 
-class TestQqIncSpider:
-    spider = QqIncSpider()
+class TestQqFullSpider:
+    spider = QqFullSpider()
 
-    def test_inc_parse_valid_01(self, resource_get):
-        # 此测例检查parse函数能否从起始url返回新闻链接
-        test_url = 'https://www.qq.com/'
-        response = resource_get(test_url, request=Request(url=test_url))
-        result = self.spider.parse(response)
-        for request in result:
-            assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+.*', request.url)
-
+    def test_full_start_requests_01(self):
+        result = self.spider.start_requests()
+        request = next(result)
+        assert re.search(r'A0000000', request.url)

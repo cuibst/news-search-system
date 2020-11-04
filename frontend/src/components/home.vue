@@ -65,7 +65,7 @@
             <div class="imgs">
               <el-carousel :interval="100000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
-                  <img :src="item.img" style="width:100%;height:80%;padding:0px;margin-bottom:0px;border:0px" alt="" srcset="">
+                  <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
                   <div class="img_title">{{item.title}}</div>
                 </el-carousel-item>
               </el-carousel>
@@ -419,16 +419,22 @@ export default {
   background-color: black;
   color: white;
 }
-.img_title{
+/* .img_title{
  width: 100%;
- height: 20%;
  color: white;
  text-align: center;
  font-weight: normal;
- background-color: #475669;
- padding: 0%;
- margin: 0%;
- border: 0px;
+ vertical-align: text-top;
+} */
+.img_title{
+  position:absolute;
+  width:475px;
+  height:100px;
+  bottom: -20%;
+  left: 0%;
+  background-color: transparent;
+  color: white;
+  text-align: center;
 }
 .img_tit:hover{
   background:rgb(79, 125, 192);
@@ -468,19 +474,11 @@ export default {
   background-color: green;
   cursor: pointer;
 }
-.el-carousel__item h3 {
-  color: #475669;
-  font-size: 18px;
-  opacity: 0.75;
-  line-height: 300px;
-  margin: 0;
-}
-
 .el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+  background-color: gray;
 }
 
 .el-carousel__item:nth-child(2n+1) {
-  background-color: #d3dce6;
+  background-color: grey;
 }
 </style>

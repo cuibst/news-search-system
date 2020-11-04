@@ -5,9 +5,9 @@ Mock.mock('/api/user', 'get', (rqst) => {
   return {
     code: 200,
     user: {
-      username: '1',
-      phonenumber: '13333333333',
-      email: 'a@at.com'
+      username: '123',
+      phonenumber: '13333233333',
+      email: 'b@bat.com'
     }
   }
 })

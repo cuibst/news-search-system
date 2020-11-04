@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     getUser: function () {
-      axios.get('/api/user').then(ret => {
+      axios.get('/api/user/').then(ret => {
         this.user = ret.data.user
       }, error => {
         console.log(error)

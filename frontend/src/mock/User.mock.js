@@ -2,7 +2,7 @@ import * as Mock from 'mockjs'
 
 Mock.mock('/api/userchange/', 'post', (rqst) => {
   console.log(rqst)
-  if (JSON.parse(rqst.body).username === '1') {
+  if (JSON.parse(rqst.body).username !== '1') {
     return {
       code: 401
     }

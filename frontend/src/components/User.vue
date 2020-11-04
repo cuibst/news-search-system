@@ -81,13 +81,6 @@ export default {
         callback()
       }
     }
-    var validateOldpass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('旧密码不能为空'))
-      } else {
-        callback()
-      }
-    }
     return {
       passwordcheck: false,
       password_input: false,
@@ -117,8 +110,7 @@ export default {
           { validator: validatePhonenumber, trigger: 'blur' }
         ],
         oldpasswd: [
-          { required: true, message: '请输入您原先的密码', trigger: 'blur' },
-          { validator: validateOldpass, trigger: 'blur' }
+          { required: true, message: '请输入您原先的密码', trigger: 'blur' }
         ]
       }
     }

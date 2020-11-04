@@ -32,8 +32,8 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com'
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
         }
       }
     })
@@ -44,155 +44,12 @@ describe('User.vue', () => {
         passwordCheck: '12456',
         email: '12346qq.com',
         phonenumber: '1872546587',
-        oldpasswd: '123456789101112131415161718'
-      }
-    })
-    const button = wrapper.findComponent(ElementUI.Button)
-    button.trigger('click')
-    await Vue.nextTick()
-  })
-  it('Invalie data to other wrong input', async () => {
-    const localVue = createLocalVue()
-    localVue.use(VueRouter)
-    const router = new VueRouter()
-    const wrapper = mount(User, {
-      router,
-      localVue,
-      propsData: {
-        user: {
-          username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com'
-        }
-      }
-    })
-    wrapper.setData({
-      ruleForm: {
-        username: '',
-        password: '',
-        passwordCheck: '',
-        email: '',
-        phonenumber: '',
         oldpasswd: ''
       }
     })
     const button = wrapper.findComponent(ElementUI.Button)
     button.trigger('click')
     await Vue.nextTick()
-  })
-  it('Invalid username send correctly', async () => {
-    const localVue = createLocalVue()
-    localVue.use(VueRouter)
-    const router = new VueRouter()
-    const wrapper = mount(User, {
-      router,
-      localVue,
-      propsData: {
-        user: {
-          username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com'
-        }
-      }
-    })
-    const button = wrapper.findComponent(ElementUI.Button)
-    mockAxios.post.mockImplementationOnce(() => {
-      return Promise.resolve({
-        data: {
-          code: 401
-        },
-        status: 200
-      })
-    })
-    wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587',
-        oldpasswd: '123'
-      }
-    })
-    button.trigger('click')
-    await flushPromises()
-    expect(wrapper.vm.ruleForm.username).toBe('1')
-  })
-  it('Valid username send correctly', async () => {
-    const localVue = createLocalVue()
-    localVue.use(VueRouter)
-    const router = new VueRouter()
-    const wrapper = mount(User, {
-      router,
-      localVue,
-      propsData: {
-        user: {
-          username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com'
-        }
-      }
-    })
-    const button = wrapper.findComponent(ElementUI.Button)
-    mockAxios.post.mockImplementationOnce(() => {
-      return Promise.resolve({
-        data: {
-          code: 200
-        },
-        status: 200
-      })
-    })
-    wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '123456',
-        passwordCheck: '123456',
-        email: '123456@qq.com',
-        phonenumber: '18725846587',
-        oldpasswd: '123'
-      }
-    })
-    button.trigger('click')
-    await flushPromises()
-    expect('1').toEqual('1')
-  })
-  it('Valid username without new password', async () => {
-    const localVue = createLocalVue()
-    localVue.use(VueRouter)
-    const router = new VueRouter()
-    const wrapper = mount(User, {
-      router,
-      localVue,
-      propsData: {
-        user: {
-          username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com',
-        }
-      }
-    })
-    const button = wrapper.findComponent(ElementUI.Button)
-    mockAxios.post.mockImplementationOnce(() => {
-      return Promise.resolve({
-        data: {
-          code: 200
-        },
-        status: 200
-      })
-    })
-    wrapper.setData({
-      ruleForm: {
-        username: '1',
-        password: '',
-        passwordCheck: '',
-        email: '123456@qq.com',
-        phonenumber: '18725846587',
-        oldpasswd: '123'
-      }
-    })
-    button.trigger('click')
-    await flushPromises()
-    expect('1').toEqual('1')
   })
   it('Fail to check the information', async () => {
     const localVue = createLocalVue()
@@ -204,8 +61,8 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com'
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
         }
       }
     })
@@ -242,19 +99,18 @@ describe('User.vue', () => {
       propsData: {
         user: {
           username: '1',
-          phonenumber: '13333333333',
-          email: 'a@at.com'
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
         }
       }
     })
     const button = wrapper.findComponent(ElementUI.Button)
-    console.log('It test')
     mockAxios.post.mockImplementationOnce(() => {
       return Promise.reject(new Error('Network error'))
     })
     wrapper.setData({
       ruleForm: {
-        username: '1',
+        username: '123',
         password: '123456',
         passwordCheck: '123456',
         email: '123456@qq.com',
@@ -263,6 +119,149 @@ describe('User.vue', () => {
     })
     button.trigger('click')
     await flushPromises()
+    expect(wrapper.vm.ruleForm.username).toBe('123')
+  })
+  it('Invalie data to other wrong input', async () => {
+    const localVue = createLocalVue()
+    localVue.use(VueRouter)
+    const router = new VueRouter()
+    const wrapper = mount(User, {
+      router,
+      localVue,
+      propsData: {
+        user: {
+          username: '1',
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
+        }
+      }
+    })
+    wrapper.setData({
+      ruleForm: {
+        username: '',
+        password: '',
+        passwordCheck: '',
+        email: '',
+        phonenumber: '',
+        oldpasswd: ''
+      }
+    })
+    const button = wrapper.findComponent(ElementUI.Button)
+    button.trigger('click')
+    await Vue.nextTick()
+  })
+  it('Invalid username send correctly', async () => {
+    const localVue = createLocalVue()
+    localVue.use(VueRouter)
+    const router = new VueRouter()
+    const wrapper = mount(User, {
+      router,
+      localVue,
+      propsData: {
+        user: {
+          username: '1',
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
+        }
+      }
+    })
+    const button = wrapper.findComponent(ElementUI.Button)
+    mockAxios.post.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          code: 401
+        },
+        status: 200
+      })
+    })
+    wrapper.setData({
+      ruleForm: {
+        username: '1',
+        password: '123456',
+        passwordCheck: '123456',
+        email: '123456@qq.com',
+        phonenumber: '18725846587',
+        oldpasswd: '123'
+      }
+    })
+    button.trigger('click')
+    await flushPromises()
     expect(wrapper.vm.ruleForm.username).toBe('1')
+  })
+  it('Valid username send correctly', async () => {
+    const localVue = createLocalVue()
+    localVue.use(VueRouter)
+    const router = new VueRouter()
+    const wrapper = mount(User, {
+      router,
+      localVue,
+      propsData: {
+        user: {
+          username: '1',
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
+        }
+      }
+    })
+    const button = wrapper.findComponent(ElementUI.Button)
+    mockAxios.post.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          code: 200
+        },
+        status: 200
+      })
+    })
+    wrapper.setData({
+      ruleForm: {
+        username: '1',
+        password: '123456',
+        passwordCheck: '123456',
+        email: '123456@qq.com',
+        phonenumber: '18725846587',
+        oldpasswd: '11233'
+      }
+    })
+    button.trigger('click')
+    await flushPromises()
+    expect('1').toEqual('1')
+  })
+  it('Valid username without new password', async () => {
+    const localVue = createLocalVue()
+    localVue.use(VueRouter)
+    const router = new VueRouter()
+    const wrapper = mount(User, {
+      router,
+      localVue,
+      propsData: {
+        user: {
+          username: '1',
+          phonenumber: '15756451234',
+          email: 'b@bat.com'
+        }
+      }
+    })
+    const button = wrapper.findComponent(ElementUI.Button)
+    mockAxios.post.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          code: 200
+        },
+        status: 200
+      })
+    })
+    wrapper.setData({
+      ruleForm: {
+        username: '1',
+        password: '',
+        passwordCheck: '',
+        email: '123456@qq.com',
+        phonenumber: '18725846587',
+        oldpasswd: '123'
+      }
+    })
+    button.trigger('click')
+    await flushPromises()
+    expect('1').toEqual('1')
   })
 })

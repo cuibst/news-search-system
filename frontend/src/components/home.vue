@@ -63,9 +63,10 @@
         <el-col :span="10">
           <el-col :span="24">
             <div class="imgs">
-              <el-carousel :interval="5000" arrow="always" indicator-position="outside">
+              <el-carousel :interval="100000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
-                  <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
+                  <img :src="item.img" style="width:100%;height:80%;padding:0px;margin-bottom:0px;border:0px" alt="" srcset="">
+                  <div class="img_title">{{item.title}}</div>
                 </el-carousel-item>
               </el-carousel>
             </div>
@@ -254,26 +255,6 @@ export default {
         {
           title: '《为了和平》第五集：万众一心',
           url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
         }
       ]
     }
@@ -417,15 +398,14 @@ export default {
 }
 .img_tit1{
   padding: 0px;
-    margin: 0 !important;
-    text-align: center;
-    font-weight: normal;
-    color: #fff;
-    position: relative;
-    top:-25px;
-    background:#000;
-    opacity: 0.8;
-    padding:2px 0px;
+  margin: 0 !important;
+  text-align: center;
+  font-weight: normal;
+  color: #fff;
+  position: relative;
+  top:-25px;
+  background:#000;
+  opacity: 0.8;
 }
 .img_tit1:hover{
   opacity: 1;
@@ -436,7 +416,19 @@ export default {
   text-align: center;
   font-weight: normal;
   padding:2px 0px;
-
+  background-color: black;
+  color: white;
+}
+.img_title{
+ width: 100%;
+ height: 20%;
+ color: white;
+ text-align: center;
+ font-weight: normal;
+ background-color: #475669;
+ padding: 0%;
+ margin: 0%;
+ border: 0px;
 }
 .img_tit:hover{
   background:rgb(79, 125, 192);

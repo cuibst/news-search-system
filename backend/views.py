@@ -5,6 +5,7 @@
 views for backend
 '''
 import json
+from datetime import datetime
 import requests
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
@@ -105,6 +106,7 @@ def upload_news(request):
     key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media',
                 'tags', 'pub_date', 'summary', 'img', 'content']
     news_id_dict = {'news_id': []}
+    print("### Start to filter valid news:", datetime.now())
     for data in news_list:
         error = False
         for key in key_list:
@@ -129,9 +131,18 @@ def upload_news(request):
             total_success += 1
         else:
             total_repetitive += 1
+    print("### Valid news found:", datetime.now())
+    print("### Start to send request to lucene:", datetime.now())
     lucene_url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
     requests.post(url=lucene_url, json=news_id_dict,
                   headers={'Content-Type': 'application/json'})
+    print("### Lucene response received:", datetime.now())
+    print("### Total news:", total_news)
+    print("### Total success:", total_success)
+    print("### Total repetitive:", total_repetitive)
+    print("### Total error:", total_error)
+    if total_error >= 0:
+        print("### Error list:", error_list)
     return JsonResponse({
         'info': 'Preserve process finished.',
         'code': 200,

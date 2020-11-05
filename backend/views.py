@@ -107,10 +107,11 @@ def upload_news(request):
                 'tags', 'pub_date', 'summary', 'img', 'content']
     news_id_dict = {'news_id': []}
     print("### Start to filter valid news:", datetime.now())
-    rep_news_list = News.objects.filter(news_id__in=origin_news_id_list)
-    total_repetitive = len(rep_news_list)
+    rep_news_list = News.objects.values('news_id').filter(news_id__in=origin_news_id_list)
+    rep_news_id_list = [news['news_id'] for news in rep_news_list]
+    total_repetitive = len(rep_news_id_list)
     for data in news_list:
-        if data['news_id'] in rep_news_list:
+        if data['news_id'] in rep_news_id_list:
             continue
         error = False
         for key in key_list:

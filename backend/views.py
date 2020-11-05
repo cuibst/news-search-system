@@ -4,6 +4,8 @@
 # pylint: disable=no-value-for-parameter
 # pylint: disable=invalid-name
 # pylint: disable=unused-variable
+# pylint: disable=redefined-outer-name
+# pylint: disable=inconsistent-return-statements
 '''
 views for backend
 '''
@@ -112,7 +114,7 @@ def login(request):
             with open('./backend/token.json', 'r', encoding='utf-8') as f:
                 tmp_dict = json.load(f)
                 for key, value in tmp_dict.items():
-                    if key == token:
+                    if user.id == value:
                         flag = True
                         break
             if flag is False:
@@ -257,3 +259,74 @@ def get_news(request):
     return JsonResponse(response_data, json_dumps_params={
         'ensure_ascii': False
     }, status=200, charset='utf-8')
+
+
+@csrf_exempt
+def user_change(request):
+    '''
+    change the information of user
+    '''
+    if request.method == "POST":
+        token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+        user_id = -1
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+            for key, value in tmp_dict.items():
+                if key == token:
+                    user_id = value
+        if user_id == -1:
+            return JsonResponse({
+                'code': 403,
+                'info': "invalid token"
+            }, status=200)
+        print(899)
+        user = User.objects.filter(id=user_id).first()
+        data = json.loads(request.body)
+
+        if data['odpasswd'] != user.password:
+            return JsonResponse({
+                'code': 402
+            }, status=200)
+        user.email = data['email']
+        user.phone_number = data['phonenumber']
+        if data['password'] != '':
+            user.password = data['password']
+        if user.name == data['username']:
+            pass
+        else:
+            tmp_user = User.objects.filter(name=data['username'])
+            if not tmp_user:
+                user.name = data['username']
+                user.save()
+                return JsonResponse({
+                    'code': 200
+                }, status=200)
+            return JsonResponse({
+                'code': 401
+            }, status=200)
+
+
+@csrf_exempt
+def user(request):
+    '''
+    get the infomation of user
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if key == token:
+                user_id = value
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    user = User.objects.filter(id=user_id).first()
+    return JsonResponse({
+        'username': user.name,
+        'phonenumber': user.phone_number,
+        'email': user.email
+    })

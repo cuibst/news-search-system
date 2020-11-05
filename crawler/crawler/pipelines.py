@@ -56,7 +56,7 @@ class NewsPipeline:
             if len(self.news_list) >= self.news_capacity:
                 requests.post(url=self.upload_news_url, json={
                     'data': self.news_list
-                }, headers={'Content-Type': 'application/json'}, timeout=10)
+                }, headers={'Content-Type': 'application/json'}, timeout=100)
                 self.news_list.clear()
             self.news_list.append(dict(item))
             return item
@@ -69,4 +69,4 @@ class NewsPipeline:
         print(spider.name, 'closed.')
         requests.post(url=self.upload_news_url, json={
             'data': self.news_list
-        }, headers={'Content-Type': 'application/json'}, timeout=10)
+        }, headers={'Content-Type': 'application/json'}, timeout=100)

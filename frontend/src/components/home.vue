@@ -4,7 +4,7 @@
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
         <el-col :span="6"  :offset="22" style="text-align:right;">
           <el-col :span="4"  class="head_nav_h"  >
-            <a href="#/login" class="login_btn" >登录</a>
+            <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
           <el-col :span="4"  class="head_nav_h"  >
             <a href="#/register" class="login_btn" >注册</a>
@@ -22,7 +22,7 @@
               <el-input
                 placeholder="请输入内容"
                 v-model="keyword">
-                <el-button slot="append" class="btn_search">click me!</el-button>
+                <el-button slot="append" class="btn_search" @click="search">click me!</el-button>
               </el-input>
             </el-col>
             <el-col :span="2" class="help">
@@ -171,6 +171,10 @@ export default {
       if (index !== this.selactive) {
         this.selactive = index
       }
+    },
+    search () {
+      // 此处变更搜索路径
+      this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
     },
     outStyle (index) {
       this.selactive = -1

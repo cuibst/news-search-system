@@ -13,8 +13,17 @@ if (sessionStorage.getItem('token')) {
   store.commit('set_token', sessionStorage.getItem('token'))
 }
 const routes = [
-  { path: '/home', component: Home },
-  { path: '/', redirect: '/login' },
+  {
+    path: '/home',
+    component: Home,
+    meta: { requiredAuth: false }
+  },
+  { path: '/', redirect: '/home' },
+  {
+    path: '/userhome',
+    component: Home,
+    meta: { requiredAuth: true }
+  },
   {
     path: '/sample',
     component: Sample,

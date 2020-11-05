@@ -142,3 +142,32 @@ def upload_news(request):
         'total_error': total_error,
         'error_list': error_list
     }, status=200)
+
+@csrf_exempt
+def get_news(request):
+    '''
+    Provide an api to return imgnews and textnews for homepage.
+    Note that this is an test version!
+    '''
+    news_list = []
+    for news in News.objects.all()[:25]:
+        data = {
+            'news_id': news.news_id,
+            'news_url': news.news_url,
+            'title': news.title,
+            'source': news.source,
+            'category': news.category,
+            'media': news.media,
+            'tags': news.tags,
+            'pub_date': news.pub_date,
+            'summary': news.summary,
+            'img': news.img,
+            'content': news.content
+        }
+        news_list.append(data)
+    return JsonResponse({
+        'data': {
+            'imgnews': news_list[:5],
+            'textnews': news_list[5:]
+        }
+    }, status=200)

@@ -104,7 +104,7 @@ def upload_news(request):
     total_error = 0
     error_list = []
     key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media',
-                'tags', 'pub_date', 'summary', 'img', 'content']
+                'tags', 'pub_date', 'summary', 'img']
     news_id_dict = {'news_id': []}
     print("### Start to filter valid news:", datetime.now())
     rep_news_list = News.objects.values('news_id').filter(news_id__in=origin_news_id_list)
@@ -113,6 +113,9 @@ def upload_news(request):
     for data in news_list:
         if data['news_id'] in rep_news_id_list:
             continue
+        content = 'unknown content'
+        if data['content']:
+            content = ''.join(data['content'])
         error = False
         for key in key_list:
             if key in data:
@@ -128,7 +131,7 @@ def upload_news(request):
         news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
                     media=data['media'], tags=data['tags'], title=data['title'],
                     news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
-                    content=str(data['content']), summary=data['summary'])
+                    content=str(content), summary=data['summary'])
         news.full_clean()
         news.save()
         total_success += 1

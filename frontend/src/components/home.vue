@@ -4,10 +4,10 @@
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
         <el-col :span="6"  :offset="22" style="text-align:right;">
           <el-col :span="4"  class="head_nav_h"  >
-            <div >登录</div>
+            <a href="#/login" class="login_btn" >登录</a>
           </el-col>
           <el-col :span="4"  class="head_nav_h"  >
-            <div >注册</div>
+            <a href="#/register" class="login_btn" >注册</a>
           </el-col>
         </el-col>
       </el-row>
@@ -51,7 +51,7 @@
             <h2 class="news_tit">热点要闻</h2>
             <div class="box">
               <ul v-for="(item,index) in textnews" :key="index" >
-                <li @click="goto(item.url)">
+                <li @click="goto(item.news_url)">
                   <i class="dot"></i>
                   <span>{{item.title}}</span>
                 </li>
@@ -63,10 +63,12 @@
         <el-col :span="10">
           <el-col :span="24">
             <div class="imgs">
-              <el-carousel :interval="100000" arrow="always" indicator-position="outside">
+              <el-carousel :interval="5000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
-                  <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
-                  <div class="img_title">{{item.title}}</div>
+                  <a :href="item.news_url">
+                    <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
+                    <div class="img_title">{{item.title}}</div>
+                  </a>
                 </el-carousel-item>
               </el-carousel>
             </div>
@@ -136,6 +138,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+// import '@/mock/index'
 export default {
   name: 'homepage',
   props: {
@@ -175,6 +179,17 @@ export default {
   mounted () {
     window.addEventListener('scroll', this.handleScrollx, true)
   },
+  created () {
+    axios.get('/api/getnews/').then(ret => {
+      this.imgnews = ret.data.data.imgnews
+      this.textnews = ret.data.data.textnews
+    }, error => {
+      this.imgnews = []
+      this.textnews = []
+      console.log(error)
+      alert('服务器忙')
+    })
+  },
   data () {
     return {
       left: 'left',
@@ -205,58 +220,8 @@ export default {
           url: ''
         }
       ],
-      imgnews: [
-        {
-          title: '安徽歙县古城“非遗”夜市再现“徽府盛景”',
-          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/745182300a228b634d993bc3b834b806.jpeg?x-bce-process=image/crop,x_0,y_0,w_930,h_506',
-          url: 'https://3w.huanqiu.com/a/58ef16/40N35LsSG8S?agt=8'
-        },
-        {
-          title: '实拍英国波特利文海浪拍岸',
-          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/0e69174619eb516c62cee299ea4f3a05.jpeg?x-bce-process=image/crop,x_0,y_0,w_2048,h_1114',
-          url: 'https://3w.huanqiu.com/a/0d8d78/40N367RpL7e?agt=8'
-        },
-        {
-          title: '安徽歙县古城“非遗”夜市再现“徽府盛景”',
-          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/745182300a228b634d993bc3b834b806.jpeg?x-bce-process=image/crop,x_0,y_0,w_930,h_506',
-          url: 'https://3w.huanqiu.com/a/58ef16/40N35LsSG8S?agt=8'
-        },
-        {
-          title: '实拍英国波特利文海浪拍岸',
-          img: 'http://contentcms-bj.cdn.bcebos.com/cmspic/0e69174619eb516c62cee299ea4f3a05.jpeg?x-bce-process=image/crop,x_0,y_0,w_2048,h_1114',
-          url: 'https://3w.huanqiu.com/a/0d8d78/40N367RpL7e?agt=8'
-        }
-      ],
-      textnews: [
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        },
-        {
-          title: '《为了和平》第五集：万众一心',
-          url: 'https://news.cctv.com/2020/10/20/ARTIm0eaup9utd1jFTXMKQFb201020.shtml'
-        }
-      ]
+      imgnews: [],
+      textnews: []
     }
   }
 }
@@ -480,5 +445,13 @@ export default {
 
 .el-carousel__item:nth-child(2n+1) {
   background-color: grey;
+}
+
+.login_btn {
+  color: black
+}
+
+.login_btn:visited {
+  color: black
 }
 </style>

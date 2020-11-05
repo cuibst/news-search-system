@@ -2,6 +2,8 @@
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-locals
 # pylint: disable=no-value-for-parameter
+# pylint: disable=invalid-name
+# pylint: disable=unused-variable
 '''
 views for backend
 '''
@@ -97,9 +99,6 @@ def login(request):
         name = data['username']
         password = data['password']
         user = User.objects.filter(name=name).first()
-
-        token = create_token(name)
-
         if not user:
             return JsonResponse({
                 'code': 401,
@@ -107,8 +106,23 @@ def login(request):
                 'token': 'WA1'
             }, status=200)
         password0 = user.password
-        print(password0, password)
         if password0 == password:
+            token = create_token(user.id)
+            flag = False
+            with open('./backend/token.json', 'r', encoding='utf-8') as f:
+                tmp_dict = json.load(f)
+                for key, value in tmp_dict.items():
+                    if key == token:
+                        flag = True
+                        break
+            if flag is False:
+                tmp_dict[token] = user.id
+            f.close()
+            print(tmp_dict)
+            with open('./backend/token.json', 'w') as f:
+                data = json.dumps(tmp_dict, ensure_ascii=False)
+                f.write(data)
+                f.close()
             return JsonResponse({
                 'code': 200,
                 'data': 'login successfully',

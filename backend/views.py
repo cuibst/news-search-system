@@ -108,19 +108,14 @@ def login(request):
                 'token': 'WA1'
             }, status=200)
         password0 = user.password
+
         if password0 == password:
             token = create_token(user.id)
             flag = False
             with open('./backend/token.json', 'r', encoding='utf-8') as f:
                 tmp_dict = json.load(f)
-                for key, value in tmp_dict.items():
-                    if user.id == value:
-                        flag = True
-                        break
-            if flag is False:
-                tmp_dict[token] = user.id
+            tmp_dict[user.id] = token
             f.close()
-            print(tmp_dict)
             with open('./backend/token.json', 'w') as f:
                 data = json.dumps(tmp_dict, ensure_ascii=False)
                 f.write(data)
@@ -272,14 +267,13 @@ def user_change(request):
         with open('./backend/token.json', 'r', encoding='utf-8') as f:
             tmp_dict = json.load(f)
             for key, value in tmp_dict.items():
-                if key == token:
-                    user_id = value
+                if token == value:
+                    user_id = key
         if user_id == -1:
             return JsonResponse({
                 'code': 403,
                 'info': "invalid token"
             }, status=200)
-        print(899)
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
 
@@ -289,10 +283,13 @@ def user_change(request):
             }, status=200)
         user.email = data['email']
         user.phone_number = data['phonenumber']
+        print(user.name)
         if data['password'] != '':
             user.password = data['password']
         if user.name == data['username']:
-            pass
+            return JsonResponse({
+                'code': 200
+            }, status=200)
         else:
             tmp_user = User.objects.filter(name=data['username'])
             if not tmp_user:
@@ -316,8 +313,8 @@ def user(request):
     with open('./backend/token.json', 'r', encoding='utf-8') as f:
         tmp_dict = json.load(f)
         for key, value in tmp_dict.items():
-            if key == token:
-                user_id = value
+            if value == token:
+                user_id = key
                 break
     if user_id == -1:
         return JsonResponse({
@@ -326,7 +323,10 @@ def user(request):
         }, status=200)
     user = User.objects.filter(id=user_id).first()
     return JsonResponse({
-        'username': user.name,
-        'phonenumber': user.phone_number,
-        'email': user.email
+        'user': {
+            'username': user.name,
+            'phonenumber': user.phone_number,
+            'email': user.email
+        }
     })
+

@@ -166,96 +166,80 @@ def upload_news(request):
     '''
         upload news
     '''
-    print('in')
-    data = json.loads(request.body)
-    if 'source' in data and data['source'] != '':
-        source = data['source']
-    else:
-        source = 'unknown source'
-    if 'news_url' in data and data['news_url'] != '':
-        news_url = data['news_url']
-    else:
-        news_url = 'unknown news_url'
-    if 'category' in data and data['category'] != '':
-        category = data['category']
-    else:
-        category = 'unknown category'
-    if 'media' in data and data['media'] != '':
-        media = data['media']
-    else:
-        media = 'unknown media'
-    if 'tags' in data and data['tags'] != '':
-        tags = data['tags']
-    else:
-        tags = 'unknown tags'
-    if 'title' in data and data['title'] != '':
-        title = data['title']
-    else:
-        title = 'unknown title'
-    if 'news_id' in data and data['news_id'] != '':
-        news_id = data['news_id']
-    else:
-        news_id = 'unknown news_id'
-    if 'pub_date' in data and data['pub_date'] != '':
-        pub_date = data['pub_date']
-    else:
-        pub_date = 'unknown pub_date'
-    if 'content' in data and data['content'] != '':
-        content = data['content']
-    else:
-        content = 'empty'
-    if 'summary' in data and data['summary'] != '':
-        summary = data['summary']
-    else:
-        summary = 'empty'
-    if 'img' in data and data['img'] != '':
-        img = data['img']
-    else:
-        img = 'empty'
-    news = News.objects.filter(news_id=news_id).first()
-    if not news:
-        news = News(source=source, news_url=news_url, category=category,
-                    media=media, tags=tags, title=title, news_id=news_id,
-                    img=img, pub_date=pub_date, content=content, summary=summary)
-        news.full_clean()
-        print('ok')
-        news.save()
-        if 'test' in data:
-            return JsonResponse({
-                'info': 'preserve successfully',
-                'code': 200
-            }, status=200)
-        tmp_dict = {"news_id": news_id}
-        url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
-
-        ret = requests.post(url, data=json.dumps(tmp_dict),
-                            headers={'Content-Type': 'application/json'})
-        dic = ret.json()
-        print(dic['data'])
-        if dic['code'] == 200:
-            return JsonResponse({
-                'info': 'preserve successfully',
-                'code': 200
-            }, status=200)
-        if dic['data'] == 'Invalid news id':
-            news.delete()
-            return JsonResponse({
-                'info': 'Invalid news id',
-                'code': 401
-            }, status=401)
-        if dic['data'] == 'No news found with given id':
-            news.delete()
-            return JsonResponse({
-                'info': 'no such news',
-                'code': 401
-            }, status=401)
-        if dic['data'] == 'News Already Exists' + news_id:
-            news.delete()
-            return JsonResponse({
-                'info': 'repetitive news',
-                'code': 401
-            }, status=200)
+    news_list = json.loads(request.body)['data']
+    total_news = len(news_list)
+    total_success = 0
+    total_repetitive = 0
+    total_error = 0
+    error_list = []
+    key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media',
+                'tags', 'pub_date', 'summary', 'img', 'content']
+    news_id_dict = {'news_id': []}
+    for data in news_list:
+        error = False
+        for key in key_list:
+            if key in data:
+                if data[key] == '':
+                    data[key] = 'unknown ' + key
+            else:
+                error = True
+                data[key] = 'unknown ' + key
+        if error:
+            total_error += 1
+            error_list.append(data['news_id'])
+        news = News.objects.filter(news_id=data['news_id']).first()
+        if not news:
+            news_id_dict['news_id'].append(data['news_id'])
+            news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
+                        media=data['media'], tags=data['tags'], title=data['title'],
+                        news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
+                        content=str(data['content']), summary=data['summary'])
+            news.full_clean()
+            news.save()
+            total_success += 1
+        else:
+            total_repetitive += 1
+    lucene_url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
+    requests.post(url=lucene_url, json=news_id_dict,
+                  headers={'Content-Type': 'application/json'})
     return JsonResponse({
-        'info': 'repetitive news',
-        'code': 401
+        'info': 'Preserve process finished.',
+        'code': 200,
+        'total_news': total_news,
+        'total_success': total_success,
+        'total_repetitive': total_repetitive,
+        'total_error': total_error,
+        'error_list': error_list
     }, status=200)
+
+@csrf_exempt
+def get_news(request):
+    '''
+    Provide an api to return imgnews and textnews for homepage.
+    Note that this is an test version!
+    '''
+    news_list = []
+    for news in News.objects.all()[:25]:
+        data = {
+            'news_id': news.news_id,
+            'news_url': news.news_url,
+            'title': news.title,
+            'source': news.source,
+            'category': news.category,
+            'media': news.media,
+            'tags': news.tags,
+            'pub_date': news.pub_date,
+            'summary': news.summary,
+            'img': news.img,
+            'content': news.content
+        }
+        news_list.append(data)
+    response_data = {
+        'data': {
+            'imgnews': news_list[:5],
+            'textnews': news_list[5:]
+        }
+    }
+    return JsonResponse(response_data, json_dumps_params={
+        'ensure_ascii': False
+    }, status=200, charset='utf-8')

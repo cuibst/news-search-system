@@ -108,51 +108,32 @@ class TestViews(TestCase):
         '''
             Test /api/uploadnews/
         '''
-        news = News(source='1', news_url='2', category='3',\
-                    media='7', tags='6', title='5', news_id='4',\
-                    pub_date='8', content='9', summary='10')
+        news = News(source='1', news_url='2', category='3',
+                    media='7', tags='6', title='5', news_id='4',
+                    pub_date='8', content='9', summary='10', img='11')
         news.save()
         response = self.client.post('/api/uploadnews/', data={
-            "source": "1",
-            "news_url": "d",
-            "category": "a",
-            "media": "11",
-            "tags": "12",
-            "title": "112",
-            "news_id": "4",
-            "pub_date": "255",
-            "content": "2333",
-            "summary": "9080",
-            "img": "9878",
-            "test": True
+            'data': [
+                {
+                    "source": "1",
+                    "news_url": "d",
+                    "category": "a",
+                    "media": "11",
+                    "tags": "12",
+                    "title": "112",
+                    "news_id": "4",
+                    "pub_date": "255",
+                    "content": "2333",
+                    "summary": "9080",
+                    "img": "9878",
+                    "test": True
+                }
+            ]
         }, content_type='application/json')
 
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertEqual(data['code'], 401)
-        self.assertEqual(data['info'], 'repetitive news')
-
-        response = self.client.post('/api/uploadnews/', data={
-            "source": "1",
-            "news_url": "d",
-            "category": "a",
-            "media": "11",
-            "tags": "12",
-            "title": "112",
-            "news_id": "45",
-            "pub_date": "255",
-            "content": "2333",
-            "summary": "908",
-            "img": "98009",
-            "test": True
-        }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['code'], 200)
-        self.assertEqual(data['info'], 'preserve successfully')
-        # dic1 = {'id': "45"}
-        # dic2 = {'id': "4"}
-        # requests.post("https://news-search-lucene-rzotgorz.app.secoder.net/index/delete", data=json.dumps(dic1),
-        #               header={'Content-Type': 'application/json'})
-        # requests.post("https://news-search-lucene-rzotgorz.app.secoder.net/index/delete", data=json.dumps(dic2),
-        #               header={'Content-Type': 'application/json'})
+        self.assertEqual(data['info'], 'Preserve process finished.')
+        self.assertEqual(data['total_repetitive'], 1)
+        news.delete()

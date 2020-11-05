@@ -96,8 +96,8 @@ def upload_news(request):
     '''
         upload news
     '''
-    news_pack = json.loads(request.body)
-    total_news = len(news_pack.keys())
+    news_list = json.loads(request.body)['data']
+    total_news = len(news_list)
     total_success = 0
     total_repetitive = 0
     total_error = 0
@@ -105,8 +105,7 @@ def upload_news(request):
     key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media',
                 'tags', 'pub_date', 'summary', 'img', 'content']
     news_id_dict = {'news_id': []}
-    for news_key in news_pack:
-        data = news_pack[news_key]
+    for data in news_list:
         error = False
         for key in key_list:
             if key in data:
@@ -123,7 +122,7 @@ def upload_news(request):
             news_id_dict['news_id'].append(data['news_id'])
             news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
                         media=data['media'], tags=data['tags'], title=data['title'],
-                        news_id=['news_id'], img=data['img'], pub_date=data['pub_date'],
+                        news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
                         content=str(data['content']), summary=data['summary'])
             news.full_clean()
             news.save()
@@ -165,9 +164,12 @@ def get_news(request):
             'content': news.content
         }
         news_list.append(data)
-    return JsonResponse({
+    response_data = {
         'data': {
             'imgnews': news_list[:5],
             'textnews': news_list[5:]
         }
-    }, status=200)
+    }
+    return JsonResponse(response_data, json_dumps_params={
+        'ensure_ascii': False
+    }, status=200, charset='utf-8')

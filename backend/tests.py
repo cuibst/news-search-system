@@ -113,21 +113,22 @@ class TestViews(TestCase):
                     pub_date='8', content='9', summary='10', img='11')
         news.save()
         response = self.client.post('/api/uploadnews/', data={
-            0: {
-                "source": "1",
-                "news_url": "d",
-                "category": "a",
-                "media": "11",
-                "tags": "12",
-                "title": "112",
-                "news_id": "4",
-                "pub_date": "255",
-                "content": "2333",
-                "summary": "9080",
-                "img": "9878",
-                "test": True
-            }
-
+            'data': [
+                {
+                    "source": "1",
+                    "news_url": "d",
+                    "category": "a",
+                    "media": "11",
+                    "tags": "12",
+                    "title": "112",
+                    "news_id": "4",
+                    "pub_date": "255",
+                    "content": "2333",
+                    "summary": "9080",
+                    "img": "9878",
+                    "test": True
+                }
+            ]
         }, content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
@@ -135,3 +136,4 @@ class TestViews(TestCase):
         self.assertEqual(data['code'], 200)
         self.assertEqual(data['info'], 'Preserve process finished.')
         self.assertEqual(data['total_repetitive'], 1)
+        news.delete()

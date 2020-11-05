@@ -26,6 +26,7 @@ class NewsPipeline:
     news_capacity = 10
     upload_news_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
 
+
     def open_spider(self, spider):
         '''
         Initialize the crawler

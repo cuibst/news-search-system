@@ -4,82 +4,76 @@ The crawler for news.qq.com
 '''
 import re
 import json
+from datetime import datetime, timedelta
+from urllib import parse
 from pathlib import Path
 from scrapy.spiders import Request, Spider
 from ..items import NewsItem
+from .lib.itemparser import cat_gen
 
+def parse_item(response):
+    '''
+    input response from nes url, yield news item
+    :param response:
+    :return:
+    '''
+    # 从新闻页爬取信息，存入data/qq/news_info/文件夹
+    url = response.request.url
+    script_list = response.xpath('/html/head//script/text()').extract()
+    news_brief_info = None
+    for script in script_list:
+        if script.find('window.DATA = ') >= 0:
+            news_brief_info = json.loads(script.lstrip('window.DATA = '))
+            break
+    item = NewsItem()
+    try:
+        item['title'] = news_brief_info['title']
+        cat_dic = {
+            'politics': ['politics', 'law'],
+            'finance': ['finance', 'lottery'],
+            'tech': ['tech', 'science', 'auto', 'digital'],
+            'military': ['mil'],
+            'social': ['social', 'society', 'cul'],
+            'edu': ['edu', 'history'],
+            'sports': ['sports'],
+            'ent': ['ent', 'game', 'funny', 'comic'],
+            'life': ['life', 'photography', 'baby', 'pet',
+                     'lifestyle', 'weather', 'travel', 'food', 'health'],
+            'house': ['house', 'houseliving']
+        }
+        item['category'] = cat_gen(news_brief_info['catalog1'], cat_dic)
+        item['media'] = news_brief_info['media']
+        item['pub_date'] = news_brief_info['pubtime']
+        item['tags'] = news_brief_info['tags']
+        item['news_id'] = 'qq_' + news_brief_info['cms_id']
+        item['source'] = 'qq'
+        item['news_url'] = url
+        # summary
+        summary = response.xpath('//meta[@name="description"]/@content').extract()
+        if summary:
+            item['summary'] = summary[0].strip()
+        else:
+            item['summary'] = ''
+        item['content'] = []
+        img_src = ''
+        for one_p in response.xpath('//p[@class="one-p"]'):
+            img = one_p.xpath('.//img/@src').extract()
+            if len(img) > 0:
+                if img_src == '':
+                    img_src = parse.urljoin(url, img[0])
+            item['content'] += [text for text in one_p.xpath('./text()').extract() if text.strip() != '']
+        item['img'] = img_src
+        yield item
+    except (KeyError, ValueError, TypeError):
+        # 删除了记录错误url的功能
+        return
 
 
 class QqIncSpider(Spider):
     '''
-    The increment spider for news.qq.com
-    '''
-    name = "qq_inc"
-    allowed_domains = ['news.qq.com', 'new.qq.com']
-    start_urls = ['https://www.qq.com/']
-    total_error = 0
-    current_dir_path = Path(__file__).parent
-
-    #browser = webdriver.Chrome(executable_path='chromedriver.exe')
-    #browser.set_page_load_timeout(10)
-
-    def parse(self, response, **kwargs):
-        '''
-        parse the url from the response
-        '''
-        href_list = response.xpath('//a/@href').extract()
-        pattern = '.+/omn/2020[0-9]{4}/(2020[0-9]{4}[A-za-z0-9]+).*'
-        for href in href_list:
-            if re.match(pattern, href) is not None:
-                yield Request(href, callback=self.parse_item)
-
-
-    def parse_item(self, response):
-        '''
-        parse the response page and save it into data/news_info
-        '''
-        # 从新闻页爬取信息，存入data/news_info/文件夹
-        current_url = response.request.url
-        script_list = response.xpath('/html/head//script/text()').extract()
-        news_brief_info = None
-        for script in script_list:
-            if script.find('window.DATA = ') >= 0:
-                news_brief_info = json.loads(script.lstrip('window.DATA = '))
-                break
-        item = NewsItem()
-        try:
-            item['title'] = news_brief_info['title']
-            item['category'] = news_brief_info['catalog1']
-            item['media'] = news_brief_info['media']
-            item['pub_date'] = news_brief_info['pubtime']
-            item['tags'] = news_brief_info['tags']
-            item['news_id'] = news_brief_info['cms_id']
-            item['source'] = self.name.split('_')[0]
-            item['news_url'] = current_url
-            item['content'] = []
-            for one_p in response.xpath('//p[@class="one-p"]'):
-                img = one_p.xpath('.//img/@src').extract()
-                if len(img) != 0:
-                    item['content'] += ['img_' + src for src in img]
-                else:
-                    item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
-            yield item
-        except (KeyError, TypeError, ValueError):
-            # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
-            new_dir = self.current_dir_path / Path('data/error/')
-            new_dir.mkdir(parents=True, exist_ok=True)
-            error_f = open(new_dir / Path('error_url.txt'), 'a', encoding='utf-8')
-            error_f.write(str(self.total_error) + '_' + current_url + '\n')
-            error_f.close()
-            self.total_error += 1
-
-
-
-class QqNewsInfoSpider(Spider):
-    '''
     The spider for qq news info
     '''
-    name = 'qq_news_info'
+    name = 'qq_inc'
     allowed_domains = ['i.news.qq.com', 'new.qq.com']
     current_dir_path = Path(__file__).parent
     # 以下是腾讯新闻的不同新闻标签
@@ -121,43 +115,42 @@ class QqNewsInfoSpider(Spider):
                 file = open(new_dir / Path(dic['cms_id'] + '.json'), 'w', encoding='utf-8')
                 file.write(json.dumps(dic, indent=4, ensure_ascii=False))
                 file.close()
-                yield Request(dic['url'], callback=self.parse_item)
+                yield Request(dic['url'], callback=parse_item)
 
-    def parse_item(self, response):
+
+class QqFullSpider(Spider):
+    '''
+    This spider generate all possible news urls and try to crawl them
+    '''
+    name = 'qq_full'
+    allowed_domains = ['*']
+    # 爬取2020全年10月28日及以前的新闻
+    start_date = datetime(2020, 10, 28)
+    end_date = datetime(2019, 12, 31)
+    # https://new.qq.com/omn/20201020/20201020A0G0KM00.html
+
+    def start_requests(self):
         '''
-        get the news detail from the news page
+        Generate all possible news urls within the date range.
         '''
-        # 从新闻页爬取信息，存入data/qq/news_info/文件夹
-        current_url = response.request.url
-        script_list = response.xpath('/html/head//script/text()').extract()
-        news_brief_info = None
-        for script in script_list:
-            if script.find('window.DATA = ') >= 0:
-                news_brief_info = json.loads(script.lstrip('window.DATA = '))
-                break
-        item = NewsItem()
-        try:
-            item['title'] = news_brief_info['title']
-            item['category'] = news_brief_info['catalog1']
-            item['media'] = news_brief_info['media']
-            item['pub_date'] = news_brief_info['pubtime']
-            item['tags'] = news_brief_info['tags']
-            item['news_id'] = news_brief_info['cms_id']
-            item['source'] = self.name.split('_')[0]
-            item['news_url'] = current_url
-            item['content'] = []
-            for one_p in response.xpath('//p[@class="one-p"]'):
-                img = one_p.xpath('.//img/@src').extract()
-                if len(img) != 0:
-                    item['content'] += ['img_' + src for src in img]
-                else:
-                    item['content'] += ['text_' + text for text in one_p.xpath('./text()').extract()]
-            yield item
-        except (KeyError, ValueError, TypeError):
-            # 如果出现错误，将出现错误的url追加存入error/error_url.txt文件
-            new_dir = self.current_dir_path / Path('data/error/')
-            new_dir.mkdir(parents=True, exist_ok=True)
-            error_f = open(new_dir / Path('error_url.txt'), 'a', encoding='utf-8')
-            error_f.write(str(self.total_error) + '_' + current_url + '\n')
-            error_f.close()
-            self.total_error += 1
+        date = self.start_date
+        alphabet = [chr(i) for i in range(48, 58)] + [chr(i) for i in range(65, 91)]
+        while date != self.end_date:
+            # TO DO
+            year = str(date.year)
+            month = str(date.month).rjust(2, '0')
+            day = str(date.day).rjust(2, '0')
+            date_string = year + month + day
+            iden_list = [0, 0, 0, 0]
+            for iden in range(20*36**3):
+                for i in range(4):
+                    iden_list[3 - i] = iden % 36
+                    iden //= 36
+                iden_string = ''.join([alphabet[iden_list[i]] for i in range(4)])
+                target_url = 'https://new.qq.com/omn/' + date_string + '/' + date_string + \
+                    'A0' + iden_string + '00.html'
+                yield Request(url=target_url, callback=parse_item)
+            date = date - timedelta(days=1)
+
+    def parse(self, response, **kwargs):
+        pass

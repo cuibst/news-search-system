@@ -23,7 +23,7 @@ def parse_item(response):
     news_brief_info = None
     for script in script_list:
         if script.find('window.DATA = ') >= 0:
-            news_brief_info = json.loads(script.lstrip('window.DATA = '))
+            news_brief_info = json.loads(script.strip().lstrip('window.DATA = '))
             break
     item = NewsItem()
     try:

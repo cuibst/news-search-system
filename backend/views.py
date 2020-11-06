@@ -23,7 +23,7 @@ from .models import User, News
 HEADER = {'typ': 'JWP', 'alg': 'default'}
 KEY = "rzotgorz"
 SALT = 'www.lanou3g.com'
-TIME_OUT = 60*60*2
+TIME_OUT = 60*30
 
 
 def encrypt(obj):
@@ -113,7 +113,10 @@ def login(request):
             token = create_token(user.id)
             with open('./backend/token.json', 'r', encoding='utf-8') as f:
                 tmp_dict = json.load(f)
-                tmp_dict[user.id] = token
+                print(tmp_dict)
+                print("________________________________________________________")
+                tmp_dict[str(user.id)] = (token, time.time())
+                print(tmp_dict)
                 f.close()
             with open('./backend/token.json', 'w') as f:
                 data = json.dumps(tmp_dict, ensure_ascii=False)
@@ -266,8 +269,13 @@ def user_change(request):
         with open('./backend/token.json', 'r', encoding='utf-8') as f:
             tmp_dict = json.load(f)
             for key, value in tmp_dict.items():
-                if token == value:
-                    user_id = key
+                if token == value[0]:
+                    if value[1]+TIME_OUT < time.time():
+                        return JsonResponse({
+                            'code': 403,
+                            'info': 'overdue token'
+                        }, status=200)
+                    user_id = int(key)
         if user_id == -1:
             return JsonResponse({
                 'code': 403,
@@ -311,8 +319,13 @@ def user(request):
     with open('./backend/token.json', 'r', encoding='utf-8') as f:
         tmp_dict = json.load(f)
         for key, value in tmp_dict.items():
-            if value == token:
-                user_id = key
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
                 break
     if user_id == -1:
         return JsonResponse({

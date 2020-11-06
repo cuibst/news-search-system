@@ -111,11 +111,10 @@ def login(request):
 
         if password0 == password:
             token = create_token(user.id)
-            flag = False
             with open('./backend/token.json', 'r', encoding='utf-8') as f:
                 tmp_dict = json.load(f)
-            tmp_dict[user.id] = token
-            f.close()
+                tmp_dict[user.id] = token
+                f.close()
             with open('./backend/token.json', 'w') as f:
                 data = json.dumps(tmp_dict, ensure_ascii=False)
                 f.write(data)
@@ -290,17 +289,16 @@ def user_change(request):
             return JsonResponse({
                 'code': 200
             }, status=200)
-        else:
-            tmp_user = User.objects.filter(name=data['username'])
-            if not tmp_user:
-                user.name = data['username']
-                user.save()
-                return JsonResponse({
-                    'code': 200
-                }, status=200)
+        tmp_user = User.objects.filter(name=data['username'])
+        if not tmp_user:
+            user.name = data['username']
+            user.save()
             return JsonResponse({
-                'code': 401
+                'code': 200
             }, status=200)
+        return JsonResponse({
+            'code': 401
+        }, status=200)
 
 
 @csrf_exempt
@@ -329,4 +327,3 @@ def user(request):
             'email': user.email
         }
     })
-

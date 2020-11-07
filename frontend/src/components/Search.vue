@@ -25,10 +25,10 @@
             <div class="box">
               <h4 class="titles" v-html="item.title" @click="goto(item.news_url)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
-              <el-col :span="6" v-if="item.img!='empty'">
-                <img :src="item.img" class="news_img">
+              <el-col :span="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
+                <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
               </el-col>
-              <el-col :span="item.img==''?24:18" class="news_info">
+              <el-col :span="(item.img=='empty'||item.img=='unknown img')?25:19" class="news_info">
                 <div>
                   <span class="srouces">{{item.media}}</span>
                   <span class="publish_time">{{item.pub_date}}</span>
@@ -64,11 +64,13 @@ export default {
   },
   mounted () {
     this.keyword = this.$route.params.keyword
+    document.title = this.$route.meta.title + this.keyword
     this.KeyChange(this.keyword)
   },
 
   watch: {
     '$route' (to, from) {
+      document.title = to.meta.title + to.params.keyword
       this.KeyChange(to.params.keyword)
     }
   },
@@ -83,11 +85,11 @@ export default {
             query: newkey
           }
         }).then(ret => {
-        console.log(this.infolist)
         this.infolist = ret.data.infolist
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
+        console.log(this.infolist)
       }, error => {
         console.log(error)
         this.infolist = []
@@ -150,9 +152,15 @@ export default {
   cursor: pointer;
 }
 .news_img{
-  border-radius: 8px;
-  height: 100%;
-  width: 100%;
+  width:100%;
+  height:0;
+  padding-bottom: 80%;
+  overflow:hidden;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size:cover;
+  -moz-background-size:cover;
+  background-size:cover;
 }
 .news_info{
   padding:0 10px;

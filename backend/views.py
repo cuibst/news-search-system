@@ -1,4 +1,3 @@
-# pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-locals
 # pylint: disable=no-value-for-parameter
@@ -21,64 +20,26 @@ from .models import User, News
 
 # Create your views here.
 HEADER = {'typ': 'JWP', 'alg': 'default'}
-KEY = "rzotgorz"
+KEY = "myy"
 SALT = 'www.lanou3g.com'
 TIME_OUT = 60*30
 
 
-def encrypt(obj):
-    '''
-    encrypt the user
-    '''
-    value = signing.dumps(obj, key=KEY, salt=SALT)
-    value = signing.b64_encode(value.encode()).decode()
-    return value
-
-
-def decrypt(src):
-    '''
-    decrypt the token
-    '''
-    src = signing.b64_decode(src.encode()).decode()
-    raw = signing.loads(src, key=KEY, salt=SALT)
-    print(type(raw))
-    return raw
-
-
-def create_token(username):
+def create_token(userid):
     '''
     generate token information
     '''
-
-    header = encrypt(HEADER)
-
-    payload = {'username': username, 'iat': time.time()}
-    payload = encrypt(payload)
-
+    header = signing.dumps(HEADER, key=KEY, salt=SALT)
+    header = signing.b64_encode(header.encode()).decode()
+    payload = {'userid': userid, 'iat': time.time()}
+    payload = signing.dumps(payload, key=KEY, salt=SALT)
+    payload = signing.b64_encode(payload.encode()).decode()
     md5 = hashlib.md5()
-
     md5.update(("%s.%s" % (header, payload)).encode())
     signature = md5.hexdigest()
-
     token = "%s.%s.%s" % (header, payload, signature)
     return token
 
-
-def get_payload(token):
-    '''
-    get the token of payload
-    '''
-    payload = str(token).split('.')[1]
-    payload = decrypt(payload)
-    return payload
-
-
-def get_username(token):
-    '''
-    get the token of username
-    '''
-    payload = get_payload(token)
-    return payload['username']
 
 def index(request):
     '''

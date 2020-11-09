@@ -245,7 +245,7 @@ def user_change(request):
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
 
-        if data['odpasswd'] != user.password:
+        if data['oldpasswd'] != user.password:
             return JsonResponse({
                 'code': 402
             }, status=200)

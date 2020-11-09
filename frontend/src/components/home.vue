@@ -46,7 +46,7 @@
             @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
             v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
-              <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
+              <i class="el-icon-s-home" v-if="index==0"></i>{{item}}</div>
           </div>
         </el-col>
       </el-row>
@@ -198,7 +198,12 @@ export default {
   },
   created () {
     this.login = typeof (this.$store.state.token) !== 'undefined'
-    axios.get('/api/getnews/').then(ret => {
+    axios.get('/api/getnews/',
+      {
+        params: {
+          type: 0
+        }
+      }).then(ret => {
       this.imgnews = ret.data.data.imgnews
       this.textnews = ret.data.data.textnews
     }, error => {
@@ -207,6 +212,25 @@ export default {
       console.log(error)
       alert('服务器忙')
     })
+  },
+  watch: {
+    // 当频道改变时，更改其中的信息
+    selactive (to, from) {
+      axios.get('/api/getnews/',
+        {
+          params: {
+            type: 0
+          }
+        }).then(ret => {
+        this.imgnews = ret.data.data.imgnews
+        this.textnews = ret.data.data.textnews
+      }, error => {
+        this.imgnews = []
+        this.textnews = []
+        console.log(error)
+        alert('服务器忙')
+      })
+    }
   },
   data () {
     return {
@@ -217,28 +241,7 @@ export default {
       headindex_active: 1,
       activenav: 0,
       selactive: 0,
-      navlist: [
-        {
-          name: '要闻',
-          url: ''
-        },
-        {
-          name: '娱乐',
-          url: ''
-        },
-        {
-          name: '财经',
-          url: ''
-        },
-        {
-          name: '体育',
-          url: ''
-        },
-        {
-          name: '时尚',
-          url: ''
-        }
-      ],
+      navlist: ['综合', '要闻', '娱乐', '财经', '体育', '时尚'],
       imgnews: [],
       textnews: []
     }

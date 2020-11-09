@@ -75,7 +75,11 @@ export default {
     }
   },
   methods: {
-    goto (url) {
+    goto (url, type) {
+      axios.post('/api/views/',
+        {
+          news_type: type
+        })
       window.open(url, '_blank')
     },
     KeyChange: async function (newkey) {
@@ -89,7 +93,7 @@ export default {
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
-        console.log(this.infolist)
+        // console.log(this.infolist)
       }, error => {
         console.log(error)
         this.infolist = []

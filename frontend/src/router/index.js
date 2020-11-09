@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Sample from '../components/Sample.vue'
+import Home from '../components/home.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import SearchResult from '../views/SearchResult.vue'
@@ -12,7 +13,17 @@ if (sessionStorage.getItem('token')) {
   store.commit('set_token', sessionStorage.getItem('token'))
 }
 const routes = [
-  { path: '/', redirect: '/login' },
+  {
+    path: '/home',
+    component: Home,
+    meta: { requiredAuth: false }
+  },
+  { path: '/', redirect: '/home' },
+  {
+    path: '/userhome',
+    component: Home,
+    meta: { requiredAuth: true }
+  },
   {
     path: '/sample',
     component: Sample,

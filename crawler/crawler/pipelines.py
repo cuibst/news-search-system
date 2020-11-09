@@ -23,6 +23,9 @@ class NewsPipeline:
     dir_path = None
     current_dir_path = Path(__file__).parent
     news_list = []
+    news_capacity = 10
+    upload_news_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
+
 
     def open_spider(self, spider):
         '''
@@ -51,11 +54,10 @@ class NewsPipeline:
             file.write(content)
             file.close()
             # 向django后端发送post请求添加新闻
-            backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
-            if len(self.news_list) >= 100:
-                requests.post(url=backend_url, json={
+            if len(self.news_list) >= self.news_capacity:
+                requests.post(url=self.upload_news_url, json={
                     'data': self.news_list
-                })
+                }, headers={'Content-Type': 'application/json'}, timeout=100)
                 self.news_list.clear()
             self.news_list.append(dict(item))
             return item
@@ -65,8 +67,7 @@ class NewsPipeline:
         '''
         post remain news in self.news_pack
         '''
-        print(spider.name, 'closed')
-        backend_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
-        requests.post(url=backend_url, json={
+        print(spider.name, 'closed.')
+        requests.post(url=self.upload_news_url, json={
             'data': self.news_list
-        })
+        }, headers={'Content-Type': 'application/json'}, timeout=100)

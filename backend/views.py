@@ -12,6 +12,7 @@ import json
 import time
 import hashlib
 import requests
+from datetime import datetime
 from django.core import signing
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
@@ -141,15 +142,24 @@ def upload_news(request):
         upload news
     '''
     news_list = json.loads(request.body)['data']
+    origin_news_id_list = [news['news_id'] for news in news_list]
     total_news = len(news_list)
     total_success = 0
-    total_repetitive = 0
     total_error = 0
     error_list = []
     key_list = ['news_id', 'news_url', 'title', 'source', 'category', 'media',
-                'tags', 'pub_date', 'summary', 'img', 'content']
+                'tags', 'pub_date', 'summary', 'img']
     news_id_dict = {'news_id': []}
+    print("### Start to filter valid news:", datetime.now())
+    rep_news_list = News.objects.values('news_id').filter(news_id__in=origin_news_id_list)
+    rep_news_id_list = [news['news_id'] for news in rep_news_list]
+    total_repetitive = len(rep_news_id_list)
     for data in news_list:
+        if data['news_id'] in rep_news_id_list:
+            continue
+        content = 'unknown content'
+        if data['content']:
+            content = ''.join(data['content'])
         error = False
         for key in key_list:
             if key in data:
@@ -161,21 +171,26 @@ def upload_news(request):
         if error:
             total_error += 1
             error_list.append(data['news_id'])
-        news = News.objects.filter(news_id=data['news_id']).first()
-        if not news:
-            news_id_dict['news_id'].append(data['news_id'])
-            news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
-                        media=data['media'], tags=data['tags'], title=data['title'],
-                        news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
-                        content=str(data['content']), summary=data['summary'])
-            news.full_clean()
-            news.save()
-            total_success += 1
-        else:
-            total_repetitive += 1
+        news_id_dict['news_id'].append(data['news_id'])
+        news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
+                    media=data['media'], tags=data['tags'], title=data['title'],
+                    news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
+                    content=str(content), summary=data['summary'])
+        news.full_clean()
+        news.save()
+        total_success += 1
+    print("### Valid news found:", datetime.now())
+    print("### Start to send request to lucene:", datetime.now())
     lucene_url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"
     requests.post(url=lucene_url, json=news_id_dict,
-                  headers={'Content-Type': 'application/json'})
+                  headers={'Content-Type': 'application/json'}, timeout=100)
+    print("### Lucene response received:", datetime.now())
+    print("### Total news:", total_news)
+    print("### Total success:", total_success)
+    print("### Total repetitive:", total_repetitive)
+    print("### Total error:", total_error)
+    if total_error >= 0:
+        print("### Error list:", error_list)
     return JsonResponse({
         'info': 'Preserve process finished.',
         'code': 200,

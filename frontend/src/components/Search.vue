@@ -41,8 +41,10 @@
           </el-col>
         </el-col>
       </el-row>
-      <el-pagination background layout="prev, pager, next" :page-count="pages" @current-change="handleCurrent" :current-page.sync="currentpage">
-      </el-pagination>
+      <div class="paginator">
+        <el-pagination background layout="prev, pager, next" :page-count="pages" @current-change="handleCurrent" :current-page.sync="currentpage">
+        </el-pagination>
+      </div>
     </div>
 </div>
 </template>
@@ -161,5 +163,8 @@ export default {
 }
 .active_nav{
   border-bottom: 2px solid #38f;
+}
+.paginator{
+  margin-left: 10%;
 }
 </style>

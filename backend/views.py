@@ -17,7 +17,7 @@ from django.core import signing
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, News
+from .models import User, News, Behavior
 
 # Create your views here.
 HEADER = {'typ': 'JWP', 'alg': 'default'}
@@ -316,3 +316,36 @@ def user(request):
             'email': user.email
         }
     })
+
+@csrf_exempt
+def add_behavior(request):
+    '''
+        add behavior to user
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    user = User.objects.filter(id=user_id).first()
+    data = json.loads(request.body)
+    content = data['content']
+    tmp_behavior = Behavior(user=user, content=content)
+    tmp_behavior.save()
+    return JsonResponse({
+        'code': 200,
+        'info': 'save successfully'
+    }, status=200)

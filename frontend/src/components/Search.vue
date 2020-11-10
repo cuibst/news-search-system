@@ -1,4 +1,23 @@
 <template>
+<div>
+<el-row style="padding:10px; border-bottom:1px solid #ccc;">
+  <el-col :span="6"  :offset="22" style="text-align:right;" v-show="!login">
+      <el-col :span="4"  class="head_nav_h"  >
+        <div class="head_btn" @click="tologin">登录</div>
+      </el-col>
+      <el-col :span="4"  class="head_nav_h"  >
+        <div class="head_btn" @click="toregister">注册</div>
+      </el-col>
+  </el-col>
+  <el-col :span="20" :offset="12" style="text-align:right;" v-if="login">
+    <el-col :span="10" class="head_nav_h" >
+      欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+    </el-col>
+    <el-col :span="4" class="head_nav_h" >
+      <div class="head_btn" @click="quituser">退出登录</div>
+    </el-col>
+  </el-col>
+</el-row>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
@@ -11,7 +30,7 @@
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
                 v-model = "keyword">
-                <el-button slot="append" class="btn_search" @click="search">click me</el-button>
+                <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
             </el-col>
           </div>
@@ -47,6 +66,7 @@
       </div>
     </div>
 </div>
+</div>
 </template>
 
 <script>
@@ -59,10 +79,12 @@ export default {
       keyword: '',
       infolist: [],
       currentpage: 1,
-      pages: 0
+      pages: 0,
+      login: false
     }
   },
   mounted () {
+    this.login = typeof (this.$store.state.token) !== 'undefined'
     this.keyword = this.$route.params.keyword
     document.title = this.$route.meta.title + this.keyword
     this.KeyChange(this.keyword)
@@ -120,6 +142,19 @@ export default {
         alert('服务器忙')
       })
       scrollTo(0, 0)
+    },
+    quituser () {
+      this.$store.commit('rm_token')
+      this.login = false
+    },
+    tologin () {
+      this.$router.push({
+        path: '/login',
+        query: { redirect: this.$route.path }
+      })
+    },
+    toregister () {
+      document.location = '#/register'
     }
   }
 }
@@ -178,5 +213,16 @@ export default {
 }
 .paginator{
   margin-left: 10%;
+}
+.login_btn {
+  color: black
+}
+.login_btn:visited {
+  color: black
+}
+.head_btn {
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

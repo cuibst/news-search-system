@@ -26,7 +26,7 @@ describe('homepage.vue', () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.reject(Error('Network Failure'))
     })
-    wrapper.vm.selactive = 1
+    wrapper.vm.activenav = 1
     await flushPromises()
     expect(JSON.stringify(wrapper.vm.textnews)).toBe('[]')
   })
@@ -118,7 +118,7 @@ describe('homepage.vue', () => {
     await flushPromises()
     wrapper.vm.quituser()
     expect(typeof wrapper.vm.$store.token).toBe('undefined')
-  }),
+  })
   it('renders correctly with these news data', async () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.resolve({
@@ -160,7 +160,7 @@ describe('homepage.vue', () => {
         name: 'SearchResult'
       }
     ]
-    const router = new VueRouter()
+    const router = new VueRouter(routes)
     const wrapper = shallowMount(home, {
       router,
       localVue

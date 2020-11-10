@@ -6,7 +6,9 @@ import mockAxios from '../__mocks__/axios'
 import flushPromises from 'flush-promises'
 import Vue from 'vue'
 import Pagination from 'element-ui'
+import store from '@/store'
 
+Vue.prototype.$store = store
 Vue.use(Pagination)
 
 describe('Search.vue', () => {
@@ -248,6 +250,7 @@ describe('Search.vue', () => {
     wrapper.vm.currentpage = 2
     wrapper.vm.handleCurrent(2)
     await flushPromises()
+    wrapper.vm.tologin()
   })
   it('handles net failure when change page', async () => {
     mockAxios.get.mockImplementationOnce(() => {
@@ -292,8 +295,10 @@ describe('Search.vue', () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.reject(Error('Net Failed'))
     })
+    wrapper.vm.quituser()
     wrapper.vm.currentpage = 2
     wrapper.vm.handleCurrent(2)
     await flushPromises()
+    wrapper.vm.toregister()
   })
 })

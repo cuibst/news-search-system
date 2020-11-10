@@ -215,11 +215,11 @@ export default {
   },
   watch: {
     // 当频道改变时，更改其中的信息
-    selactive (to, from) {
+    activenav (to, from) {
       axios.get('/api/getnews/',
         {
           params: {
-            type: 0
+            type: to
           }
         }).then(ret => {
         this.imgnews = ret.data.data.imgnews
@@ -473,5 +473,6 @@ export default {
 .quit_btn {
   color: black;
   text-decoration: underline;
+  cursor: pointer;
 }
 </style>

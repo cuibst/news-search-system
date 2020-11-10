@@ -23,7 +23,7 @@
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
-              <h4 class="titles" v-html="item.title" @click="goto(item.news_url)">{{item.title}}</h4>
+              <h4 class="titles" v-html="item.title" @click="goto(item.news_url, item.category)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
               <el-col :span="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
                 <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>

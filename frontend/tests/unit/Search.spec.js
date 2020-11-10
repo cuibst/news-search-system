@@ -93,7 +93,7 @@ describe('Search.vue', () => {
     })
     await flushPromises()
     expect(wrapper.find('.titles').text()).toMatch('蚌埠哪里可以做亲子鉴定大概多少钱 蚌埠做dna亲子鉴定必看')
-    wrapper.vm.goto('www.baidu.com')
+    wrapper.vm.goto('www.baidu.com', 'life')
   })
   it('renders correctly with these news data', () => {
     const localVue = createLocalVue()

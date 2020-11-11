@@ -242,20 +242,19 @@ def get_news(request):
         '9': 'life',
         '10': 'house'
     }
-    # 暂用
     typenum = request.GET.get('type', default='0')
+    if typenum not in typenum_to_category:
+        typenum = '0'
     category = typenum_to_category[typenum]
-    for news in News.objects.order_by('-pk').filter(~Q(img='unknown img'))[:5]:
+    cat_query = Q()
+    if category != 'all':
+        cat_query = Q(category=category)
+    for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
         data = news_to_dict(news)
         imgnews_list.append(data)
-    if category == 'all':
-        for news in News.objects.order_by('-pk')[:20]:
-            data = news_to_dict(news)
-            textnews_list.append(data)
-    else:
-        for news in News.objects.order_by('-pk').filter(Q(category=category))[:20]:
-            data = news_to_dict(news)
-            textnews_list.append(data)
+    for news in News.objects.order_by('-pk').filter(cat_query)[:20]:
+        data = news_to_dict(news)
+        textnews_list.append(data)
     response_data = {
         'data': {
             'imgnews': imgnews_list,

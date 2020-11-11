@@ -23,7 +23,7 @@ class NewsPipeline:
     dir_path = None
     current_dir_path = Path(__file__).parent
     news_list = []
-    news_capacity = 10
+    news_capacity = 20
     upload_news_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
 
 

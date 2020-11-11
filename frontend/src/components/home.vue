@@ -2,7 +2,7 @@
   <div style="padding: 0 15px;" class="news">
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
-        <el-col :span="6"  :offset="22" style="text-align:right;" v-show="!login">
+        <el-col :span="6"  :offset="22" style="text-align:right;min-width:200px" v-show="!login">
           <el-col :span="4"  class="head_nav_h"  >
             <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
@@ -23,17 +23,17 @@
       <el-row class="search">
         <el-col :span="24" >
           <div>
-            <el-col :span="2" :offset="6">
+            <el-col :span="4">
               <img src="@/assets/logo2.jpg" id="logo" alt="">
             </el-col>
-            <el-col :span="10">
+            <el-col :span="16">
               <el-input
                 placeholder="请输入内容"
                 v-model="keyword">
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
             </el-col>
-            <el-col :span="2" class="help">
+            <el-col :span="4" class="help">
               <span>帮助</span>
             </el-col>
           </div>
@@ -41,20 +41,20 @@
       </el-row>
 
       <el-row :class="headcss">
-        <el-col :span="16" :offset="4" style="overflow:hidden;height:47px;line-height:47px;">
+        <div style="overflow:hidden;height:47px;line-height:47px;width: 1084px;margin: 0 auto;">
           <div :class="(activenav==index|| selactive==index)?'nav_active':'nav_tab'"
             @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
             v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
               <i class="el-icon-s-home" v-if="index==0"></i>{{item}}</div>
           </div>
-        </el-col>
+        </div>
       </el-row>
     </div>
 
     <div class="content">
       <el-row>
-        <el-col :span="7" :offset="4">
+        <el-col :span="10">
           <el-col :span="24">
             <h2 class="news_tit">热点要闻</h2>
             <div class="box">
@@ -68,7 +68,7 @@
           </el-col>
         </el-col>
 
-        <el-col :span="10">
+        <el-col :span="14" style="padding-left:60px">
           <el-col :span="24">
             <div class="imgs">
               <el-carousel :interval="5000" arrow="always" indicator-position="outside">
@@ -250,7 +250,12 @@ export default {
 </script>
 
 <style scoped>
-.news{
+.login_btn {
+  color: black
+}
+
+.login_btn:visited {
+  color: black
 }
 .news h2{
   text-align: center;
@@ -262,6 +267,18 @@ export default {
   letter-spacing: 2px;
   font-family:"微软雅黑";
   overflow: hidden;
+  width: 1084px;
+  margin: 0 auto;
+}
+.search{
+  padding:20px 0px;
+  width: 984px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+#logo{
+  width:100px;
+  height:30px;
 }
 .btn_search{
       background-color: #4e6ef2 !important;
@@ -269,14 +286,6 @@ export default {
       border-radius: 0;
       padding: 14px 15px !important;
       border: none !important;
-}
-.search{
-  padding:20px 0px;
-  margin-top:20px;
-}
-#logo{
-  width:100px;
-  height:30px;
 }
 .type:hover{
   background-color: crimson;
@@ -287,13 +296,18 @@ export default {
   color:rgb(207, 33, 33);
   cursor: pointer;
 }
-
 .btn_search{
   background-color: #4e6ef2 !important;
   color:#fff !important;
   border-radius: 0;
   padding: 14px 15px !important;
   border: none !important;
+}
+.help{
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    text-decoration: underline;
 }
 .nav_tab{
   float:left;
@@ -363,12 +377,6 @@ export default {
 }
 .box ul li h3,.box ul li span{
   margin-left: 8px;;
-}
-.help{
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-    text-decoration: underline;
 }
 .tit2{
       color: #254282;

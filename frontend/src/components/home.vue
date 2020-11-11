@@ -2,12 +2,20 @@
   <div style="padding: 0 15px;" class="news">
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
-        <el-col :span="6"  :offset="22" style="text-align:right;min-width:200px">
+        <el-col :span="6"  :offset="22" style="text-align:right;min-width:200px" v-show="!login">
           <el-col :span="4"  class="head_nav_h"  >
             <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
           <el-col :span="4"  class="head_nav_h"  >
             <a href="#/register" class="login_btn" >注册</a>
+          </el-col>
+        </el-col>
+        <el-col :span="20" :offset="12" style="text-align:right;" v-if="login">
+          <el-col :span="10" class="head_nav_h" >
+            欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+          </el-col>
+          <el-col :span="4" class="head_nav_h" >
+            <div class="quit_btn" @click="quituser">退出登录</div>
           </el-col>
         </el-col>
       </el-row>
@@ -22,7 +30,7 @@
               <el-input
                 placeholder="请输入内容"
                 v-model="keyword">
-                <el-button slot="append" class="btn_search" @click="search">click me!</el-button>
+                <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
             </el-col>
             <el-col :span="4" class="help">
@@ -38,7 +46,7 @@
             @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
             v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
-              <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
+              <i class="el-icon-s-home" v-if="index==0"></i>{{item}}</div>
           </div>
         </div>
       </el-row>
@@ -78,16 +86,16 @@
             <h3 class="tit2">热搜新闻词 <span>HOT WORDS</span></h3>
           </el-col>
           <el-col :span="24">
-            <el-col :span="8" class="news_word">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="8" class="news_word">中共中央政治局召开会议习近平主持</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平见习全国双拥模范表彰大会代表</el-col>
+            <el-col :span="8" class="news_word">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="8" class="news_word">中共中央政治局</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
           </el-col>
 
           <el-col :span="24">
@@ -178,13 +186,24 @@ export default {
     },
     outStyle (index) {
       this.selactive = -1
+    },
+    quituser () {
+      this.$store.commit('rm_token')
+      this.login = false
+      document.location = '#/home'
     }
   },
   mounted () {
     window.addEventListener('scroll', this.handleScrollx, true)
   },
   created () {
-    axios.get('/api/getnews/').then(ret => {
+    this.login = typeof (this.$store.state.token) !== 'undefined'
+    axios.get('/api/getnews/',
+      {
+        params: {
+          type: 0
+        }
+      }).then(ret => {
       this.imgnews = ret.data.data.imgnews
       this.textnews = ret.data.data.textnews
     }, error => {
@@ -194,36 +213,35 @@ export default {
       alert('服务器忙')
     })
   },
+  watch: {
+    // 当频道改变时，更改其中的信息
+    activenav (to, from) {
+      axios.get('/api/getnews/',
+        {
+          params: {
+            type: to
+          }
+        }).then(ret => {
+        this.imgnews = ret.data.data.imgnews
+        this.textnews = ret.data.data.textnews
+      }, error => {
+        this.imgnews = []
+        this.textnews = []
+        console.log(error)
+        alert('服务器忙')
+      })
+    }
+  },
   data () {
     return {
+      login: false,
       left: 'left',
       keyword: '',
       headcss: 'nav',
       headindex_active: 1,
       activenav: 0,
       selactive: 0,
-      navlist: [
-        {
-          name: '要闻',
-          url: ''
-        },
-        {
-          name: '娱乐',
-          url: ''
-        },
-        {
-          name: '财经',
-          url: ''
-        },
-        {
-          name: '体育',
-          url: ''
-        },
-        {
-          name: '时尚',
-          url: ''
-        }
-      ],
+      navlist: ['综合', '要闻', '娱乐', '财经', '体育', '时尚'],
       imgnews: [],
       textnews: []
     }
@@ -452,4 +470,17 @@ export default {
   background-color: grey;
 }
 
+.login_btn {
+  color: black
+}
+
+.login_btn:visited {
+  color: black
+}
+
+.quit_btn {
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
+}
 </style>

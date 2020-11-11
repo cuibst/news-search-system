@@ -28,13 +28,14 @@
             <el-col :span="8" class="searchinput">
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
-                v-model = "keyword">
+                v-model = "keyword"
+                @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
             </el-col>
         </el-col>
       </el-row>
-    </div>
+  </div>
   <div class="content">
       <el-row>
         <el-col :span="12" :offset="2">
@@ -121,7 +122,7 @@ export default {
       })
     },
     search () {
-      // 此处变更搜索路径
+      // 此处处理搜索路径变更
       this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
     },
     // 此处处理页码变更
@@ -163,7 +164,19 @@ export default {
   height: 50px;
 }
 .nav{
-  padding:15px 0px;
+  padding:20px 0px;
+  width: 1784px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.content{
+  padding:20px 0px;
+  width: 1784px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.totalinfo{
+  padding:1rem 0;
 }
 .mg2{
   margin-right:10px;
@@ -171,10 +184,6 @@ export default {
   padding:3px 0;
   cursor: pointer;
 }
-.totalinfo{
-  padding:1rem 0;
-}
-
 .box{
   line-height: 25px;
   overflow: hidden;
@@ -210,7 +219,8 @@ export default {
   border-bottom: 2px solid #38f;
 }
 .paginator{
-  margin-left: 10%;
+  margin-top: 30px;
+  text-align: center;
 }
 .login_btn {
   color: black

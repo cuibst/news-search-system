@@ -29,7 +29,8 @@
             <el-col :span="16">
               <el-input
                 placeholder="请输入内容"
-                v-model="keyword">
+                v-model="keyword"
+                @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
             </el-col>
@@ -46,7 +47,7 @@
             @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
             v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
-              <i class="el-icon-s-home" v-if="index==0"></i>{{item}}</div>
+              <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
           </div>
         </div>
       </el-row>
@@ -174,6 +175,20 @@ export default {
     },
     selectclass (index) {
       this.activenav = index
+      axios.get('/api/getnews/',
+        {
+          params: {
+            type: this.navlist[index].url
+          }
+        }).then(ret => {
+        this.imgnews = ret.data.data.imgnews
+        this.textnews = ret.data.data.textnews
+      }, error => {
+        this.imgnews = []
+        this.textnews = []
+        console.log(error)
+        alert('服务器忙')
+      })
     },
     selectStyle (index) {
       if (index !== this.selactive) {
@@ -213,25 +228,6 @@ export default {
       alert('服务器忙')
     })
   },
-  watch: {
-    // 当频道改变时，更改其中的信息
-    activenav (to, from) {
-      axios.get('/api/getnews/',
-        {
-          params: {
-            type: to
-          }
-        }).then(ret => {
-        this.imgnews = ret.data.data.imgnews
-        this.textnews = ret.data.data.textnews
-      }, error => {
-        this.imgnews = []
-        this.textnews = []
-        console.log(error)
-        alert('服务器忙')
-      })
-    }
-  },
   data () {
     return {
       login: false,
@@ -241,7 +237,48 @@ export default {
       headindex_active: 1,
       activenav: 0,
       selactive: 0,
-      navlist: ['综合', '要闻', '娱乐', '财经', '体育', '时尚'],
+      navlist: [
+        {
+          name: '要闻',
+          url: '0'
+        },
+        {
+          name: '政治',
+          url: '1'
+        },
+        {
+          name: '财经',
+          url: '2'
+        },
+        {
+          name: '军事',
+          url: '3'
+        },
+        {
+          name: '科技',
+          url: '4'
+        },
+        {
+          name: '社会',
+          url: '5'
+        },
+        {
+          name: '教育',
+          url: '6'
+        },
+        {
+          name: '运动',
+          url: '7'
+        },
+        {
+          name: '娱乐',
+          url: '8'
+        },
+        {
+          name: '生活',
+          url: '9'
+        }
+      ],
       imgnews: [],
       textnews: []
     }

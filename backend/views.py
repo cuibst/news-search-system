@@ -17,6 +17,7 @@ from django.core import signing
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from .models import User, News
 
 # Create your views here.
@@ -201,32 +202,63 @@ def upload_news(request):
         'error_list': error_list
     }, status=200)
 
+def news_to_dict(news):
+    '''
+    convert news to dict
+    '''
+    data = {
+        'news_id': news.news_id,
+        'news_url': news.news_url,
+        'title': news.title,
+        'source': news.source,
+        'category': news.category,
+        'media': news.media,
+        'tags': news.tags,
+        'pub_date': news.pub_date,
+        'summary': news.summary,
+        'img': news.img,
+        'content': news.content
+    }
+    return data
+
 @csrf_exempt
 def get_news(request):
     '''
     Provide an api to return imgnews and textnews for homepage.
     Note that this is an test version!
     '''
-    news_list = []
-    for news in News.objects.all()[:25]:
-        data = {
-            'news_id': news.news_id,
-            'news_url': news.news_url,
-            'title': news.title,
-            'source': news.source,
-            'category': news.category,
-            'media': news.media,
-            'tags': news.tags,
-            'pub_date': news.pub_date,
-            'summary': news.summary,
-            'img': news.img,
-            'content': news.content
-        }
-        news_list.append(data)
+    imgnews_list = []
+    textnews_list = []
+    typenum_to_category = {
+        '0': 'all',
+        '1': 'politics',
+        '2': 'finance',
+        '3': 'tech',
+        '4': 'military',
+        '5': 'social',
+        '6': 'edu',
+        '7': 'sports',
+        '8': 'ent',
+        '9': 'life',
+        '10': 'house'
+    }
+    typenum = request.GET.get('type', default='0')
+    if typenum not in typenum_to_category:
+        typenum = '0'
+    category = typenum_to_category[typenum]
+    cat_query = Q()
+    if category != 'all':
+        cat_query = Q(category=category)
+    for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
+        data = news_to_dict(news)
+        imgnews_list.append(data)
+    for news in News.objects.order_by('-pk').filter(cat_query)[:20]:
+        data = news_to_dict(news)
+        textnews_list.append(data)
     response_data = {
         'data': {
-            'imgnews': news_list[:5],
-            'textnews': news_list[5:]
+            'imgnews': imgnews_list,
+            'textnews': textnews_list
         }
     }
     return JsonResponse(response_data, json_dumps_params={

@@ -166,6 +166,20 @@ export default {
     },
     selectclass (index) {
       this.activenav = index
+      axios.get('/api/getnews/',
+        {
+          params: {
+            type: this.navlist[index].url
+          }
+        }).then(ret => {
+        this.imgnews = ret.data.data.imgnews
+        this.textnews = ret.data.data.textnews
+      }, error => {
+        this.imgnews = []
+        this.textnews = []
+        console.log(error)
+        alert('服务器忙')
+      })
     },
     selectStyle (index) {
       if (index !== this.selactive) {
@@ -205,23 +219,43 @@ export default {
       navlist: [
         {
           name: '要闻',
-          url: ''
+          url: '0'
         },
         {
-          name: '娱乐',
-          url: ''
+          name: '政治',
+          url: '1'
         },
         {
           name: '财经',
-          url: ''
+          url: '2'
         },
         {
-          name: '体育',
-          url: ''
+          name: '军事',
+          url: '3'
         },
         {
-          name: '时尚',
-          url: ''
+          name: '科技',
+          url: '4'
+        },
+        {
+          name: '社会',
+          url: '5'
+        },
+        {
+          name: '教育',
+          url: '6'
+        },
+        {
+          name: '运动',
+          url: '7'
+        },
+        {
+          name: '娱乐',
+          url: '8'
+        },
+        {
+          name: '生活',
+          url: '9'
         }
       ],
       imgnews: [],

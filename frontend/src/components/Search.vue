@@ -221,7 +221,8 @@ export default {
   border-bottom: 2px solid #38f;
 }
 .paginator{
-  margin-left: 10%;
+  margin-top: 30px;
+  text-align: center;
 }
 .login_btn {
   color: black

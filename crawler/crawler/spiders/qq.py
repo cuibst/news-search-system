@@ -23,7 +23,7 @@ def parse_item(response):
     news_brief_info = None
     for script in script_list:
         if script.find('window.DATA = ') >= 0:
-            news_brief_info = json.loads(script.lstrip('window.DATA = '))
+            news_brief_info = json.loads(script.strip().lstrip('window.DATA = '))
             break
     item = NewsItem()
     try:
@@ -127,7 +127,6 @@ class QqFullSpider(Spider):
     # 爬取2020全年10月28日及以前的新闻
     start_date = datetime(2020, 10, 28)
     end_date = datetime(2019, 12, 31)
-    # https://new.qq.com/omn/20201020/20201020A0G0KM00.html
 
     def start_requests(self):
         '''

@@ -1,4 +1,23 @@
 <template>
+<div>
+<el-row style="padding:10px; border-bottom:1px solid #ccc;">
+  <el-col :span="6"  :offset="22" style="text-align:right;" v-show="!login">
+      <el-col :span="4"  class="head_nav_h"  >
+        <div class="head_btn" @click="tologin">登录</div>
+      </el-col>
+      <el-col :span="4"  class="head_nav_h"  >
+        <div class="head_btn" @click="toregister">注册</div>
+      </el-col>
+  </el-col>
+  <el-col :span="20" :offset="12" style="text-align:right;" v-if="login">
+    <el-col :span="10" class="head_nav_h" >
+      欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+    </el-col>
+    <el-col :span="4" class="head_nav_h" >
+      <div class="head_btn" @click="quituser">退出登录</div>
+    </el-col>
+  </el-col>
+</el-row>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
@@ -11,7 +30,7 @@
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
                 v-model = "keyword">
-                <el-button slot="append" class="btn_search" @click="search">click me</el-button>
+                <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
             </el-col>
           </div>
@@ -23,12 +42,12 @@
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
-              <h4 class="titles" v-html="item.title" @click="goto(item.news_url)">{{item.title}}</h4>
+              <h4 class="titles" v-html="item.title" @click="goto(item.news_url, item.category)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
-              <el-col :span="6" v-if="item.img!='empty'">
-                <img :src="item.img" class="news_img">
+              <el-col :span="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
+                <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
               </el-col>
-              <el-col :span="item.img==''?24:18" class="news_info">
+              <el-col :span="(item.img=='empty'||item.img=='unknown img')?25:19" class="news_info">
                 <div>
                   <span class="srouces">{{item.media}}</span>
                   <span class="publish_time">{{item.pub_date}}</span>
@@ -47,6 +66,7 @@
       </div>
     </div>
 </div>
+</div>
 </template>
 
 <script>
@@ -59,21 +79,29 @@ export default {
       keyword: '',
       infolist: [],
       currentpage: 1,
-      pages: 0
+      pages: 0,
+      login: false
     }
   },
   mounted () {
+    this.login = typeof (this.$store.state.token) !== 'undefined'
     this.keyword = this.$route.params.keyword
+    document.title = this.$route.meta.title + this.keyword
     this.KeyChange(this.keyword)
   },
 
   watch: {
     '$route' (to, from) {
+      document.title = to.meta.title + to.params.keyword
       this.KeyChange(to.params.keyword)
     }
   },
   methods: {
-    goto (url) {
+    goto (url, type) {
+      axios.post('/api/views/',
+        {
+          news_type: type
+        })
       window.open(url, '_blank')
     },
     KeyChange: async function (newkey) {
@@ -83,11 +111,11 @@ export default {
             query: newkey
           }
         }).then(ret => {
-        console.log(this.infolist)
         this.infolist = ret.data.infolist
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
+        // console.log(this.infolist)
       }, error => {
         console.log(error)
         this.infolist = []
@@ -114,6 +142,19 @@ export default {
         alert('服务器忙')
       })
       scrollTo(0, 0)
+    },
+    quituser () {
+      this.$store.commit('rm_token')
+      this.login = false
+    },
+    tologin () {
+      this.$router.push({
+        path: '/login',
+        query: { redirect: this.$route.path }
+      })
+    },
+    toregister () {
+      document.location = '#/register'
     }
   }
 }
@@ -150,9 +191,15 @@ export default {
   cursor: pointer;
 }
 .news_img{
-  border-radius: 8px;
-  height: 100%;
-  width: 100%;
+  width:100%;
+  height:0;
+  padding-bottom: 80%;
+  overflow:hidden;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size:cover;
+  -moz-background-size:cover;
+  background-size:cover;
 }
 .news_info{
   padding:0 10px;
@@ -166,5 +213,16 @@ export default {
 }
 .paginator{
   margin-left: 10%;
+}
+.login_btn {
+  color: black
+}
+.login_btn:visited {
+  color: black
+}
+.head_btn {
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

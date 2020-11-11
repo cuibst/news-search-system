@@ -9,6 +9,8 @@ from django.test import TestCase
 from backend.models import User, News
 
 # Create your tests here.
+
+
 class TestViews(TestCase):
     '''
     Test cases for views.py

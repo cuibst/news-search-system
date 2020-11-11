@@ -16,13 +16,19 @@ const routes = [
   {
     path: '/home',
     component: Home,
-    meta: { requiredAuth: false }
+    meta: {
+      requiredAuth: false,
+      title: 'tg新闻-发现全球新闻'
+    }
   },
   { path: '/', redirect: '/home' },
   {
     path: '/userhome',
     component: Home,
-    meta: { requiredAuth: true }
+    meta: {
+      requiredAuth: true,
+      title: 'tg新闻-发现全球新闻'
+    }
   },
   {
     path: '/sample',
@@ -33,19 +39,28 @@ const routes = [
     path: '/login',
     name: 'LoginPage',
     component: LoginPage,
-    meta: { requiredAuth: false }
+    meta: {
+      requiredAuth: false,
+      title: '用户登录-tg新闻'
+    }
   },
   {
     path: '/register',
     name: 'RegisterPage',
     component: RegisterPage,
-    meta: { requiredAuth: false }
+    meta: {
+      requiredAuth: false,
+      title: '用户注册-tg新闻'
+    }
   },
   {
     path: '/searchresult/:keyword',
     name: 'SearchResult',
     component: SearchResult,
-    meta: { requiredAuth: false }
+    meta: {
+      requiredAuth: false,
+      title: 'tg新闻搜索结果-'
+    }
   }
 ]
 
@@ -54,6 +69,9 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
   if (to.matched.some(r => r.meta.requiredAuth)) {
     if (store.state.token) {
       next()

@@ -29,7 +29,8 @@
             <el-col :span="16">
               <el-input
                 placeholder="请输入内容"
-                v-model="keyword">
+                v-model="keyword"
+                @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
             </el-col>

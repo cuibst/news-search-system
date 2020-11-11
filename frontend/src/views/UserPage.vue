@@ -1,5 +1,5 @@
 <template>
-  <div id="SearchResult" >
+  <div id="UserPage" >
     <User :user="user" />
   </div>
 </template>
@@ -37,5 +37,8 @@ export default {
 }
 </script>
 
-// <style lang="less" scoped>
-// </style>
+<style lang="less" scoped>
+#UserPage {
+  height: 100%;
+}
+</style>

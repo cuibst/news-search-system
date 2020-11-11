@@ -24,7 +24,6 @@ export default {
 
 <style lang="less" scoped>
 #LoginPage {
-  background-color: #66CCFF;
   height: 100%;
 }
 </style>

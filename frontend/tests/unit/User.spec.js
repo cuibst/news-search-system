@@ -6,8 +6,9 @@ import mockAxios from '../__mocks__/axios'
 import ElementUI, { Button, Container, Header, Main, Input, Form, FormItem, Message } from 'element-ui'
 import axios from 'axios'
 import VueRouter from 'vue-router'
+import store from '@/store'
 
-axios.defaults.baseURL = 'api/'
+Vue.prototype.$store = store
 Vue.prototype.$http = axios
 Vue.config.productionTip = false
 

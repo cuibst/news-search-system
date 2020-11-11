@@ -2,7 +2,7 @@
   <div style="padding: 0 15px;" class="news">
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
-        <el-col :span="6"  :offset="22" style="text-align:right;min-width:200px" v-show="!login">
+        <el-col :span="6"  :offset="22" style="text-align:right;min-width:200px" v-if="!login">
           <el-col :span="4"  class="head_nav_h"  >
             <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
@@ -10,11 +10,11 @@
             <a href="#/register" class="login_btn" >注册</a>
           </el-col>
         </el-col>
-        <el-col :span="20" :offset="12" style="text-align:right;" v-if="login">
-          <el-col :span="10" class="head_nav_h" >
-            欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+        <el-col :span="7" :offset="17" style="text-align:right;" v-if="login">
+          <el-col :span="14" class="head_nav_h" >
+            <a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
           </el-col>
-          <el-col :span="4" class="head_nav_h" >
+          <el-col :span="10" class="head_nav_h" >
             <div class="quit_btn" @click="quituser">退出登录</div>
           </el-col>
         </el-col>
@@ -197,7 +197,7 @@ export default {
     window.addEventListener('scroll', this.handleScrollx, true)
   },
   created () {
-    this.login = typeof (this.$store.state.token) !== 'undefined'
+    this.login = (typeof (this.$store.state.token) !== 'undefined') && (this.$store.state.token !== '')
     axios.get('/api/getnews/',
       {
         params: {

@@ -67,10 +67,10 @@ const routes = [
     path: '/user',
     name: 'UserPage',
     component: UserPage,
-    meta: { 
+    meta: {
       requiredAuth: true,
-      title: 'tg新闻-用户信息' 
-   }
+      title: 'tg新闻-用户信息'
+    }
   }
 ]
 

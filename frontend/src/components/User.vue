@@ -1,42 +1,42 @@
 <template>
-  <div class="login_container">
-    <div class="login_box">
+  <div class="user_container">
+    <div class="user_box">
       <!-- 头像区域 -->
       <div class="avatar_box">
         <img src="../assets/logo.png">
       </div>
       <!-- 表单 -->
-      <el-form status-icon :model="ruleForm" :rules="rules" ref="ruleForm" class="login-form">
+      <el-form status-icon :model="ruleForm" :rules="rules" ref="ruleForm" class="user-form" label-width = "80px">
         <!--用户名-->
-        <el-form-item prop = 'username'>
-          <el-input class="input" prefix-icon="el-icon-user" v-model="ruleForm.username"></el-input>
+        <el-form-item prop = 'username' label = '用户名'>
+           <el-input class="input" prefix-icon="el-icon-user" v-model="ruleForm.username"></el-input>
         </el-form-item>
         <!--新的密码-->
-        <el-form-item prop = 'password'>
+        <el-form-item prop = 'password' label = '修改密码'>
           <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.password" placeholder="请输入新的密码（不修改请留空）"></el-input>
         </el-form-item>
         <!--确认密码-->
-        <el-form-item prop = 'passwordCheck'>
+        <el-form-item prop = 'passwordCheck' label = '确认密码'>
           <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.passwordCheck" placeholder="请确认您的新密码">
             <i class="el-icon-check" slot="append" v-if="passwordcheck"></i>
           </el-input>
           <span v-if="passwordcheck===false && password_input" style="color: red;font-size:12px;" class="errorPassword">请输入相同密码!</span>
         </el-form-item>
         <!--邮箱-->
-        <el-form-item prop = 'email'>
+        <el-form-item prop = 'email' label = '电子邮箱'>
           <el-input class="input" prefix-icon="el-icon-s-promotion" v-model="ruleForm.email"></el-input>
         </el-form-item>
         <!--手机号-->
-        <el-form-item prop = 'phonenumber'>
+        <el-form-item prop = 'phonenumber' label = '电话号码'>
           <el-input class="input" prefix-icon="el-icon-phone" v-model="ruleForm.phonenumber"></el-input>
         </el-form-item>
         <!--旧密码-->
-        <el-form-item prop = 'oldpasswd'>
-          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.oldpasswd" placeholder="请输入当前密码"></el-input>
+        <el-form-item prop = 'oldpasswd' label = '原有密码'>
+          <el-input class="input" prefix-icon="el-icon-view" show-password v-model="ruleForm.oldpasswd" placeholder="请输入原有密码"></el-input>
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
-          <el-button type="primary" @click="submitForm('ruleForm')">确认</el-button>
+          <el-button class="confirmbtn" @click="submitForm('ruleForm')">确认</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -137,8 +137,8 @@ export default {
             oldpasswd: this.ruleForm.oldpasswd
           }).then(ret => {
             if (ret.data.code === 200) {
+              this.$store.commit('set_token', { token: this.$store.state.token, username: this.username })
               this.$message.success('信息更改成功')
-              document.location = '#/sample'
             } else if (ret.data.code === 401) {
               this.$refs[formName].resetFields()
               this.$message.error('新用户名已被使用')
@@ -161,15 +161,21 @@ export default {
 
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
-.login_container {
-  background-color: lightgray;
+.user_container {
+  background-image: url('../assets/autumnroad.jpg');
   height: 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size:cover;
+  -moz-background-size:cover;
+  background-size:cover;
 }
 
-.login_box {
+.user_box {
   width: 450px;
   height: 540px;
-  background-color: lightgray;
+  background-color: lightyellow;
+  opacity: 0.95;
   border-radius: 30px;
   position: absolute;
   left: 50%;
@@ -178,7 +184,7 @@ export default {
   .avatar_box{
     height: 130px;
     width: 130px;
-    background-color: lightgray;
+    background-color: lightyellow;
     border: 1px solid #eeeeee;
     border-radius: 50%;
     padding: 10px;
@@ -206,7 +212,11 @@ export default {
   justify-content: flex-end;
 }
 
-.login-form {
+.confirmbtn {
+  background: gold;
+}
+
+.user-form {
   position: absolute;
   top: 100px;
   width: 100%;

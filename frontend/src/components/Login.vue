@@ -121,7 +121,7 @@ export default {
 }
 
 .for-regist {
-  margin-right : 15%;
+  margin-right : 1pc;
   display: inline-block;
 }
 </style>

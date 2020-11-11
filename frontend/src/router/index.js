@@ -5,6 +5,7 @@ import Home from '../components/home.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import SearchResult from '../views/SearchResult.vue'
+import UserPage from '../views/UserPage.vue'
 import '../assets/styles/global.css'
 import store from '../store'
 
@@ -60,6 +61,15 @@ const routes = [
     meta: {
       requiredAuth: false,
       title: 'tg新闻搜索结果-'
+    }
+  },
+  {
+    path: '/user',
+    name: 'UserPage',
+    component: UserPage,
+    meta: {
+      requiredAuth: true,
+      title: 'tg新闻-用户信息'
     }
   }
 ]

@@ -9,11 +9,11 @@
         <div class="head_btn" @click="toregister">注册</div>
       </el-col>
   </el-col>
-  <el-col :span="20" :offset="12" style="text-align:right;" v-if="login">
-    <el-col :span="10" class="head_nav_h" >
+  <el-col :span="7" :offset="17" style="text-align:right;" v-if="login">
+    <el-col :span="14" class="head_nav_h" >
       欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
     </el-col>
-    <el-col :span="4" class="head_nav_h" >
+    <el-col :span="10" class="head_nav_h" >
       <div class="head_btn" @click="quituser">退出登录</div>
     </el-col>
   </el-col>
@@ -22,9 +22,8 @@
   <div class="nav">
       <el-row>
         <el-col :span="24">
-          <div>
-            <el-col :span="2">
-              <img src="@/assets/logo2.jpg" alt="" class="searchlogo">
+            <el-col :span="2" :offset="1">
+              <img src="@/assets/logo2.jpg" alt="" class="searchlogo" width="100%" height="100%">
             </el-col>
             <el-col :span="8" class="searchinput">
               <el-input placeholder = "请输入内容"
@@ -34,7 +33,6 @@
                 <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
             </el-col>
-          </div>
         </el-col>
       </el-row>
   </div>
@@ -85,7 +83,7 @@ export default {
     }
   },
   mounted () {
-    this.login = typeof (this.$store.state.token) !== 'undefined'
+    this.login = (typeof (this.$store.state.token) !== 'undefined') && (this.$store.state.token !== '')
     this.keyword = this.$route.params.keyword
     document.title = this.$route.meta.title + this.keyword
     this.KeyChange(this.keyword)
@@ -124,7 +122,7 @@ export default {
       })
     },
     search () {
-      // 此处变更搜索路径
+      // 此处处理搜索路径变更
       this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
     },
     // 此处处理页码变更

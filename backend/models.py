@@ -18,7 +18,7 @@ class News(models.Model):
     media = models.CharField(max_length=50, default='unknown')
     tags = models.CharField(max_length=100, default='unknown')
     title = models.CharField(max_length=60, default='unknown')
-    news_id = models.CharField(max_length=50, default='unknown')
+    news_id = models.CharField(max_length=50, default='unknown', db_index=True)
     pub_date = models.CharField(max_length=100, default='unknown')
     content = models.CharField(max_length=10000, default='unknown')
     summary = models.CharField(max_length=500, default='unknown')

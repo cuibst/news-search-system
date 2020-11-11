@@ -17,6 +17,9 @@
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
+          <div class="for-regist">
+            还没有账户？<a href='#/register'>注册</a>
+          </div>
           <el-button type="primary" @click="sendlogin">登录</el-button>
         </el-form-item>
       </el-form>
@@ -42,7 +45,7 @@ export default {
         password: this.password
       }).then(ret => {
         if (ret.data.code === 200) {
-          this.$store.commit('set_token', ret.data.Token)
+          this.$store.commit('set_token', { token: ret.data.Token, username: this.username })
           this.$message.success('登陆成功')
           this.$emit('succeed')
         } else {
@@ -61,8 +64,13 @@ export default {
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
 .login_container {
-  background-color: #66CCFF;
+  background-image: url('../assets/mainbuild.jpg');
   height: 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size:cover;
+  -moz-background-size:cover;
+  background-size:cover;
 }
 
 .login_box {
@@ -110,5 +118,10 @@ export default {
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
+}
+
+.for-regist {
+  margin-right : 15%;
+  display: inline-block;
 }
 </style>

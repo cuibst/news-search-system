@@ -11,9 +11,12 @@ Vue.prototype.$http = axios
 Vue.prototype.$store = store
 Vue.config.productionTip = false
 
-axios.defaults.headers.common['Authentication-Token'] = store.state.token
+axios.defaults.timeout = 100000
 // 添加请求拦截器，每次请求加入Token
 axios.interceptors.request.use(config => {
+  if (config.url === 'https://news-search-lucene-rzotgorz.app.secoder.net/index/search') {
+    return config
+  }
   if (store.state.token) {
     config.headers.common['Authentication-Token'] = store.state.token
   }

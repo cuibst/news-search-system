@@ -1,4 +1,4 @@
-from crawler.crawler.spiders.xinhua import XinhuaNewsFullSpider, XinhuaIncSpider
+from crawler.crawler.spiders.xinhua import XinhuaFullSpider, XinhuaIncSpider
 from crawler.crawler.spiders.xinhua import parse_news_item, parse_news_url
 from scrapy.http import HtmlResponse, Request
 from crawler.crawlertest.cases.test.conftest import resource_get
@@ -25,7 +25,7 @@ def test_xinhua_parse_news_url_valid_01(resource_get):
 
 
 class TestXinhuaNewsFullSpider:
-    spider = XinhuaNewsFullSpider()
+    spider = XinhuaFullSpider()
 
     def test_xinhua_full_start_requests_valid_01(self):
         result = self.spider.start_requests()

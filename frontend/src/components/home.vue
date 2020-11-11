@@ -29,7 +29,8 @@
             <el-col :span="16">
               <el-input
                 placeholder="请输入内容"
-                v-model="keyword">
+                v-model="keyword"
+                @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
             </el-col>
@@ -46,7 +47,7 @@
             @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
             v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
-              <i class="el-icon-s-home" v-if="index==0"></i>{{item}}</div>
+              <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
           </div>
         </div>
       </el-row>

@@ -11,7 +11,10 @@ import store from '../store'
 
 Vue.use(VueRouter)
 if (sessionStorage.getItem('token')) {
-  store.commit('set_token', sessionStorage.getItem('token'))
+  store.commit('set_token', {
+    token: sessionStorage.getItem('token'),
+    username: sessionStorage.getItem('username')
+  })
 }
 const routes = [
   {

@@ -137,7 +137,7 @@ export default {
             oldpasswd: this.ruleForm.oldpasswd
           }).then(ret => {
             if (ret.data.code === 200) {
-              this.$store.commit('set_token', { token: this.$store.state.token, username: this.username })
+              this.$store.commit('set_token', { token: this.$store.state.token, username: this.ruleForm.username })
               this.$message.success('信息更改成功')
             } else if (ret.data.code === 401) {
               this.$refs[formName].resetFields()

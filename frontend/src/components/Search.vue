@@ -23,7 +23,9 @@
       <el-row>
         <el-col :span="24">
             <el-col :span="2" :offset="1">
-              <img src="@/assets/logo2.jpg" alt="" class="searchlogo" width="100%" height="100%">
+              <a href='/'>
+                <img src="@/assets/logo2.jpg" alt="" class="searchlogo" width="100%" height="100%">
+              </a>
             </el-col>
             <el-col :span="8" class="searchinput">
               <el-input placeholder = "请输入内容"
@@ -60,7 +62,8 @@
         </el-col>
       </el-row>
       <div class="paginator">
-        <el-pagination background layout="prev, pager, next" :page-count="pages" @current-change="handleCurrent" :current-page.sync="currentpage">
+        <el-pagination background layout="prev, pager, next" :page-count="pages"
+          @current-change="handleCurrent" :current-page.sync="currentpage">
         </el-pagination>
       </div>
     </div>
@@ -114,7 +117,6 @@ export default {
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
-        // console.log(this.infolist)
       }, error => {
         console.log(error)
         this.infolist = []
@@ -219,8 +221,8 @@ export default {
   border-bottom: 2px solid #38f;
 }
 .paginator{
-  margin-top: 30px;
-  text-align: center;
+  margin-top: 5%;
+  margin-left: 20%;
 }
 .login_btn {
   color: black

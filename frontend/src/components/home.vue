@@ -12,7 +12,7 @@
         </el-col>
         <el-col :span="7" :offset="17" style="text-align:right;" v-if="login">
           <el-col :span="14" class="head_nav_h" >
-            <a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+            欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
           </el-col>
           <el-col :span="10" class="head_nav_h" >
             <div class="quit_btn" @click="quituser">退出登录</div>
@@ -47,7 +47,7 @@
             @mouseover="selectStyle (index) " @mouseout="outStyle(index)"
             v-for="(item,index) in navlist" :key="index">
             <div @click="selectclass(index)" class="type">
-              <i class="el-icon-s-home" v-if="index==0"></i>{{item.name}}</div>
+              <i class="el-icon-s-home" v-if="index==0"></i>{{item}}</div>
           </div>
         </div>
       </el-row>
@@ -178,7 +178,7 @@ export default {
       axios.get('/api/getnews/',
         {
           params: {
-            type: this.navlist[index].url
+            type: index
           }
         }).then(ret => {
         this.imgnews = ret.data.data.imgnews
@@ -237,48 +237,7 @@ export default {
       headindex_active: 1,
       activenav: 0,
       selactive: 0,
-      navlist: [
-        {
-          name: '要闻',
-          url: '0'
-        },
-        {
-          name: '政治',
-          url: '1'
-        },
-        {
-          name: '财经',
-          url: '2'
-        },
-        {
-          name: '军事',
-          url: '3'
-        },
-        {
-          name: '科技',
-          url: '4'
-        },
-        {
-          name: '社会',
-          url: '5'
-        },
-        {
-          name: '教育',
-          url: '6'
-        },
-        {
-          name: '运动',
-          url: '7'
-        },
-        {
-          name: '娱乐',
-          url: '8'
-        },
-        {
-          name: '生活',
-          url: '9'
-        }
-      ],
+      navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
       imgnews: [],
       textnews: []
     }

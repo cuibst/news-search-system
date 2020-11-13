@@ -1,11 +1,5 @@
 <template>
   <div class="user_container">
-    <div class="user_box">
-      <!-- 头像区域 -->
-      <div class="avatar_box">
-        <img src="../assets/logo.png">
-      </div>
-      <!-- 表单 -->
       <el-form status-icon :model="ruleForm" :rules="rules" ref="ruleForm" class="user-form" label-width = "80px">
         <!--用户名-->
         <el-form-item prop = 'username' label = '用户名'>
@@ -36,10 +30,9 @@
         </el-form-item>
         <!--按钮-->
         <el-form-item class="logbtn">
-          <el-button class="confirmbtn" @click="submitForm('ruleForm')">确认</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">确认</el-button>
         </el-form-item>
       </el-form>
-    </div>
   </div>
 </template>
 
@@ -162,43 +155,8 @@ export default {
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
 .user_container {
-  background-image: url('../assets/autumnroad.jpg');
-  height: 100%;
-  background-position: center center;
-  background-repeat: no-repeat;
-  -webkit-background-size:cover;
-  -moz-background-size:cover;
-  background-size:cover;
-}
-
-.user_box {
-  width: 450px;
-  height: 540px;
-  background-color: lightyellow;
-  opacity: 0.95;
-  border-radius: 30px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  .avatar_box{
-    height: 130px;
-    width: 130px;
-    background-color: lightyellow;
-    border: 1px solid #eeeeee;
-    border-radius: 50%;
-    padding: 10px;
-    box-shadow: 0 0 10px #dddddd;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background-color: gray;
-    }
-  }
+ margin-top: 5pc;
+ height:100%;
 }
 
 .header {
@@ -212,15 +170,9 @@ export default {
   justify-content: flex-end;
 }
 
-.confirmbtn {
-  background: gold;
-}
-
 .user-form {
-  position: absolute;
-  top: 100px;
-  width: 100%;
-  padding: 0 20px;
+  margin-top: 10px;
+  margin-left: 10px;
   box-sizing: border-box;
 }
 

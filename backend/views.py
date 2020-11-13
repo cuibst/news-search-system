@@ -317,6 +317,7 @@ def user(request):
         }
     })
 
+
 @csrf_exempt
 def add_behavior(request):
     '''
@@ -348,4 +349,91 @@ def add_behavior(request):
     return JsonResponse({
         'code': 200,
         'info': 'save successfully'
+    }, status=200)
+
+
+@csrf_exempt
+def views(request):
+    '''
+        record what the user like
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+
+    user1 = User.objects.filter(id=user_id).first()
+    print(user1.id)
+    data = json.loads(request.body)
+    tmp_list = data['like']
+    for item in tmp_list:
+        print(item)
+        tmp_behavior = Behavior(user=user1, content=item)
+        tmp_behavior.save()
+    return JsonResponse({
+        'code': 200
+    }, status=200)
+
+
+@csrf_exempt
+def get_behavior(request):
+    '''
+        get what the user may like
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    user1 = User.objects.filter(id=user_id).first()
+    tmp_dict1 = {}
+    tmp_list = []
+    for item in user1.user_behavior.all():
+        if item in tmp_dict1:
+            tmp_dict1[item.content] += 1
+        else:
+            tmp_dict1[item.content] = 1
+            tmp_list.append(item.content)
+    print(tmp_dict1)
+    tmp_list.sort(key=lambda elem: tmp_dict1[elem])
+
+    if len(tmp_list) < 5:
+        return JsonResponse({
+            'list': tmp_list,
+            'length': len(tmp_list)
+        }, status=200)
+    final_list = []
+    print(final_list)
+    for i in range(0, 5):
+        final_list.append(tmp_list[i])
+    return JsonResponse({
+        'list': final_list,
+        'length': 5
     }, status=200)

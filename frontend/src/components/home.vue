@@ -159,7 +159,7 @@ export default {
   },
   methods: {
     goto (url) {
-      window.location.href = url
+       window.open(url, '_blank')
     },
     // he是为了方便单元测试 默认传参不影响
     handleScrollx (event, he = -1) {
@@ -175,17 +175,18 @@ export default {
     },
     selectclass (index) {
       this.activenav = index
+      var that = this
       axios.get('/api/getnews/',
         {
           params: {
             type: index
           }
         }).then(ret => {
-        this.imgnews = ret.data.data.imgnews
-        this.textnews = ret.data.data.textnews
+        that.imgnews = ret.data.data.imgnews
+        that.textnews = ret.data.data.textnews
       }, error => {
-        this.imgnews = []
-        this.textnews = []
+        that.imgnews = []
+        that.textnews = []
         console.log(error)
         alert('服务器忙')
       })
@@ -213,17 +214,18 @@ export default {
   },
   created () {
     this.login = (typeof (this.$store.state.token) !== 'undefined') && (this.$store.state.token !== '')
+    var that = this
     axios.get('/api/getnews/',
       {
         params: {
           type: 0
         }
       }).then(ret => {
-      this.imgnews = ret.data.data.imgnews
-      this.textnews = ret.data.data.textnews
+      that.imgnews = ret.data.data.imgnews
+      that.textnews = ret.data.data.textnews
     }, error => {
-      this.imgnews = []
-      this.textnews = []
+      that.imgnews = []
+      that.textnews = []
       console.log(error)
       alert('服务器忙')
     })

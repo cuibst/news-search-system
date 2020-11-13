@@ -1,7 +1,7 @@
 import home from '@/components/home.vue'
 import VueRouter from 'vue-router'
 import Vue from 'vue'
-import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import '../../src/plugins/element.js'
 import flushPromises from 'flush-promises'
 import mockAxios from '../__mocks__/axios'
@@ -17,7 +17,7 @@ describe('homepage.vue', () => {
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const router = new VueRouter()
-    const wrapper = mount(home, {
+    const wrapper = shallowMount(home, {
       router,
       localVue
     })
@@ -26,7 +26,8 @@ describe('homepage.vue', () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.reject(Error('Network Failure'))
     })
-    wrapper.vm.activenav = 1
+    wrapper.vm.selectclass(1)
+    console.log('This is network failure' + wrapper.vm.textnews)
     await flushPromises()
     expect(JSON.stringify(wrapper.vm.textnews)).toBe('[]')
   })
@@ -71,14 +72,11 @@ describe('homepage.vue', () => {
       localVue
     })
     await flushPromises()
-    wrapper.vm.goto('www.baidu.com')
     wrapper.vm.handleScrollx()
     expect(wrapper.find('.nav').exists()).toBe(true)
     wrapper.vm.handleScrollx(scroll, 300)
     await Vue.nextTick()
     expect(wrapper.find('.nav2').exists()).toBe(true)
-    wrapper.vm.selectclass(2)
-    expect(wrapper.vm.activenav).toBe(2)
     wrapper.vm.selectStyle(2)
     wrapper.vm.outStyle(2)
     expect(wrapper.vm.selactive).toBe(-1)
@@ -114,12 +112,13 @@ describe('homepage.vue', () => {
         }
       })
     })
-    wrapper.vm.selactive = 1
+    wrapper.vm.selectclass(2)
     await flushPromises()
     wrapper.vm.quituser()
     expect(typeof wrapper.vm.$store.token).toBe('undefined')
+    wrapper.vm.goto('www.baidu.com')
   })
-  it('renders correctly with these news data', async () => {
+  it('renders correctly with search button', async () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {

@@ -159,7 +159,7 @@ export default {
   },
   methods: {
     goto (url) {
-       window.open(url, '_blank')
+      window.open(url, '_blank')
     },
     // he是为了方便单元测试 默认传参不影响
     handleScrollx (event, he = -1) {

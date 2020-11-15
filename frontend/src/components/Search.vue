@@ -43,7 +43,7 @@
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
-              <h4 class="titles" v-html="item.title" @click="goto(item.news_url, item.category)">{{item.title}}</h4>
+              <h4 class="titles" v-html="item.title" @click="goto(item)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
               <el-col :span="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
                 <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
@@ -99,12 +99,24 @@ export default {
     }
   },
   methods: {
-    goto (url, type) {
+    goto: async function (item) {
+      var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
+      var particle = []
+      var totest = item.summary + item.title
+      var r = reg.exec(totest)
+      while (r) {
+        if (particle.indexOf(r[1]) === -1) {
+          particle.push(r[1])
+        }
+        totest = totest.replace(reg, '')
+        r = reg.exec(totest)
+      }
+      console.log(particle)
       axios.post('/api/views/',
         {
-          news_type: type
+          like: particle
         })
-      window.open(url, '_blank')
+      window.open(item.news_url, '_blank')
     },
     KeyChange: async function (newkey) {
       await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',

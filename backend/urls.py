@@ -12,5 +12,8 @@ urlpatterns = [
     path('uploadnews/', views.upload_news, name='uploadnews'),
     path('getnews/', views.get_news, name='getnews'),
     path('userchange/', views.user_change, name='user_change'),
-    path('user/', views.user, name='user')
+    path('user/', views.user, name='user'),
+    path('addbehavior/', views.add_behavior, name='add_behavior'),
+    path('views/', views.views, name='views'),
+    path('getbehavior/', views.get_behavior, name='get_behavior')
 ]

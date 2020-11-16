@@ -410,7 +410,6 @@ def views(request):
             'code': 403,
             'info': 'invalid token'
         }, status=200)
-
     user1 = User.objects.filter(id=user_id).first()
     print(user1.id)
     data = json.loads(request.body)

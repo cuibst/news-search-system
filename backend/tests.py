@@ -206,3 +206,45 @@ class TestViews(TestCase):
         }, content_type='application/json')
         data = json.loads(response.content)
         self.assertEqual(data['code'], 401)
+
+    def test_views(self):
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        response = a.post('/api/views/', data={
+            'like': ['1', '2', '3', '4', '5']
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+
+    def test_get_behavior(self):
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        a.post('/api/views/', data={
+            'like': ['1', '2', '3', '4', '5', '6']
+        }, content_type='application/json')
+        a.post('/api/views/', data={
+            'like': ['1', '2', '3', '4', '5']
+        }, content_type='application/json')
+        response = a.post('/api/getbehavior/', data={
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['length'], 5)
+        self.assertEqual(data['list'][4], '5')

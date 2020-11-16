@@ -293,6 +293,7 @@ def user_change(request):
         print(user_id)
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
+        print(User.objects.all())
         if data['oldpasswd'] != user.password:
             return JsonResponse({
                 'code': 402

@@ -208,6 +208,9 @@ class TestViews(TestCase):
         self.assertEqual(data['code'], 401)
 
     def test_views(self):
+        '''
+            test views
+        '''
         user = User(name='1', password='12')
         user.save()
         self.client.post('/api/login/', data={
@@ -226,6 +229,9 @@ class TestViews(TestCase):
         self.assertEqual(data['code'], 200)
 
     def test_get_behavior(self):
+        '''
+            test get_behavior
+        '''
         user = User(name='1', password='12')
         user.save()
         self.client.post('/api/login/', data={

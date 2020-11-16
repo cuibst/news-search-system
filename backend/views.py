@@ -289,9 +289,10 @@ def user_change(request):
                 'code': 403,
                 'info': "invalid token"
             }, status=200)
+        print("------------------------")
+        print(user_id)
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
-
         if data['oldpasswd'] != user.password:
             return JsonResponse({
                 'code': 402

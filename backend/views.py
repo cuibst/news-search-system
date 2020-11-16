@@ -302,6 +302,7 @@ def user_change(request):
         if data['password'] != '':
             user.password = data['password']
         if user.name == data['username']:
+            user.save()
             return JsonResponse({
                 'code': 200
             }, status=200)
@@ -347,7 +348,7 @@ def user(request):
             'phonenumber': user.phone_number,
             'email': user.email
         }
-    })
+    }, status=200)
 
 
 @csrf_exempt

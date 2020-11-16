@@ -3,9 +3,11 @@ Test suite for backend
 '''
 # pylint: disable=line-too-long
 # pylint: disable=unused-import
+# pylint: disable=invalid-name
 import json
 import requests
 from django.test import TestCase
+from django.test import Client
 from backend.models import User, News
 
 # Create your tests here.
@@ -44,6 +46,11 @@ class TestViews(TestCase):
             'username': '1',
             'password': '12'
         }, content_type='application/json')
+        # a = Client()
+        # response = a.post('/api/login/', data={
+        #     'username': '1',
+        #     'password': '12'
+        # }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['code'], 401)
@@ -94,7 +101,6 @@ class TestViews(TestCase):
         data = json.loads(response.content)
         self.assertEqual(data['code'], 402)
         self.assertEqual(data['data'], 'Validation error')
-
         response = self.client.post('/api/register/', data={
             'username': 'abcdefg',
             'password': '123',
@@ -139,3 +145,62 @@ class TestViews(TestCase):
         self.assertEqual(data['info'], 'Preserve process finished.')
         self.assertEqual(data['total_repetitive'], 1)
         news.delete()
+
+    def test_user(self):
+        '''
+            test user
+        '''
+        user = User(name='1', password='123')
+        user.save()
+        response = self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '123'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        token = tmp_dict['1'][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        response = a.get('/api/user/')
+        data = json.loads(response.content)
+        self.assertEqual(data['user']['username'], '1')
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_change(self):
+        '''
+        test user_change
+        '''
+        user = User(name='1', password='12', email='12', phone_number='123')
+        user.save()
+        response = self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        token = tmp_dict['1'][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        response = a.post('/api/userchange/', data={
+            'oldpasswd': '123'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 402)
+        response = a.post('/api/userchange/', data={
+            'oldpasswd': '12',
+            'email': '1@2',
+            'phonenumber': '123456',
+            'username': '123',
+            'password': '12345'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        user1 = User(name='@')
+        user1.save()
+        response = a.post('/api/userchange/', data={
+            'oldpasswd': '12345',
+            'email': '1@2',
+            'phonenumber': '123456',
+            'username': '@',
+            'password': '12345'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 401)

@@ -21,7 +21,7 @@
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
-        <el-col :span="24">
+        <el-col :span="20">
             <el-col :span="2" :offset="1">
               <a href='/'>
                 <img src="@/assets/logo2.jpg" alt="" class="searchlogo" width="100%" height="100%">
@@ -30,11 +30,25 @@
             <el-col :span="8" class="searchinput">
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
-                v-model = "keyword"
+                v-model.lazy = "keyword"
                 @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
             </el-col>
+            <el-col :span="2">
+              <div> </div>
+            </el-col>
+            <el-col :span="4">
+              <el-dropdown @command="handleCommand" class="choice">
+                <span class="el-dropdown-link">
+                  搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="a">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="b">按时间排序</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+          </el-col>
         </el-col>
       </el-row>
   </div>
@@ -99,6 +113,42 @@ export default {
     }
   },
   methods: {
+    handleCommand: async function (command) {
+      if (command === 'a') {
+        await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+          {
+            params: {
+              query: this.keyword
+            }
+          }).then(ret => {
+          this.infolist = ret.data.infolist
+          this.count = ret.data.count
+          this.pages = Math.ceil(this.count / 20)
+          this.currentpage = 1
+        }, error => {
+          console.log(error)
+          this.infolist = []
+          alert('服务器忙')
+        })
+      } else if (command === 'b') {
+        await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+          {
+            params: {
+              query: this.keyword,
+              time: true
+            }
+          }).then(ret => {
+          this.infolist = ret.data.infolist
+          this.count = ret.data.count
+          this.pages = Math.ceil(this.count / 20)
+          this.currentpage = 1
+        }, error => {
+          console.log(error)
+          this.infolist = []
+          alert('服务器忙')
+        })
+      }
+    },
     goto: async function (item) {
       var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
       var particle = []
@@ -246,5 +296,16 @@ export default {
   color: black;
   text-decoration: underline;
   cursor: pointer;
+}
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
+}
+.choice{
+  padding-left: 10px;
+  padding-top: 10px;
 }
 </style>

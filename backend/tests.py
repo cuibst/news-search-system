@@ -158,7 +158,8 @@ class TestViews(TestCase):
         }, content_type='application/json')
         with open('./backend/token.json', 'r', encoding='utf-8') as f:
             tmp_dict = json.load(f)
-        token = tmp_dict['1'][0]
+        k = str(user.id)
+        token = tmp_dict[k][0]
         a = Client(HTTP_AUTHENTICATION_TOKEN=token)
         response = a.get('/api/user/')
         data = json.loads(response.content)
@@ -177,7 +178,8 @@ class TestViews(TestCase):
         }, content_type='application/json')
         with open('./backend/token.json', 'r', encoding='utf-8') as f:
             tmp_dict = json.load(f)
-        token = tmp_dict['1'][0]
+        k = str(user.id)
+        token = tmp_dict[k][0]
         a = Client(HTTP_AUTHENTICATION_TOKEN=token)
         response = a.post('/api/userchange/', data={
             'oldpasswd': '123'

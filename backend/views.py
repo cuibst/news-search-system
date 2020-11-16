@@ -78,7 +78,7 @@ def login(request):
                 tmp_dict = json.load(f)
                 print(tmp_dict)
                 print("________________________________________________________")
-                tmp_dict[str(user.id)] = (token, time.time())
+                tmp_dict[str(user.id)] = [token, time.time()]
                 print(tmp_dict)
                 f.close()
             with open('./backend/token.json', 'w') as f:

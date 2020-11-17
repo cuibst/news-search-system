@@ -442,6 +442,9 @@ def get_behavior(request):
 
 @csrf_exempt
 def get_record(request):
+    '''
+        get users' search history
+    '''
     token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
     user_id = -1
     with open('./backend/token.json', 'r', encoding='utf-8') as f:
@@ -475,6 +478,9 @@ def get_record(request):
 
 @csrf_exempt
 def post_record(request):
+    '''
+        post users' search history
+    '''
     print(1)
     token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
     user_id = -1

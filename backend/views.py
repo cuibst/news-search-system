@@ -59,7 +59,6 @@ def login(request):
     login
     '''
     if request.method == 'POST':
-
         data = json.loads(request.body)
         name = data['username']
         password = data['password']
@@ -78,7 +77,7 @@ def login(request):
                 tmp_dict = json.load(f)
                 print(tmp_dict)
                 print("________________________________________________________")
-                tmp_dict[str(user.id)] = (token, time.time())
+                tmp_dict[str(user.id)] = [token, time.time()]
                 print(tmp_dict)
                 f.close()
             with open('./backend/token.json', 'w') as f:
@@ -289,9 +288,11 @@ def user_change(request):
                 'code': 403,
                 'info': "invalid token"
             }, status=200)
+        print("------------------------")
+        print(user_id)
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
-
+        print(user.password)
         if data['oldpasswd'] != user.password:
             return JsonResponse({
                 'code': 402
@@ -302,6 +303,7 @@ def user_change(request):
         if data['password'] != '':
             user.password = data['password']
         if user.name == data['username']:
+            user.save()
             return JsonResponse({
                 'code': 200
             }, status=200)
@@ -310,7 +312,8 @@ def user_change(request):
             user.name = data['username']
             user.save()
             return JsonResponse({
-                'code': 200
+                'code': 200,
+                'info': 'name changed'
             }, status=200)
         return JsonResponse({
             'code': 401
@@ -347,40 +350,6 @@ def user(request):
             'phonenumber': user.phone_number,
             'email': user.email
         }
-    })
-
-
-@csrf_exempt
-def add_behavior(request):
-    '''
-        add behavior to user
-    '''
-    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
-    user_id = -1
-    with open('./backend/token.json', 'r', encoding='utf-8') as f:
-        tmp_dict = json.load(f)
-        for key, value in tmp_dict.items():
-            if token == value[0]:
-                if value[1] + TIME_OUT < time.time():
-                    return JsonResponse({
-                        'code': 403,
-                        'info': 'overdue token'
-                    }, status=200)
-                user_id = int(key)
-                break
-    if user_id == -1:
-        return JsonResponse({
-            'code': 403,
-            'info': 'invalid token'
-        }, status=200)
-    user = User.objects.filter(id=user_id).first()
-    data = json.loads(request.body)
-    content = data['content']
-    tmp_behavior = Behavior(user=user, content=content)
-    tmp_behavior.save()
-    return JsonResponse({
-        'code': 200,
-        'info': 'save successfully'
     }, status=200)
 
 
@@ -407,7 +376,6 @@ def views(request):
             'code': 403,
             'info': 'invalid token'
         }, status=200)
-
     user1 = User.objects.filter(id=user_id).first()
     print(user1.id)
     data = json.loads(request.body)

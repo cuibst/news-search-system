@@ -9,7 +9,7 @@
      <h3 class="tit2">猜你喜欢 <span>Like</span></h3>
      <el-row v-for="(item,index) in likenews" :key="index">
        <el-col :sm="24" :md="13">
-         <h3 class="title" @click="goto(item.news_url)">{{item.title}}</h3>
+         <h3 style="vertical-align: middle" class="title" @click="goto(item.news_url)">{{item.title}}</h3>
        </el-col>
        <el-col :xs="16" :sm="12" :md="4" :offset="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
          <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
@@ -20,6 +20,7 @@
 
 <script>
 import axios from 'axios'
+// import '@/mock/index'
 export default {
   name: 'Profile',
   props: {

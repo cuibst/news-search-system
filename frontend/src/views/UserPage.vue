@@ -1,13 +1,13 @@
 <template>
   <div id="UserPage" >
     <el-container>
-    <el-aside width="140px">
+    <el-aside :style="'width: '+ ((offsetWid > 400)? '140px' : '60px')" >
       <a href="/" class="index">
           <img src="../assets/logo2.jpg" width="100%">
-          <span class="index">Tg Search</span>
+          <span class="index" v-show="offsetWid > 400">Tg Search</span>
       </a>
       <el-menu default-active="1" class="el-menu-vertial-demo"
-       @select="changeindex" style="margin-top:10px; padding-top:0; border:0">
+       @select="changeindex" style="margin-top:10px; padding-top:0; border:0" :collapse="offsetWid < 400">
         <el-menu-item index="1">
           <i class="el-icon-menu"></i>
           <span slot="title">用户详情</span>
@@ -20,8 +20,11 @@
     </el-aside>
   <el-container>
     <el-header>
-      <span class="welcome">
+      <span class="welcome" v-show="offsetWid > 450">
         Hello, {{this.$store.state.username}}! This is your own world.
+      </span>
+      <span class="welcome" v-show="offsetWid <= 450">
+        欢迎来到用户空间
       </span>
     </el-header>
     <el-main>
@@ -56,11 +59,18 @@ export default {
         type: Object,
         default: () => {}
       },
-      activeindex: 1
+      activeindex: 1,
+      offsetWid: 1000
     }
   },
   mounted () {
+    this.offsetWid = document.documentElement.clientWidth || screen.width
+    const that = this
+    window.addEventListener('resize', () => {
+      that.offsetWid = document.documentElement.clientWidth || screen.width
+    })
     this.getUser()
+    console.log('width:' + ((this.offsetWid > 400) ? '140px' : '30px'))
   },
   methods: {
     getUser: function () {

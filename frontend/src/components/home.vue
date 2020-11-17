@@ -76,7 +76,9 @@
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
                   <a :href="item.news_url">
                     <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
-                    <div class="img_title">{{item.title}}</div>
+                    <div class="img_title_box">
+                      <span class="img_title"> {{item.title}}</span>
+                    </div>
                   </a>
                 </el-carousel-item>
               </el-carousel>
@@ -111,12 +113,13 @@
             </el-col>
             <el-col :span="14" class="box2">
               <ul>
-                <li v-for="(item,index) in textnews" :key="index">
+                <li v-for="(item,index) in likenews" :key="index">
                   <span class="child_tit">{{item.title}}</span>
                 </li>
               </ul>
             </el-col>
           </el-col>
+          <!-- 不确定此部分能否显示
           <el-col :span="24" style="margin-top:5px;">
             <el-col :span="10">
               <el-col :span="11">
@@ -140,6 +143,7 @@
               </ul>
             </el-col>
           </el-col>
+          -->
         </el-col>
       </el-row>
     </div>
@@ -184,9 +188,11 @@ export default {
         }).then(ret => {
         that.imgnews = ret.data.data.imgnews
         that.textnews = ret.data.data.textnews
+        that.likenews = ret.data.data.likenews || []
       }, error => {
         that.imgnews = []
         that.textnews = []
+        that.likenews = []
         console.log(error)
         alert('服务器忙')
       })
@@ -223,9 +229,12 @@ export default {
       }).then(ret => {
       that.imgnews = ret.data.data.imgnews
       that.textnews = ret.data.data.textnews
+      that.likenews = ret.data.data.likenews || []
+      console.log(that.imgnews)
     }, error => {
       that.imgnews = []
       that.textnews = []
+      that.likenews = []
       console.log(error)
       alert('服务器忙')
     })
@@ -241,7 +250,8 @@ export default {
       selactive: 0,
       navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
       imgnews: [],
-      textnews: []
+      textnews: [],
+      likenews: []
     }
   }
 }
@@ -412,15 +422,20 @@ export default {
   background-color: black;
   color: white;
 }
-.img_title{
+.img_title_box{
   position:absolute;
-  width:475px;
+  width:100%;
   height:100px;
   bottom: -20%;
   left: 0%;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.466);
   color: white;
-  text-align: center;
+  padding-left: 10px;
+  text-align: left;
+}
+.img_title{
+  font-weight: bold;
+  opacity: 1;
 }
 .img_tit:hover{
   background:rgb(79, 125, 192);

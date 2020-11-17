@@ -59,7 +59,6 @@ def login(request):
     login
     '''
     if request.method == 'POST':
-
         data = json.loads(request.body)
         name = data['username']
         password = data['password']
@@ -293,7 +292,7 @@ def user_change(request):
         print(user_id)
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
-        print(User.objects.all())
+        print(user.password)
         if data['oldpasswd'] != user.password:
             return JsonResponse({
                 'code': 402
@@ -313,7 +312,8 @@ def user_change(request):
             user.name = data['username']
             user.save()
             return JsonResponse({
-                'code': 200
+                'code': 200,
+                'info': 'name changed'
             }, status=200)
         return JsonResponse({
             'code': 401

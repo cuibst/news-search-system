@@ -165,6 +165,12 @@ class TestViews(TestCase):
         data = json.loads(response.content)
         self.assertEqual(data['user']['username'], '1')
         self.assertEqual(response.status_code, 200)
+        token1 = token + '1'
+        b = Client(HTTP_AUTHENTICATION_TOKEN=token1)
+        response = b.get('/api/user/')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 403)
+        self.assertEqual(data['info'], 'invalid token')
 
     def test_user_change(self):
         '''
@@ -190,11 +196,21 @@ class TestViews(TestCase):
             'oldpasswd': '12',
             'email': '1@2',
             'phonenumber': '123456',
+            'username': '1',
+            'password': '12345'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        response = a.post('/api/userchange/', data={
+            'oldpasswd': '12345',
+            'email': '1@2',
+            'phonenumber': '123456',
             'username': '123',
             'password': '12345'
         }, content_type='application/json')
         data = json.loads(response.content)
         self.assertEqual(data['code'], 200)
+        self.assertEqual(data['info'], 'name changed')
         user1 = User(name='@')
         user1.save()
         response = a.post('/api/userchange/', data={
@@ -227,6 +243,14 @@ class TestViews(TestCase):
         }, content_type='application/json')
         data = json.loads(response.content)
         self.assertEqual(data['code'], 200)
+        token1 = token + '1'
+        b = Client(HTTP_AUTHENTICATION_TOKEN=token1)
+        response = b.post('/api/views/', data={
+            'like': ['1', '2', '3', '4', '5']
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 403)
+        self.assertEqual(data['info'], 'invalid token')
 
     def test_get_behavior(self):
         '''
@@ -244,8 +268,12 @@ class TestViews(TestCase):
         token = tmp_dict[k][0]
         a = Client(HTTP_AUTHENTICATION_TOKEN=token)
         a.post('/api/views/', data={
-            'like': ['1', '2', '3', '4', '5', '6']
+            'like': ['1', '2', '3', '4']
         }, content_type='application/json')
+        response = a.post('/api/getbehavior/', data={
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['length'], 4)
         a.post('/api/views/', data={
             'like': ['1', '2', '3', '4', '5']
         }, content_type='application/json')
@@ -253,4 +281,3 @@ class TestViews(TestCase):
         }, content_type='application/json')
         data = json.loads(response.content)
         self.assertEqual(data['length'], 5)
-        self.assertEqual(data['list'][4], '5')

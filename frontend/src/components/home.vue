@@ -24,10 +24,11 @@
         <el-col :span="24" >
           <div>
             <el-col :span="4">
-              <img src="@/assets/logo2.jpg" id="logo" alt="">
+              <img src="@/assets/logo3.png" id="logo" alt="">
             </el-col>
             <el-col :span="16">
               <el-input
+                class="searchinput"
                 placeholder="请输入内容"
                 v-model="keyword"
                 @keyup.enter.native="search">
@@ -167,7 +168,7 @@ export default {
       if (he !== -1) {
         height = 300
       }
-      if (height > 222) {
+      if (height > 144) {
         this.headcss = 'nav2'
       } else {
         this.headcss = 'nav'
@@ -273,8 +274,9 @@ export default {
   margin-top: 20px;
 }
 #logo{
-  width:100px;
-  height:30px;
+  width:50px;
+  height:50px;
+  transform: translate(0,-10%);
 }
 .btn_search{
       background-color: #4e6ef2 !important;
@@ -332,6 +334,7 @@ export default {
   color:#fff;
   font-weight: bold;
   margin-bottom: 20px;
+  width: 100%;
 }
 .nav2{
   background:#01204f;
@@ -340,7 +343,8 @@ export default {
   margin-bottom: 20px;
   position: fixed;
   top: 0;
-  width: 100%;
+  width: 98%;
+  right: 1%;
   z-index: 999;
 }
 .dot{
@@ -478,5 +482,9 @@ export default {
   color: black;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.searchinput{
+  transform: translate(-5%,0);
 }
 </style>

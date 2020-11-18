@@ -301,7 +301,6 @@ class TestViews(TestCase):
         '''
         response = self.client.get('/api/getnews/')
         data = json.loads(response.content)
-        print(data)
         assert 'imgnews' in data['data']
         assert 'textnews' in data['data']
     def test_post_record(self):
@@ -366,3 +365,11 @@ class TestViews(TestCase):
         test_list = ['11', '10', '9', '8', '7', '6', '5', '4', '3', '2']
         self.assertEqual(data['length'], 10)
         self.assertEqual(data['data'], test_list)
+
+    def test_get_hotwords(self):
+        '''
+        test for get_hotwords() function in views.py
+        '''
+        response = self.client.get('/api/gethotwords/')
+        data = json.loads(response.content)
+        assert 'data' in data

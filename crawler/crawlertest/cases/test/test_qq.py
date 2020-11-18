@@ -39,7 +39,7 @@ class TestQqIncSpider:
         responce = resource_get(test_url, request=Request(url=test_url))
         result = self.spider.parse(responce)
         for request in result:
-            assert re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w+.*', request.url)
+            assert re.search(r'20\d{6}\w+', request.url)
 
     def test_parse_not_valid_01(self, resource_get):
         # 此测例检查错误的新闻列表url，测试offset=200的情况

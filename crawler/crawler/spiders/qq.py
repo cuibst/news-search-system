@@ -17,7 +17,7 @@ def parse_item(response):
     :param response:
     :return:
     '''
-    # 从新闻页爬取信息，存入data/qq/news_info/文件夹
+    # 从新闻页爬取信息，传递给pipelines
     url = response.request.url
     script_list = response.xpath('/html/head//script/text()').extract()
     news_brief_info = None
@@ -97,7 +97,7 @@ class QqIncSpider(Spider):
         '''
         crawl the list of the news, and get summary
         '''
-        # 爬取新闻信息列表，提取新闻的简要信息，存入data/qq/news_brief_info/文件夹
+        # 爬取新闻信息列表，提取新闻url，再进行后一步爬取
         try:
             data_list = json.loads(response.text)['data']['list']
         except (ValueError, KeyError, TypeError):

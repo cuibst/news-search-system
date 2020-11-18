@@ -14,7 +14,8 @@
         <br>
         <!--密码-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-view" show-password v-model="password" placeholder="请输入您的密码" class="password"></el-input>
+          <el-input prefix-icon="el-icon-view" show-password
+            v-model="password" placeholder="请输入您的密码" class="password" @keyup.enter.native="sendlogin"></el-input>
         </el-form-item>
         <!--按钮-->
         <br>

@@ -80,8 +80,7 @@ export default {
       axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
-            query: this.likewords,
-            time: true
+            query: this.likewords
           }
         }).then(ret => {
         this.likenews = ret.data.infolist

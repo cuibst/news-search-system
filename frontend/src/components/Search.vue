@@ -143,6 +143,10 @@ export default {
         })
       window.open(item.news_url, '_blank')
     },
+    unique (arr) {
+      const res = new Map()
+      return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
+    },
     KeyChange: async function (newkey) {
       await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
@@ -151,11 +155,10 @@ export default {
             time: this.time
           }
         }).then(ret => {
-        this.infolist = []
-        this.cnt = 0
-        for (var i = 0; i < ret.data.infolist.length; i++) {
-          if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
-        }
+        this.infolist = ret.data.infolist
+        this.removecnt = this.infolist.length
+        this.infolist = this.unique(this.infolist)
+        this.removecnt = this.removecnt - this.infolist.length
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1

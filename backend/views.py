@@ -253,12 +253,17 @@ def get_news(request):
     for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
         data = news_to_dict(news)
         imgnews_list.append(data)
-    for news in News.objects.order_by('-pk').filter(cat_query)[:25]:
+    id_set = set()
+    title_set = set()
+    for news in News.objects.order_by('-pk').filter(cat_query)[:50]:
         if len(textnews_list) >= 20:
             break
         data = news_to_dict(news)
-        if data not in imgnews_list:
+        if data not in imgnews_list and data['title'] not in title_set \
+            and data['news_id'] not in id_set:
             textnews_list.append(data)
+            id_set.add(data['news_id'])
+            title_set.add(data['title'])
         else:
             continue
     response_data = {

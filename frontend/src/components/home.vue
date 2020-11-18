@@ -63,7 +63,7 @@
               <ul v-for="(item,index) in textnews" :key="index" >
                 <li @click="goto(item.news_url)">
                   <i class="dot"></i>
-                  <span>{{item.title}}</span>
+                  <span :style="{'font-weight': index%5==0?'bold':''}">{{item.title}}</span>
                 </li>
               </ul>
             </div>
@@ -76,8 +76,8 @@
               <el-carousel :interval="5000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
                   <a :href="item.news_url" target="_blank">
-                    <div style="width: 572px; height: 430px;overflow:hidden">
-                      <img :src="item.img" style="width:572px;overflow:hidden" alt="" srcset="">
+                    <div style="width: 572px; height: 400px;overflow:hidden">
+                      <img :src="item.img" style="width:572px;min-height: 400px" alt="" srcset="">
                     </div>
                     <div class="img_title_box">
                       <span class="img_title"> {{item.title}}</span>
@@ -545,7 +545,7 @@ export default {
 }
 
 /deep/ .el-carousel__container{
-          height: 430px;
+          height: 400px;
         }
 
 .news_img{

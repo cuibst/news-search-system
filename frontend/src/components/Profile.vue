@@ -37,6 +37,7 @@ export default {
   },
   data () {
     return {
+      likewords: '',
       likenews: [],
       history: [],
       length: 0
@@ -49,9 +50,10 @@ export default {
           type: 0
         }
       }).then(ret => {
-      this.likenews = ret.data.data.likenews
+      this.likewords = ret.data.data.likeword
+      this.getLikenews()
     }, error => {
-      this.likenews = []
+      this.likewords = ''
       console.log(error)
       alert('服务器忙')
     })
@@ -69,6 +71,35 @@ export default {
     },
     search (keyword) {
       this.$router.push({ name: 'SearchResult', params: { keyword: keyword } })
+    },
+    unique (arr) {
+      const res = new Map()
+      return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
+    },
+    getLikenews () {
+      axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+        {
+          params: {
+            query: this.likewords,
+            time: true
+          }
+        }).then(ret => {
+        this.likenews = ret.data.infolist
+        var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
+        var j = 0
+        var len = 0
+        for (j = 0, len = this.likenews.length; j < len; j++) {
+          var r = reg.exec(this.likenews[j].title)
+          while (r) {
+            this.likenews[j].title = (this.likenews[j].title).replace(reg, r[1])
+            r = reg.exec(this.likenews[j].title)
+          }
+        }
+        this.likenews = this.unique(this.likenews)
+      }, error => {
+        this.likenews = this.imgnews
+        console.log(error)
+      })
     }
   }
 }

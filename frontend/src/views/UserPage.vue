@@ -106,7 +106,8 @@ export default {
     color: #333;
     text-align: center;
     height:100%;
-    border-right: darkgray 1px solid;
+    // border-right: darkgray 1px solid;
+    box-shadow: lightgray 2px 0 5px 4px;
 }
 .el-main {
     color: #333;

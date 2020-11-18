@@ -20,3 +20,10 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.get('/123.py')
         self.assertEqual(response.status_code, 404)
+
+    def test_metrics(self):
+        '''
+        Test /metrics get
+        '''
+        response = self.client.get('/metrics')
+        self.assertEqual(response.status_code, 200)

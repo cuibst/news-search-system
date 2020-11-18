@@ -21,10 +21,10 @@
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
-        <el-col :span="20">
-            <el-col :span="2" :offset="1">
+        <el-col :span="24">
+            <el-col :span="2" :offset="1.5">
               <a href='/'>
-                <img src="@/assets/logo2.jpg" alt="" class="searchlogo" width="100%" height="100%">
+                <img src="@/assets/logo3.png" alt="" class="searchlogo" width="100%" height="100%">
               </a>
             </el-col>
             <el-col :span="8" class="searchinput">
@@ -44,8 +44,8 @@
                   搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="a">按相关排序</el-dropdown-item>
-                  <el-dropdown-item command="b">按时间排序</el-dropdown-item>
+                  <el-dropdown-item command="false" :class="time?'':'selected'">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="true" :class="time?'selected':''">按时间排序</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
           </el-col>
@@ -53,6 +53,11 @@
       </el-row>
   </div>
   <div class="content">
+      <el-row>
+        <el-col :span="12" :offset="2">
+          共搜索到{{count}}个结果<span v-if="removecnt === 0">。</span><span v-else>，并为您去除了本页中的{{removecnt}}条重复结果</span>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
@@ -96,7 +101,10 @@ export default {
       infolist: [],
       currentpage: 1,
       pages: 0,
-      login: false
+      count: 0,
+      removecnt: 0,
+      login: false,
+      time: false
     }
   },
   mounted () {
@@ -113,41 +121,10 @@ export default {
     }
   },
   methods: {
-    handleCommand: async function (command) {
-      if (command === 'a') {
-        await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
-          {
-            params: {
-              query: this.keyword
-            }
-          }).then(ret => {
-          this.infolist = ret.data.infolist
-          this.count = ret.data.count
-          this.pages = Math.ceil(this.count / 20)
-          this.currentpage = 1
-        }, error => {
-          console.log(error)
-          this.infolist = []
-          alert('服务器忙')
-        })
-      } else if (command === 'b') {
-        await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
-          {
-            params: {
-              query: this.keyword,
-              time: true
-            }
-          }).then(ret => {
-          this.infolist = ret.data.infolist
-          this.count = ret.data.count
-          this.pages = Math.ceil(this.count / 20)
-          this.currentpage = 1
-        }, error => {
-          console.log(error)
-          this.infolist = []
-          alert('服务器忙')
-        })
-      }
+    handleCommand: function (command) {
+      console.log(command)
+      this.time = command === 'true'
+      this.KeyChange(this.keyword)
     },
     goto: async function (item) {
       var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
@@ -172,10 +149,17 @@ export default {
       await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
-            query: newkey
+            query: newkey,
+            time: this.time
           }
         }).then(ret => {
-        this.infolist = ret.data.infolist
+        this.infolist = []
+        this.cnt = 0
+        for (var i = 0; i < ret.data.infolist.length; i++) {
+          console.log(ret.data.infolist[i])
+          if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
+        }
+        console.log(this.infolist)
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
@@ -184,6 +168,10 @@ export default {
         this.infolist = []
         alert('服务器忙')
       })
+      axios.post('/api/postrecord/',
+        {
+          content: newkey
+        })
     },
     search () {
       // 此处处理搜索路径变更
@@ -195,10 +183,17 @@ export default {
         {
           params: {
             query: this.keyword,
-            start: (currentPage - 1) * 20
+            start: (currentPage - 1) * 20,
+            time: this.time
           }
         }).then(ret => {
-        this.infolist = ret.data.infolist
+        this.infolist = []
+        this.removecnt = 0
+        for (var i = 0; i < ret.data.infolist.length; i++) {
+          console.log(ret.data.infolist[i])
+          if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
+        }
+        console.log(this.infolist)
       }, error => {
         console.log(error)
         this.infolist = []
@@ -226,6 +221,8 @@ export default {
 <style lang="less" scoped>
 .searchlogo {
   height: 50px;
+  width: 50px;
+  transform: translate(100%,0);
 }
 .nav{
   padding:20px 0px;
@@ -307,5 +304,9 @@ export default {
 .choice{
   padding-left: 10px;
   padding-top: 10px;
+}
+.selected{
+  background-color: rgb(64, 158, 255);
+  color: white
 }
 </style>

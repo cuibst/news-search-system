@@ -6,6 +6,12 @@
        <li>电子邮箱：&nbsp;{{user.email}}</li>
        <li>手机号码：&nbsp;{{user.phonenumber}}</li>
      </ul>
+     <h3 class="tit2" v-if="length>0">搜索记录 <span>History</span></h3>
+     <ul v-if="length>0">
+       <li v-for="(item, index) in history" :key="index">
+         <span class="history" @click="search(item)">{{item}}</span>
+       </li>
+     </ul>
      <h3 class="tit2">猜你喜欢 <span>Like</span></h3>
      <el-row v-for="(item,index) in likenews" :key="index">
        <el-col :sm="24" :md="13">
@@ -31,7 +37,10 @@ export default {
   },
   data () {
     return {
-      likenews: []
+      likewords: '',
+      likenews: [],
+      history: [],
+      length: 0
     }
   },
   created () {
@@ -41,16 +50,56 @@ export default {
           type: 0
         }
       }).then(ret => {
-      this.likenews = ret.data.data.likenews
+      this.likewords = ret.data.data.likeword
+      this.getLikenews()
     }, error => {
-      this.likenews = []
+      this.likewords = ''
       console.log(error)
       alert('服务器忙')
+    })
+    axios.get('/api/getrecord/').then(ret => {
+      this.history = ret.data.data
+      this.length = ret.data.length
+    }, error => {
+      this.length = 0
+      console.log(error)
     })
   },
   methods: {
     goto (url) {
       window.open(url, '_blank')
+    },
+    search (keyword) {
+      this.$router.push({ name: 'SearchResult', params: { keyword: keyword } })
+    },
+    unique (arr) {
+      const res = new Map()
+      return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
+    },
+    getLikenews () {
+      axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+        {
+          params: {
+            query: this.likewords,
+            time: true
+          }
+        }).then(ret => {
+        this.likenews = ret.data.infolist
+        var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
+        var j = 0
+        var len = 0
+        for (j = 0, len = this.likenews.length; j < len; j++) {
+          var r = reg.exec(this.likenews[j].title)
+          while (r) {
+            this.likenews[j].title = (this.likenews[j].title).replace(reg, r[1])
+            r = reg.exec(this.likenews[j].title)
+          }
+        }
+        this.likenews = this.unique(this.likenews)
+      }, error => {
+        this.likenews = []
+        console.log(error)
+      })
     }
   }
 }
@@ -114,5 +163,10 @@ ul li {
 .el-col{
   text-align: left;
   min-height: 100px;
+}
+.history{
+  cursor: pointer;
+  text-decoration: underline;
+  font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 </style>

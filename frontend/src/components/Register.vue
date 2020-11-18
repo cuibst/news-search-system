@@ -1,5 +1,8 @@
 <template>
   <div class="login_container">
+    <div class="left">
+      <img src="https://passport.baidu.com/static/passpc-account/img/reg_bg_min.jpg" class="back">
+    </div>
     <div class="login_box">
       <!-- 头像区域 -->
       <div class="avatar_box">
@@ -144,17 +147,17 @@ export default {
 }
 
 .login_box {
-  width: 450px;
-  height: 500px;
-  background-color: aliceblue;
+  width: 340px;
+  height: 700px;
+  background-color: rgba(255,255,255,.9);
   border-radius: 30px;
   position: absolute;
-  left: 50%;
+  right: 0;
   top: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-30%,-50%);
   .avatar_box{
-    height: 130px;
-    width: 130px;
+    height: 22%;
+    width: 50%;
     background-color: aliceblue;
     border: 1px solid #eeeeee;
     border-radius: 50%;
@@ -162,7 +165,7 @@ export default {
     box-shadow: 0 0 10px #dddddd;
     position: absolute;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%,30%);
     img {
       width: 100%;
       height: 100%;
@@ -181,14 +184,28 @@ export default {
 .logbtn {
   display: flex;
   justify-content: flex-end;
+  transform: translate(0,60%);
 }
 
 .login-form {
   position: absolute;
-  top: 100px;
+  top: 40%;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
+.left{
+  float: left;
+  width: 100%;
+  height: 100%;
+  left: 0.1%;
+  position: relative;
+  display: block;
+}
+
+.back{
+  height: 100%;
+  width: 100%;
+}
 </style>

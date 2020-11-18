@@ -19,6 +19,7 @@ from . import views
 
 urlpatterns = [
     path('', views.serve_static),
+    path('metrics', views.metrics),
     path('admin/', admin.site.urls),
     path('api/', include('backend.urls')),
     re_path(r'(?P<path>.+)', views.serve_static),

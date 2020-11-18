@@ -24,10 +24,11 @@
         <el-col :span="24" >
           <div>
             <el-col :span="4">
-              <img src="@/assets/logo2.jpg" id="logo" alt="">
+              <img src="@/assets/logo3.png" id="logo" alt="">
             </el-col>
             <el-col :span="16">
               <el-input
+                class="searchinput"
                 placeholder="请输入内容"
                 v-model="keyword"
                 @keyup.enter.native="search">
@@ -74,7 +75,7 @@
             <div class="imgs">
               <el-carousel :interval="5000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
-                  <a :href="item.news_url">
+                  <a :href="item.news_url" target="_blank">
                     <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
                     <div class="img_title_box">
                       <span class="img_title"> {{item.title}}</span>
@@ -100,7 +101,7 @@
             <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
             <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
           </el-col>
-
+          <div v-show="login">
           <el-col :span="24">
             <h3 class="tit2">猜你喜欢 <span>LIKE</span></h3>
           </el-col>
@@ -114,11 +115,12 @@
             <el-col :span="14" class="box2">
               <ul>
                 <li v-for="(item,index) in likenews" :key="index">
-                  <span class="child_tit">{{item.title}}</span>
+                  <span class="child_tit" @click="goto(item.news_url)">{{item.title}}</span>
                 </li>
               </ul>
             </el-col>
           </el-col>
+          </div>
           <!-- 不确定此部分能否显示
           <el-col :span="24" style="margin-top:5px;">
             <el-col :span="10">
@@ -171,11 +173,15 @@ export default {
       if (he !== -1) {
         height = 300
       }
-      if (height > 222) {
+      if (height > 144) {
         this.headcss = 'nav2'
       } else {
         this.headcss = 'nav'
       }
+    },
+    unique (arr) {
+      const res = new Map()
+      return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
     },
     selectclass (index) {
       this.activenav = index
@@ -188,13 +194,41 @@ export default {
         }).then(ret => {
         that.imgnews = ret.data.data.imgnews
         that.textnews = ret.data.data.textnews
-        that.likenews = ret.data.data.likenews || []
+        that.likewords = ret.data.data.likeword || ''
+        this.getLikenews()
       }, error => {
         that.imgnews = []
         that.textnews = []
-        that.likenews = []
+        that.likewords = ''
         console.log(error)
         alert('服务器忙')
+      })
+    },
+    getLikenews () {
+      console.log(this.likewords)
+      axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+        {
+          params: {
+            query: this.likewords,
+            time: true
+          }
+        }).then(ret => {
+        this.likenews = ret.data.infolist
+        console.log(ret.data.infolist)
+        var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
+        var j = 0
+        var len = 0
+        for (j = 0, len = this.likenews.length; j < len; j++) {
+          var r = reg.exec(this.likenews[j].title)
+          while (r) {
+            this.likenews[j].title = (this.likenews[j].title).replace(reg, r[1])
+            r = reg.exec(this.likenews[j].title)
+          }
+        }
+        this.likenews = this.unique(this.likenews).slice(0, (this.likenews.length > 8) ? 8 : (this.likenews.length))
+      }, error => {
+        this.likenews = this.imgnews
+        console.log(error)
       })
     },
     selectStyle (index) {
@@ -229,12 +263,12 @@ export default {
       }).then(ret => {
       that.imgnews = ret.data.data.imgnews
       that.textnews = ret.data.data.textnews
-      that.likenews = ret.data.data.likenews || []
-      console.log(that.imgnews)
+      that.likewords = ret.data.data.likeword || ''
+      this.getLikenews()
     }, error => {
       that.imgnews = []
       that.textnews = []
-      that.likenews = []
+      that.likewords = ''
       console.log(error)
       alert('服务器忙')
     })
@@ -251,7 +285,8 @@ export default {
       navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
       imgnews: [],
       textnews: [],
-      likenews: []
+      likenews: [],
+      likewords: ''
     }
   }
 }
@@ -285,8 +320,9 @@ export default {
   margin-top: 20px;
 }
 #logo{
-  width:100px;
-  height:30px;
+  width:50px;
+  height:50px;
+  transform: translate(0,-10%);
 }
 .btn_search{
       background-color: #4e6ef2 !important;
@@ -344,6 +380,7 @@ export default {
   color:#fff;
   font-weight: bold;
   margin-bottom: 20px;
+  width: 100%;
 }
 .nav2{
   background:#01204f;
@@ -352,7 +389,8 @@ export default {
   margin-bottom: 20px;
   position: fixed;
   top: 0;
-  width: 100%;
+  width: 98%;
+  right: 1%;
   z-index: 999;
 }
 .dot{
@@ -448,6 +486,8 @@ export default {
   margin-block-end: 1em;
   margin-inline-start: 0px;
   margin-inline-end: 0px;
+  line-height: 25px;
+  cursor: pointer;
 }
 .news_word{
     font-size: 18px;
@@ -495,5 +535,9 @@ export default {
   color: black;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.searchinput{
+  transform: translate(-5%,0);
 }
 </style>

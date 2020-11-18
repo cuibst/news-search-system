@@ -281,3 +281,66 @@ class TestViews(TestCase):
         }, content_type='application/json')
         data = json.loads(response.content)
         self.assertEqual(data['length'], 5)
+
+    def test_post_record(self):
+        '''
+            test post_record
+        '''
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        response = a.post('/api/postrecord/', data={
+            'content': '0'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        self.assertEqual(data['info'], 'save successfully')
+        response = a.post('/api/postrecord/', data={
+            'content': '0'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        self.assertEqual(data['info'], 'repeat search')
+        for i in range(1, 10):
+            a.post('/api/postrecord/', data={
+                'content': str(i)
+            }, content_type='application/json')
+        response = a.post('/api/postrecord/', data={
+            'content': 'a'
+        }, content_type='application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        self.assertEqual(data['info'], 'replace one')
+
+    def test_get_record(self):
+        '''
+            test get_record
+        '''
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        for i in range(1, 12):
+            a.post('/api/postrecord/', data={
+                'content': str(i)
+            }, content_type='application/json')
+        response = a.get('/api/getrecord/')
+        data = json.loads(response.content)
+        test_list = ['11', '10', '9', '8', '7', '6', '5', '4', '3', '2']
+        self.assertEqual(data['length'], 10)
+        self.assertEqual(data['data'], test_list)

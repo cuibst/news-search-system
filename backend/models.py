@@ -27,4 +27,10 @@ class News(models.Model):
 class Behavior(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_behavior", default='')
     content = models.CharField(max_length=100, default='')
+
+class Record(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_record", default='')
+    content = models.CharField(max_length=100,default='')
+
+
 # Create your models here.

@@ -18,7 +18,8 @@ from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-from .models import User, News, Behavior
+from .models import User, News, Behavior, Record
+
 
 # Create your views here.
 HEADER = {'typ': 'JWP', 'alg': 'default'}
@@ -436,4 +437,91 @@ def get_behavior(request):
     return JsonResponse({
         'list': final_list,
         'length': 5
+    }, status=200)
+
+
+@csrf_exempt
+def get_record(request):
+    '''
+        get users' search history
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    print(user_id)
+    user3 = User.objects.filter(id=user_id).first()
+    length = user3.user_record.count()
+    tmp_list = []
+    for i in user3.user_record.all():
+        tmp_list.append(i.content)
+    tmp_list.reverse()
+    return JsonResponse({
+        'length': length,
+        'data': tmp_list
+    }, status=200)
+
+
+@csrf_exempt
+def post_record(request):
+    '''
+        post users' search history
+    '''
+    print(1)
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    print(user_id)
+    user2 = User.objects.filter(id=user_id).first()
+    data = json.loads(request.body)
+    content = data['content']
+    record = Record(user=user2, content=content)
+    for item in user2.user_record.all():
+        if item.content == content:
+            item.delete()
+            record.save()
+            return JsonResponse({
+                'code': 200,
+                'info': 'repeat search'
+            }, status=200)
+    record.save()
+    num = user2.user_record.count()
+    if num > 10:
+        user2.user_record.first().delete()
+        return JsonResponse({
+            'code': 200,
+            'info': 'replace one'
+        }, status=200)
+    return JsonResponse({
+        'code': 200,
+        'info': 'save successfully'
     }, status=200)

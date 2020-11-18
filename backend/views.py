@@ -156,9 +156,12 @@ def upload_news(request):
     rep_news_list = News.objects.values('news_id').filter(news_id__in=origin_news_id_list)
     rep_news_id_list = [news['news_id'] for news in rep_news_list]
     total_repetitive = len(rep_news_id_list)
+    print("###", rep_news_id_list)
     for data in news_list:
         if data['news_id'] in rep_news_id_list:
+            print("###", data['news_id'])
             continue
+        rep_news_id_list.append(data['news_id'])
         content = 'unknown content'
         if data['content']:
             content = ''.join(data['content'])

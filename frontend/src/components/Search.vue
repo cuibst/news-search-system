@@ -1,33 +1,35 @@
 <template>
 <div>
-<el-row style="padding:10px; border-bottom:1px solid #ccc;">
-  <el-col :span="6"  :offset="22" style="text-align:right;" v-show="!login">
-      <el-col :span="4"  class="head_nav_h"  >
+<el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="!login" >
+  <el-col :span="6"  :offset="18" style="text-align:right;">
+      <el-col :span="4"  :offset="16" class="head_nav_h"  >
         <div class="head_btn" @click="tologin">登录</div>
       </el-col>
       <el-col :span="4"  class="head_nav_h"  >
         <div class="head_btn" @click="toregister">注册</div>
       </el-col>
   </el-col>
-  <div style="float:right;font-family:'pingfang'" v-if="login">
-    <div class="head_nav_user">
-      欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
-    </div>
-    <div class="head_nav_h" style="display:inline;float:right">
-      <div class="quit_btn" @click="quituser"> 退出登录</div>
-    </div>
-  </div>
+</el-row>
+<el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="login" >
+  <el-col :span="7" :offset="17" style="text-align:right;">
+    <el-col :span="14" class="head_nav_h" >
+      欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+    </el-col>
+    <el-col :span="10" class="head_nav_h" >
+      <div class="head_btn" @click="quituser">退出登录</div>
+    </el-col>
+  </el-col>
 </el-row>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
         <el-col :span="24">
-            <el-col :span="2" :offset="1.5">
+            <el-col :xs="{span: 20, offset: 4}" :sm=" {span: 4, offset: 2}" :md=" {span: 2.5, offset: 1.5}" :lg=" {span: 2, offset: 1.5}">
               <a href='/'>
-                <img src="@/assets/logo3.png" alt="" class="searchlogo" width="100%" height="100%">
+                <img src="@/assets/logo3.png" alt="" class="searchlogo" width="100%" height="100%" >
               </a>
             </el-col>
-            <el-col :span="8" class="searchinput">
+            <el-col :xs="{span: 20, offset: 2}" :sm="8" class="searchinput">
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
                 v-model.lazy = "keyword"
@@ -38,7 +40,7 @@
             <el-col :span="2">
               <div> </div>
             </el-col>
-            <el-col :span="4">
+            <el-col :xs="10" :sm="4">
               <el-dropdown @command="handleCommand" class="choice">
                 <span class="el-dropdown-link">
                   搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
@@ -52,22 +54,22 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="12" :offset="2" style="font-size:10px">
+        <el-col :xs="18" :sm="12" :offset="2" style="font-size:10px">
           共搜索到{{count}}个结果<span v-if="removecnt === 0">。</span><span v-else>，并为您去除了本页中的{{removecnt}}条重复结果</span>
         </el-col>
       </el-row>
   </div>
   <div class="content">
       <el-row>
-        <el-col :span="12" :offset="2">
+        <el-col :xs="22" :sm="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
               <h4 class="titles" v-html="item.title" @click="goto(item)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
-              <el-col :span="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
+              <el-col :xs="12" :sm="12" :md="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
                 <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
               </el-col>
-              <el-col :span="(item.img=='empty'||item.img=='unknown img')?25:19" class="news_info">
+              <el-col :xs="20" :sm="20" :md="(item.img=='empty'||item.img=='unknown img')?24:19" class="news_info">
                 <div>
                   <span class="srouces">{{item.media}}</span>
                   <span class="publish_time">{{item.pub_date}}</span>
@@ -223,13 +225,13 @@ export default {
 }
 .nav{
   padding:20px 0px;
-  width: 1784px;
+  // width: 1784px;
   margin: 0 auto;
   margin-top: 20px;
 }
 .content{
-  padding:0px 0px;
-  width: 1784px;
+  padding:20px 0px;
+  // width: 1784px;
   margin: 0 auto;
   margin-top: 20px;
 }
@@ -279,6 +281,8 @@ export default {
 .paginator{
   margin-top: 5%;
   margin-left: 20%;
+  padding-right: 0%;
+  margin-right: 0px;
 }
 .login_btn {
   color: black

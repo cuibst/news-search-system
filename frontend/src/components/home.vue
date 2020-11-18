@@ -2,7 +2,7 @@
   <div style="padding: 0 15px;" class="news">
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
-        <el-col :span="6"  :offset="22" style="text-align:right;min-width:200px" v-if="!login">
+        <el-col :span="6"  :offset="18" style="text-align:right;min-width:200px" v-if="!login">
           <el-col :span="4"  class="head_nav_h"  >
             <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
@@ -55,7 +55,7 @@
       <el-row>
         <el-col :span="10">
           <el-col :span="24">
-            <h2 class="news_tit">热点要闻</h2>
+            <h2 class="news_tit">{{(activenav == 0 )?'热点要闻':'实时新闻'}}</h2>
             <div class="box">
               <ul v-for="(item,index) in textnews" :key="index" >
                 <li @click="goto(item.news_url)">
@@ -125,14 +125,19 @@
         </el-col>
       </el-row>
     </div>
+    <Endbar></Endbar>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import Endbar from '@/components/Endbar.vue'
 // import '@/mock/index'
 export default {
   name: 'homepage',
+  components: {
+    Endbar
+  },
   props: {
     news: {
       type: Object,

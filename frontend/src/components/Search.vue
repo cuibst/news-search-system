@@ -44,8 +44,8 @@
                   搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="true" :class="time?'selected':''">按相关排序</el-dropdown-item>
-                  <el-dropdown-item command="false" :class="time?'':'selected'">按时间排序</el-dropdown-item>
+                  <el-dropdown-item command="false" :class="time?'':'selected'">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="true" :class="time?'selected':''">按时间排序</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
           </el-col>
@@ -122,6 +122,7 @@ export default {
   },
   methods: {
     handleCommand: function (command) {
+      console.log(command)
       this.time = command === 'true'
       this.KeyChange(this.keyword)
     },
@@ -167,7 +168,7 @@ export default {
         this.infolist = []
         alert('服务器忙')
       })
-      axios.post('/api/postrecord',
+      axios.post('/api/postrecord/',
         {
           content: newkey
         })

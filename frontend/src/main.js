@@ -20,7 +20,6 @@ axios.interceptors.request.use(config => {
   if (store.state.token) {
     config.headers.common['Authentication-Token'] = store.state.token
   }
-  console.log(config)
   return config
 }, error => {
   return Promise.reject(error)

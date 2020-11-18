@@ -9,14 +9,14 @@
         <div class="head_btn" @click="toregister">注册</div>
       </el-col>
   </el-col>
-  <el-col :span="7" :offset="17" style="text-align:right;" v-if="login">
-    <el-col :span="14" class="head_nav_h" >
-      欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
-    </el-col>
-    <el-col :span="10" class="head_nav_h" >
-      <div class="head_btn" @click="quituser">退出登录</div>
-    </el-col>
-  </el-col>
+  <div style="float:right;font-family:'pingfang'" v-if="login">
+    <div class="head_nav_user">
+      欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+    </div>
+    <div class="head_nav_h" style="display:inline;float:right">
+      <div class="quit_btn" @click="quituser"> 退出登录</div>
+    </div>
+  </div>
 </el-row>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
@@ -51,13 +51,13 @@
           </el-col>
         </el-col>
       </el-row>
-  </div>
-  <div class="content">
       <el-row>
-        <el-col :span="12" :offset="2">
+        <el-col :span="12" :offset="2" style="font-size:10px">
           共搜索到{{count}}个结果<span v-if="removecnt === 0">。</span><span v-else>，并为您去除了本页中的{{removecnt}}条重复结果</span>
         </el-col>
       </el-row>
+  </div>
+  <div class="content">
       <el-row>
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
@@ -228,7 +228,7 @@ export default {
   margin-top: 20px;
 }
 .content{
-  padding:20px 0px;
+  padding:0px 0px;
   width: 1784px;
   margin: 0 auto;
   margin-top: 20px;

@@ -250,9 +250,16 @@ def get_news(request):
     cat_query = Q()
     if category != 'all':
         cat_query = Q(category=category)
-    for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
+    id_set = set()
+    title_set = set()
+    for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:15]:
+        if len(imgnews_list) >= 5:
+            break
         data = news_to_dict(news)
-        imgnews_list.append(data)
+        if data['title'] not in title_set and data['news_id'] not in id_set:
+            imgnews_list.append(data)
+            title_set.add(data['title'])
+            id_set.add(data['news_id'])
     id_set = set()
     title_set = set()
     for news in News.objects.order_by('-pk').filter(cat_query)[:50]:

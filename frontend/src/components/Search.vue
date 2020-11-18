@@ -122,7 +122,6 @@ export default {
   },
   methods: {
     handleCommand: function (command) {
-      console.log(command)
       this.time = command === 'true'
       this.KeyChange(this.keyword)
     },
@@ -138,7 +137,6 @@ export default {
         totest = totest.replace(reg, '')
         r = reg.exec(totest)
       }
-      console.log(particle)
       axios.post('/api/views/',
         {
           like: particle
@@ -156,10 +154,8 @@ export default {
         this.infolist = []
         this.cnt = 0
         for (var i = 0; i < ret.data.infolist.length; i++) {
-          console.log(ret.data.infolist[i])
           if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
         }
-        console.log(this.infolist)
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
@@ -190,10 +186,8 @@ export default {
         this.infolist = []
         this.removecnt = 0
         for (var i = 0; i < ret.data.infolist.length; i++) {
-          console.log(ret.data.infolist[i])
           if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
         }
-        console.log(this.infolist)
       }, error => {
         console.log(error)
         this.infolist = []

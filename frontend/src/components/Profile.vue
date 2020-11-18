@@ -97,7 +97,7 @@ export default {
         }
         this.likenews = this.unique(this.likenews)
       }, error => {
-        this.likenews = this.imgnews
+        this.likenews = []
         console.log(error)
       })
     }

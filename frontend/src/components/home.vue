@@ -253,7 +253,7 @@ export default {
       navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
       imgnews: [],
       textnews: [],
-      likenews: [],
+      likenews: []
     }
   }
 }

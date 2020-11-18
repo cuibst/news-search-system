@@ -44,8 +44,8 @@
                   搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="a">按相关排序</el-dropdown-item>
-                  <el-dropdown-item command="b">按时间排序</el-dropdown-item>
+                  <el-dropdown-item command="true" :class="time?'selected':''">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="false" :class="time?'':'selected'">按时间排序</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
           </el-col>
@@ -96,7 +96,8 @@ export default {
       infolist: [],
       currentpage: 1,
       pages: 0,
-      login: false
+      login: false,
+      time: false
     }
   },
   mounted () {
@@ -113,41 +114,9 @@ export default {
     }
   },
   methods: {
-    handleCommand: async function (command) {
-      if (command === 'a') {
-        await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
-          {
-            params: {
-              query: this.keyword
-            }
-          }).then(ret => {
-          this.infolist = ret.data.infolist
-          this.count = ret.data.count
-          this.pages = Math.ceil(this.count / 20)
-          this.currentpage = 1
-        }, error => {
-          console.log(error)
-          this.infolist = []
-          alert('服务器忙')
-        })
-      } else if (command === 'b') {
-        await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
-          {
-            params: {
-              query: this.keyword,
-              time: true
-            }
-          }).then(ret => {
-          this.infolist = ret.data.infolist
-          this.count = ret.data.count
-          this.pages = Math.ceil(this.count / 20)
-          this.currentpage = 1
-        }, error => {
-          console.log(error)
-          this.infolist = []
-          alert('服务器忙')
-        })
-      }
+    handleCommand: function (command) {
+      this.time = command === 'true'
+      this.KeyChange(this.keyword)
     },
     goto: async function (item) {
       var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
@@ -172,7 +141,8 @@ export default {
       await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
-            query: newkey
+            query: newkey,
+            time: this.time
           }
         }).then(ret => {
         this.infolist = ret.data.infolist
@@ -184,6 +154,10 @@ export default {
         this.infolist = []
         alert('服务器忙')
       })
+      axios.post('/api/postrecord',
+        {
+          content: newkey
+        })
     },
     search () {
       // 此处处理搜索路径变更
@@ -195,7 +169,8 @@ export default {
         {
           params: {
             query: this.keyword,
-            start: (currentPage - 1) * 20
+            start: (currentPage - 1) * 20,
+            time: this.time
           }
         }).then(ret => {
         this.infolist = ret.data.infolist
@@ -307,5 +282,9 @@ export default {
 .choice{
   padding-left: 10px;
   padding-top: 10px;
+}
+.selected{
+  background-color: rgb(64, 158, 255);
+  color: white
 }
 </style>

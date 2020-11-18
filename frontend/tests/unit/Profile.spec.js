@@ -1,5 +1,6 @@
 import Profile from '@/components/Profile.vue'
-import { mount, createLocalVue } from '@vue/test-utils'
+import VueRouter from 'vue-router'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import mockAxios from '../__mocks__/axios'
 
@@ -20,8 +21,30 @@ describe('Profile.vue', () => {
         }
       })
     })
+    mockAxios.get.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          length: 0,
+          data: [
+            '解放军',
+            '特朗普 拜登',
+            '达拉崩吧版的贝蒂剥夺秘鲁问坤题库卡卡替考特苏瓦西拉送'
+          ]
+        }
+      })
+    })
     const localVue = createLocalVue()
-    const wrapper = mount(Profile, {
+    const routes = [
+      {
+        path: '/searchresult/:keyword',
+        name: 'SearchResult'
+      }
+    ]
+    const router = new VueRouter({
+      routes
+    })
+    const wrapper = shallowMount(Profile, {
+      router,
       localVue,
       propsData: {
         user: {
@@ -36,11 +59,8 @@ describe('Profile.vue', () => {
     wrapper.vm.goto('https://www.meituan.com/')
   })
   it('Invalid network', async () => {
-    mockAxios.get.mockImplementationOnce(() => {
-      return Promise.reject(new Error('Network error'))
-    })
     const localVue = createLocalVue()
-    const wrapper = mount(Profile, {
+    const wrapper = shallowMount(Profile, {
       localVue,
       propsData: {
         user: {

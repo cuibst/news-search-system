@@ -6,6 +6,7 @@
 # pylint: disable=redefined-outer-name
 # pylint: disable=inconsistent-return-statements
 # pylint: disable=too-many-branches
+# pylint: disable=consider-using-enumerate
 '''
 views for backend
 '''

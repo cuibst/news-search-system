@@ -76,7 +76,7 @@
               <el-carousel :interval="5000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
                   <a :href="item.news_url" target="_blank">
-                    <div style="width: 572px; height: 430px;overflow:hidden">
+                    <div style="width: 572px; height: 400px;overflow:hidden">
                       <img :src="item.img" style="width:572px;min-height: 400px" alt="" srcset="">
                     </div>
                     <div class="img_title_box">

@@ -545,7 +545,7 @@ export default {
 }
 
 /deep/ .el-carousel__container{
-          height: 430px;
+          height: 400px;
         }
 
 .news_img{

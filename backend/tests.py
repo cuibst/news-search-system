@@ -9,8 +9,21 @@ import requests
 from django.test import TestCase
 from django.test import Client
 from backend.models import User, News
+from backend.views import news_to_dict
 
 # Create your tests here.
+
+
+def test_news_to_dict():
+    '''
+    test for function news_to_dict() in views.py
+    '''
+    news = News(source='test_source', news_url='test_news_url',
+                category='test_category', media='test_media', tags='test_tags',
+                title='test_title', news_id='test_news_id', pub_date='test_pub_date',
+                content='test_content', summary='test_summary', img='test_img')
+    data = news_to_dict(news)
+    assert data['news_id'] == 'test_news_id'
 
 
 class TestViews(TestCase):
@@ -281,3 +294,13 @@ class TestViews(TestCase):
         }, content_type='application/json')
         data = json.loads(response.content)
         self.assertEqual(data['length'], 5)
+
+    def test_get_news(self):
+        '''
+        test for getnews() in views.py
+        '''
+        response = self.client.get('/api/getnews/')
+        data = json.loads(response.content)
+        print(data)
+        assert 'imgnews' in data['data']
+        assert 'textnews' in data['data']

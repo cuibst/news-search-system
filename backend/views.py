@@ -251,9 +251,14 @@ def get_news(request):
     for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
         data = news_to_dict(news)
         imgnews_list.append(data)
-    for news in News.objects.order_by('-pk').filter(cat_query)[:20]:
+    for news in News.objects.order_by('-pk').filter(cat_query)[:25]:
+        if len(textnews_list) >= 20:
+            break
         data = news_to_dict(news)
-        textnews_list.append(data)
+        if data not in imgnews_list:
+            textnews_list.append(data)
+        else:
+            continue
     response_data = {
         'data': {
             'imgnews': imgnews_list,

@@ -76,7 +76,9 @@
               <el-carousel :interval="5000" arrow="always" indicator-position="outside">
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
                   <a :href="item.news_url" target="_blank">
-                    <img :src="item.img" style="width:100%;height:100%;" alt="" srcset="">
+                    <div style="width: 572px; height: 430px;overflow:hidden">
+                      <img :src="item.img" style="width:572px; height: 430px" alt="" srcset="">
+                    </div>
                     <div class="img_title_box">
                       <span class="img_title"> {{item.title}}</span>
                     </div>
@@ -231,7 +233,6 @@ export default {
       that.imgnews = ret.data.data.imgnews
       that.textnews = ret.data.data.textnews
       that.likenews = ret.data.data.likenews || []
-      console.log(that.imgnews)
     }, error => {
       that.imgnews = []
       that.textnews = []
@@ -252,13 +253,13 @@ export default {
       navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
       imgnews: [],
       textnews: [],
-      likenews: []
+      likenews: [],
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .login_btn {
   color: black
 }
@@ -430,7 +431,7 @@ export default {
   position:absolute;
   width:100%;
   height:100px;
-  bottom: -20%;
+  bottom: -14%;
   left: 0%;
   background-color: rgba(0, 0, 0, 0.466);
   color: white;
@@ -504,4 +505,7 @@ export default {
 .searchinput{
   transform: translate(-5%,0);
 }
+/deep/ .el-carousel__container{
+          height: 430px;
+        }
 </style>

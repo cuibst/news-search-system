@@ -28,8 +28,9 @@ axios.interceptors.response.use(res => {
   return res
 }, error => {
   if (error.response && error.response.status === 401) {
-    this.$store.commit('rm_token')
-    router.push('/login')
+    store.commit('rm_token')
+    const url = error.response.url
+    if (url === '/api/user/' || url === '/api/userchange/' || url === '/api/getrecord') router.push('/login')
   }
   return Promise.reject(error)
 }

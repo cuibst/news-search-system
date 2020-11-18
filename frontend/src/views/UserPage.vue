@@ -36,6 +36,7 @@
         <Profile :user="user" v-if="activeindex == 1"></Profile>
       </el-row>
     </el-main>
+    <Endbar></Endbar>
   </el-container>
     </el-container>
   </div>
@@ -44,13 +45,15 @@
 <script>
 import User from '@/components/User.vue'
 import Profile from '@/components/Profile.vue'
+import Endbar from '@/components/Endbar.vue'
 import axios from 'axios'
 // import '@/mock/index'
 export default {
   name: 'UserPage',
   components: {
     User,
-    Profile
+    Profile,
+    Endbar
   },
   data () {
     return {

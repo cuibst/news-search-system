@@ -19,7 +19,7 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from bs4 import BeautifulSoup
-from .models import User, News, Behavior, Record
+from .models import User, News, Behavior, Record, Search
 
 
 # Create your views here.
@@ -406,6 +406,8 @@ def views(request):
         print(item)
         tmp_behavior = Behavior(user=user1, content=item)
         tmp_behavior.save()
+        tmp_search = Search(content=item, create_time=str(time.time()))
+        tmp_search.save()
     return JsonResponse({
         'code': 200
     }, status=200)
@@ -438,7 +440,7 @@ def get_behavior(request):
     tmp_dict1 = {}
     tmp_list = []
     for item in user1.user_behavior.all():
-        if item in tmp_dict1:
+        if item.content in tmp_dict1:
             tmp_dict1[item.content] += 1
         else:
             tmp_dict1[item.content] = 1
@@ -547,6 +549,7 @@ def post_record(request):
         'info': 'save successfully'
     }, status=200)
 
+
 @csrf_exempt
 def get_hotwords(request):
     '''
@@ -566,3 +569,35 @@ def get_hotwords(request):
     return JsonResponse(return_data, json_dumps_params={
         'ensure_ascii': False
     }, status=200, charset='utf-8')
+
+@csrf_exempt
+def get_search(request):
+    '''
+        get search result
+    '''
+    print(1)
+    for item in Search.objects.all():
+        num = time.time() - float(item.create_time)
+        if num > 10 * 24 * 60 * 60:
+            item.delete()
+
+    tmp_dict = {}
+    tmp_list = []
+    for item in Search.objects.all():
+        if item.content in tmp_dict:
+            tmp_dict[item.content] += 1
+        else:
+            tmp_dict[item.content] = 1
+            tmp_list.append(item.content)
+    tmp_list.sort(key=lambda elem: tmp_dict[elem])
+    tmp_list.reverse()
+    final_list = []
+    if len(tmp_list) < 10:
+        for item in tmp_list:
+            final_list.append(item)
+    else:
+        for i in range(0, 10):
+            final_list.append(tmp_list[i])
+    return JsonResponse({
+        'list': final_list
+    }, status=200)

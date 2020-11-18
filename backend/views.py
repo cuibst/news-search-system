@@ -5,6 +5,8 @@
 # pylint: disable=unused-variable
 # pylint: disable=redefined-outer-name
 # pylint: disable=inconsistent-return-statements
+# pylint: disable=too-many-branches
+# pylint: disable=consider-using-enumerate
 '''
 views for backend
 '''
@@ -225,6 +227,7 @@ def news_to_dict(news):
     }
     return data
 
+
 @csrf_exempt
 def get_news(request):
     '''
@@ -276,10 +279,45 @@ def get_news(request):
             title_set.add(data['title'])
         else:
             continue
+    likeword = ''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    break
+                user_id = int(key)
+                break
+    if user_id != -1:
+        user1 = User.objects.filter(id=user_id).first()
+        tmp_dict1 = {}
+        tmp_list = []
+        for item in user1.user_behavior.all():
+            if item.content in tmp_dict1:
+                tmp_dict1[item.content] += 1
+            else:
+                tmp_dict1[item.content] = 1
+                tmp_list.append(item.content)
+
+        tmp_list.sort(key=lambda elem: tmp_dict1[elem])
+        tmp_list.reverse()
+        print(tmp_list)
+        final_list = []
+        if len(tmp_list) < 5:
+            final_list = tmp_list
+        else:
+            for i in range(0, 5):
+                final_list.append(tmp_list[i])
+        for i in range(0, len(final_list)):
+            likeword += final_list[i]
+            likeword += ' '
     response_data = {
         'data': {
             'imgnews': imgnews_list,
-            'textnews': textnews_list
+            'textnews': textnews_list,
+            'likeword': likeword
         }
     }
     return JsonResponse(response_data, json_dumps_params={
@@ -301,15 +339,15 @@ def user_change(request):
                 if token == value[0]:
                     if value[1]+TIME_OUT < time.time():
                         return JsonResponse({
-                            'code': 403,
+                            'code': 401,
                             'info': 'overdue token'
-                        }, status=200)
+                        }, status=401)
                     user_id = int(key)
         if user_id == -1:
             return JsonResponse({
-                'code': 403,
+                'code': 401,
                 'info': "invalid token"
-            }, status=200)
+            }, status=401)
         print("------------------------")
         print(user_id)
         user = User.objects.filter(id=user_id).first()
@@ -355,16 +393,16 @@ def user(request):
             if token == value[0]:
                 if value[1] + TIME_OUT < time.time():
                     return JsonResponse({
-                        'code': 403,
+                        'code': 401,
                         'info': 'overdue token'
-                    }, status=200)
+                    }, status=401)
                 user_id = int(key)
                 break
     if user_id == -1:
         return JsonResponse({
-            'code': 403,
+            'code': 401,
             'info': 'invalid token'
-        }, status=200)
+        }, status=401)
     user = User.objects.filter(id=user_id).first()
     return JsonResponse({
         'user': {
@@ -388,26 +426,27 @@ def views(request):
             if token == value[0]:
                 if value[1] + TIME_OUT < time.time():
                     return JsonResponse({
-                        'code': 403,
+                        'code': 401,
                         'info': 'overdue token'
-                    }, status=200)
+                    }, status=401)
                 user_id = int(key)
                 break
     if user_id == -1:
         return JsonResponse({
-            'code': 403,
+            'code': 401,
             'info': 'invalid token'
-        }, status=200)
+        }, status=401)
     user1 = User.objects.filter(id=user_id).first()
     print(user1.id)
     data = json.loads(request.body)
     tmp_list = data['like']
+    print(tmp_list)
     for item in tmp_list:
-        print(item)
+
         tmp_behavior = Behavior(user=user1, content=item)
         tmp_behavior.save()
-        tmp_search = Search(content=item, create_time=str(time.time()))
-        tmp_search.save()
+        print(item)
+
     return JsonResponse({
         'code': 200
     }, status=200)
@@ -426,16 +465,16 @@ def get_behavior(request):
             if token == value[0]:
                 if value[1] + TIME_OUT < time.time():
                     return JsonResponse({
-                        'code': 403,
+                        'code': 401,
                         'info': 'overdue token'
-                    }, status=200)
+                    }, status=401)
                 user_id = int(key)
                 break
     if user_id == -1:
         return JsonResponse({
-            'code': 403,
+            'code': 401,
             'info': 'invalid token'
-        }, status=200)
+        }, status=401)
     user1 = User.objects.filter(id=user_id).first()
     tmp_dict1 = {}
     tmp_list = []
@@ -476,16 +515,16 @@ def get_record(request):
             if token == value[0]:
                 if value[1] + TIME_OUT < time.time():
                     return JsonResponse({
-                        'code': 403,
+                        'code': 401,
                         'info': 'overdue token'
-                    }, status=200)
+                    }, status=401)
                 user_id = int(key)
                 break
     if user_id == -1:
         return JsonResponse({
-            'code': 403,
+            'code': 401,
             'info': 'invalid token'
-        }, status=200)
+        }, status=401)
     print(user_id)
     user3 = User.objects.filter(id=user_id).first()
     length = user3.user_record.count()
@@ -513,16 +552,16 @@ def post_record(request):
             if token == value[0]:
                 if value[1] + TIME_OUT < time.time():
                     return JsonResponse({
-                        'code': 403,
+                        'code': 401,
                         'info': 'overdue token'
-                    }, status=200)
+                    }, status=401)
                 user_id = int(key)
                 break
     if user_id == -1:
         return JsonResponse({
-            'code': 403,
+            'code': 401,
             'info': 'invalid token'
-        }, status=200)
+        }, status=401)
     print(user_id)
     user2 = User.objects.filter(id=user_id).first()
     data = json.loads(request.body)

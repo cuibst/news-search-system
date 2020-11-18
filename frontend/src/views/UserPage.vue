@@ -3,11 +3,10 @@
     <el-container>
     <el-aside :style="'width: '+ ((offsetWid > 400)? '140px' : '60px')" >
       <a href="/" class="index">
-          <img src="../assets/logo2.jpg" width="100%">
-          <span class="index" v-show="offsetWid > 400">Tg Search</span>
+          <img src="../assets/logo3.png" width="90%">
       </a>
       <el-menu default-active="1" class="el-menu-vertial-demo"
-       @select="changeindex" style="margin-top:10px; padding-top:0; border:0" :collapse="offsetWid < 400">
+       @select="changeindex" style="margin-top:20px; padding-top:0; border:0" :collapse="offsetWid < 400">
         <el-menu-item index="1">
           <i class="el-icon-menu"></i>
           <span slot="title">用户详情</span>

@@ -1,8 +1,5 @@
 <template>
   <div class="login_container">
-    <div class="left">
-      <img src="https://passport.baidu.com/static/passpc-account/img/reg_bg_min.jpg" class="back">
-    </div>
     <div class="login_box">
       <!-- 头像区域 -->
       <div class="avatar_box">
@@ -72,20 +69,13 @@ export default {
 .login_container {
   height: 100%;
   background-color:aliceblue;
-}
-
-.left{
-  float: left;
-  width: 100%;
-  height: 100%;
-  left: 0.1%;
-  position: relative;
-  display: block;
-}
-
-.back{
-  height: 100%;
-  width: 100%;
+  background-image:url("../assets/background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+  background-size: contain;
+  -webkit-background-size: cover;/* 兼容Webkit内核浏览器如Chrome和Safari */
+  -o-background-size: cover;/* 兼容Opera */
 }
 
 .login_box {
@@ -96,7 +86,7 @@ export default {
   position: absolute;
   right: 0;
   top: 50%;
-  transform: translate(-30%,-50%);
+  transform: translate(-50%,-50%);
   .avatar_box{
     height: 22%;
     width: 40%;
@@ -144,10 +134,21 @@ export default {
   margin-right : 1pc;
   display: flex;
   justify-content: flex-end;
-  transform: translate(10%,30%);
+  transform: translate(-25%,30%);
 }
 
 .password{
   transform: translate(0,-30%);
+}
+
+.text{
+  color: white;
+  font-size: 50px;
+  transform: translate(50%,150%);
+  font-family: "黑体";
+}
+
+.text1{
+  transform: translate(4%,70%);
 }
 </style>

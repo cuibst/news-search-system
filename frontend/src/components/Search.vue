@@ -44,8 +44,8 @@
                   搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="true" :class="time?'selected':''">按相关排序</el-dropdown-item>
-                  <el-dropdown-item command="false" :class="time?'':'selected'">按时间排序</el-dropdown-item>
+                  <el-dropdown-item command="false" :class="time?'':'selected'">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="true" :class="time?'selected':''">按时间排序</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
           </el-col>
@@ -53,6 +53,11 @@
       </el-row>
   </div>
   <div class="content">
+      <el-row>
+        <el-col :span="12" :offset="2">
+          共搜索到{{count}}个结果<span v-if="removecnt === 0">。</span><span v-else>，并为您去除了本页中的{{removecnt}}条重复结果</span>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
@@ -96,6 +101,8 @@ export default {
       infolist: [],
       currentpage: 1,
       pages: 0,
+      count: 0,
+      removecnt: 0,
       login: false,
       time: false
     }
@@ -130,7 +137,6 @@ export default {
         totest = totest.replace(reg, '')
         r = reg.exec(totest)
       }
-      console.log(particle)
       axios.post('/api/views/',
         {
           like: particle
@@ -145,7 +151,11 @@ export default {
             time: this.time
           }
         }).then(ret => {
-        this.infolist = ret.data.infolist
+        this.infolist = []
+        this.cnt = 0
+        for (var i = 0; i < ret.data.infolist.length; i++) {
+          if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
+        }
         this.count = ret.data.count
         this.pages = Math.ceil(this.count / 20)
         this.currentpage = 1
@@ -154,7 +164,7 @@ export default {
         this.infolist = []
         alert('服务器忙')
       })
-      axios.post('/api/postrecord',
+      axios.post('/api/postrecord/',
         {
           content: newkey
         })
@@ -173,7 +183,11 @@ export default {
             time: this.time
           }
         }).then(ret => {
-        this.infolist = ret.data.infolist
+        this.infolist = []
+        this.removecnt = 0
+        for (var i = 0; i < ret.data.infolist.length; i++) {
+          if (i === 0 || ret.data.infolist[i - 1].title !== ret.data.infolist[i].title) { this.infolist.push(ret.data.infolist[i]) } else { this.removecnt += 1 }
+        }
       }, error => {
         console.log(error)
         this.infolist = []

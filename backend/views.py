@@ -19,7 +19,7 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from bs4 import BeautifulSoup
-from .models import User, News, Behavior, Record
+from .models import User, News, Behavior, Record, Search
 
 
 # Create your views here.
@@ -156,9 +156,12 @@ def upload_news(request):
     rep_news_list = News.objects.values('news_id').filter(news_id__in=origin_news_id_list)
     rep_news_id_list = [news['news_id'] for news in rep_news_list]
     total_repetitive = len(rep_news_id_list)
+    print("###", rep_news_id_list)
     for data in news_list:
         if data['news_id'] in rep_news_id_list:
+            print("###", data['news_id'])
             continue
+        rep_news_id_list.append(data['news_id'])
         content = 'unknown content'
         if data['content']:
             content = ''.join(data['content'])
@@ -250,15 +253,27 @@ def get_news(request):
     cat_query = Q()
     if category != 'all':
         cat_query = Q(category=category)
-    for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
+    id_set = set()
+    title_set = set()
+    for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:15]:
+        if len(imgnews_list) >= 5:
+            break
         data = news_to_dict(news)
-        imgnews_list.append(data)
-    for news in News.objects.order_by('-pk').filter(cat_query)[:25]:
+        if data['title'] not in title_set and data['news_id'] not in id_set:
+            imgnews_list.append(data)
+            title_set.add(data['title'])
+            id_set.add(data['news_id'])
+    id_set = set()
+    title_set = set()
+    for news in News.objects.order_by('-pk').filter(cat_query)[:50]:
         if len(textnews_list) >= 20:
             break
         data = news_to_dict(news)
-        if data not in imgnews_list:
+        if data not in imgnews_list and data['title'] not in title_set \
+            and data['news_id'] not in id_set:
             textnews_list.append(data)
+            id_set.add(data['news_id'])
+            title_set.add(data['title'])
         else:
             continue
     response_data = {
@@ -391,6 +406,8 @@ def views(request):
         print(item)
         tmp_behavior = Behavior(user=user1, content=item)
         tmp_behavior.save()
+        tmp_search = Search(content=item, create_time=str(time.time()))
+        tmp_search.save()
     return JsonResponse({
         'code': 200
     }, status=200)
@@ -423,7 +440,7 @@ def get_behavior(request):
     tmp_dict1 = {}
     tmp_list = []
     for item in user1.user_behavior.all():
-        if item in tmp_dict1:
+        if item.content in tmp_dict1:
             tmp_dict1[item.content] += 1
         else:
             tmp_dict1[item.content] = 1
@@ -532,6 +549,7 @@ def post_record(request):
         'info': 'save successfully'
     }, status=200)
 
+
 @csrf_exempt
 def get_hotwords(request):
     '''
@@ -551,3 +569,35 @@ def get_hotwords(request):
     return JsonResponse(return_data, json_dumps_params={
         'ensure_ascii': False
     }, status=200, charset='utf-8')
+
+@csrf_exempt
+def get_search(request):
+    '''
+        get search result
+    '''
+    print(1)
+    for item in Search.objects.all():
+        num = time.time() - float(item.create_time)
+        if num > 10 * 24 * 60 * 60:
+            item.delete()
+
+    tmp_dict = {}
+    tmp_list = []
+    for item in Search.objects.all():
+        if item.content in tmp_dict:
+            tmp_dict[item.content] += 1
+        else:
+            tmp_dict[item.content] = 1
+            tmp_list.append(item.content)
+    tmp_list.sort(key=lambda elem: tmp_dict[elem])
+    tmp_list.reverse()
+    final_list = []
+    if len(tmp_list) < 10:
+        for item in tmp_list:
+            final_list.append(item)
+    else:
+        for i in range(0, 10):
+            final_list.append(tmp_list[i])
+    return JsonResponse({
+        'list': final_list
+    }, status=200)

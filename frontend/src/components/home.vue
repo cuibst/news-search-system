@@ -92,61 +92,39 @@
             <h3 class="tit2">热搜新闻词 <span>HOT WORDS</span></h3>
           </el-col>
           <el-col :span="24">
-            <el-col :span="8" class="news_word">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="8" class="news_word">中共中央政治局</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
-            <el-col :span="4" class="news_word_small">习近平会见全国双拥模范表彰大会代表</el-col>
+            <el-col :span="8" class="news_word" @click.native="getsearch(hotwords[0])">{{hotwords[0]}}</el-col>
+            <el-col :span="8" class="news_word" @click.native="getsearch(hotwords[1])">{{hotwords[1]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[2])">{{hotwords[2]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[3])">{{hotwords[3]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[4])">{{hotwords[4]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[5])">{{hotwords[5]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[6])">{{hotwords[6]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[7])">{{hotwords[7]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[8])">{{hotwords[8]}}</el-col>
+            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[9])">{{hotwords[9]}}</el-col>
           </el-col>
-
+          <div v-show="login">
           <el-col :span="24">
             <h3 class="tit2">猜你喜欢 <span>LIKE</span></h3>
           </el-col>
           <el-col :span="24">
             <el-col :span="10">
               <div class="imgs">
-                <img src="@/assets/imgs.jpg" style="width:100%;height:100%;" alt="" srcset="">
-                <h5 class="img_tit1">Iphone 12</h5>
+                <a :href="likeimgnews.news_url" target="_blank">
+                <div :style="{'background-image': 'url('+likeimgnews.img+')' }" class="news_img"></div>
+                <h5 class="img_tit1">{{likeimgnews.title}}</h5>
+                </a>
               </div>
             </el-col>
             <el-col :span="14" class="box2">
               <ul>
                 <li v-for="(item,index) in likenews" :key="index">
-                  <span class="child_tit">{{item.title}}</span>
+                  <span class="child_tit" @click="goto(item.news_url)">{{item.title}}</span>
                 </li>
               </ul>
             </el-col>
           </el-col>
-          <!-- 不确定此部分能否显示
-          <el-col :span="24" style="margin-top:5px;">
-            <el-col :span="10">
-              <el-col :span="11">
-                <div class="imgs">
-                  <img src="@/assets/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
-                  <h5 class="img_tit">Iphone 12</h5>
-                </div>
-              </el-col>
-              <el-col :span="11" :offset="2">
-                <div class="imgs">
-                  <img src="@/assets/imgs.jpg" style="width:100%;height:150px;" alt="" srcset="">
-                  <h5 class="img_tit">Iphone 12</h5>
-                </div>
-              </el-col>
-            </el-col>
-            <el-col :span="14" class="box2">
-              <ul>
-                <li v-for="(item,index) in textnews" :key="index">
-                  <span class="child_tit">{{item.title}}</span>
-                </li>
-              </ul>
-            </el-col>
-          </el-col>
-          -->
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -180,6 +158,10 @@ export default {
         this.headcss = 'nav'
       }
     },
+    unique (arr) {
+      const res = new Map()
+      return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
+    },
     selectclass (index) {
       this.activenav = index
       var that = this
@@ -191,13 +173,49 @@ export default {
         }).then(ret => {
         that.imgnews = ret.data.data.imgnews
         that.textnews = ret.data.data.textnews
-        that.likenews = ret.data.data.likenews || []
+        that.likewords = ret.data.data.likeword || '习近平'
+        this.getLikenews()
       }, error => {
         that.imgnews = []
         that.textnews = []
-        that.likenews = []
+        that.likewords = '习近平'
         console.log(error)
         alert('服务器忙')
+      })
+    },
+    getLikenews () {
+      console.log(this.likewords)
+      axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
+        {
+          params: {
+            query: this.likewords,
+            time: true
+          }
+        }).then(ret => {
+        this.likenews = ret.data.infolist
+        console.log(ret.data.infolist)
+        var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
+        var j = 0
+        var len = 0
+        for (j = 0, len = this.likenews.length; j < len; j++) {
+          var r = reg.exec(this.likenews[j].title)
+          while (r) {
+            this.likenews[j].title = (this.likenews[j].title).replace(reg, r[1])
+            r = reg.exec(this.likenews[j].title)
+          }
+        }
+        this.likenews = this.unique(this.likenews)
+        for (j = 0, len = this.likenews.length; j < len; j++) {
+          if (this.likenews[j].img !== 'empty' && this.likenews[j].img !== 'unknown img') {
+            this.likeimgnews = this.likenews[j]
+            this.likenews.splice(j, 1)
+            break
+          }
+        }
+        this.likenews = this.likenews.slice(0, (this.likenews.length > 10) ? 10 : (this.likenews.length))
+      }, error => {
+        this.likenews = this.imgnews
+        console.log(error)
       })
     },
     selectStyle (index) {
@@ -208,6 +226,10 @@ export default {
     search () {
       // 此处变更搜索路径
       this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
+    },
+    getsearch (keyword) {
+      this.keyword = keyword
+      this.search()
     },
     outStyle (index) {
       this.selactive = -1
@@ -232,14 +254,23 @@ export default {
       }).then(ret => {
       that.imgnews = ret.data.data.imgnews
       that.textnews = ret.data.data.textnews
-      that.likenews = ret.data.data.likenews || []
+      that.likewords = ret.data.data.likeword || '习近平'
+      this.getLikenews()
     }, error => {
       that.imgnews = []
       that.textnews = []
-      that.likenews = []
+      that.likewords = '习近平'
       console.log(error)
       alert('服务器忙')
     })
+    axios.get('/api/gethotwords/').then(
+      ret => {
+        this.hotwords = ret.data.data
+      }, error => {
+        console.log(error)
+        this.hotwords = []
+      }
+    )
   },
   data () {
     return {
@@ -253,7 +284,10 @@ export default {
       navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
       imgnews: [],
       textnews: [],
-      likenews: []
+      likenews: [],
+      likeimgnews: {},
+      likewords: '',
+      hotwords: []
     }
   }
 }
@@ -448,20 +482,23 @@ export default {
 }
 .child_tit{
   display: block;
-  font-size: 1.17em;
+  font-size: 18px;
   margin-block-start: 1em;
   margin-block-end: 1em;
   margin-inline-start: 0px;
   margin-inline-end: 0px;
+  line-height: 25px;
+  cursor: pointer;
 }
 .news_word{
     font-size: 18px;
     background: #3064bb;
-    padding:20px 12px;
+    padding:20px 10px;
     border:1px solid #fff;
     height:100px;
     color: #fff;
     text-align: center;
+    line-height: 24px;
 }
 .news_word:hover{
   background-color: green;
@@ -475,6 +512,7 @@ export default {
     height:100px;
     color: #fff;
     text-align: center;
+    line-height: 20px;
 }
 .news_word_small:hover{
   background-color: green;
@@ -505,7 +543,21 @@ export default {
 .searchinput{
   transform: translate(-5%,0);
 }
+
 /deep/ .el-carousel__container{
           height: 430px;
         }
+
+.news_img{
+  width:100%;
+  height:0;
+  padding-bottom: 80%;
+  overflow:hidden;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size:cover;
+  -moz-background-size:cover;
+  background-size:cover;
+}
+
 </style>

@@ -18,6 +18,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from bs4 import BeautifulSoup
 from .models import User, News, Behavior, Record
 
 
@@ -530,3 +531,23 @@ def post_record(request):
         'code': 200,
         'info': 'save successfully'
     }, status=200)
+
+@csrf_exempt
+def get_hotwords(request):
+    '''
+    crawl hotwords from baidu news
+    '''
+    baidunews_url = 'https://news.baidu.com/'
+    response = requests.get(url=baidunews_url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    soup.encode('utf-8')
+    hotwords = soup.select('a.hotwords_li_a')
+    hotwords_list = []
+    for hotword in hotwords:
+        hotwords_list.append(hotword.text)
+    return_data = {
+        'data': hotwords_list
+    }
+    return JsonResponse(return_data, json_dumps_params={
+        'ensure_ascii': False
+    }, status=200, charset='utf-8')

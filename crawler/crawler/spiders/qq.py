@@ -111,15 +111,9 @@ class QqIncSpider(Spider):
                 dic[key] = data[key]
             match_obj = re.match(r'https://new\.qq\.com/omn/20\d{6}/(20\d{6}\w{6}00)\.html', dic['url'])
             if match_obj:
-                new_dir = self.current_dir_path / Path('data/qq/news_brief_info/')
-                new_dir.mkdir(parents=True, exist_ok=True)
-                file = open(new_dir / Path(dic['cms_id'] + '.json'), 'w', encoding='utf-8')
-                file.write(json.dumps(dic, indent=4, ensure_ascii=False))
-                file.close()
                 rain_url = 'https://new.qq.com/rain/a/' + match_obj.group(1)
                 yield Request(rain_url, callback=parse_item)
                 yield Request(dic['url'], callback=parse_item)
-
 
 
 class QqFullSpider(Spider):

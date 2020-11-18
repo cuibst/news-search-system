@@ -25,6 +25,7 @@ class NewsPipeline:
         '''
         called when the spider is open
         '''
+        self.news_list.clear()
         print(spider.name, 'opened.')
 
     def process_item(self, item, spider): #pylint: disable=unused-argument

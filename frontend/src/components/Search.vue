@@ -21,10 +21,10 @@
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
-        <el-col :span="20">
-            <el-col :span="2" :offset="1">
+        <el-col :span="24">
+            <el-col :span="2" :offset="1.5">
               <a href='/'>
-                <img src="@/assets/logo2.jpg" alt="" class="searchlogo" width="100%" height="100%">
+                <img src="@/assets/logo3.png" alt="" class="searchlogo" width="100%" height="100%">
               </a>
             </el-col>
             <el-col :span="8" class="searchinput">
@@ -201,6 +201,8 @@ export default {
 <style lang="less" scoped>
 .searchlogo {
   height: 50px;
+  width: 50px;
+  transform: translate(100%,0);
 }
 .nav{
   padding:20px 0px;

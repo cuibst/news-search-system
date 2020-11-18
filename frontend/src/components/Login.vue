@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
     <div class="left">
-      <img src="../assets/autumnroad.jpg" class="back">
+      <img src="https://passport.baidu.com/static/passpc-account/img/reg_bg_min.jpg" class="back">
     </div>
     <div class="login_box">
       <!-- 头像区域 -->
@@ -12,12 +12,12 @@
       <el-form class="login-form">
         <!--用户名-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-user" v-model="username"></el-input>
+          <el-input prefix-icon="el-icon-user" v-model="username" placeholder="请输入您的用户名"></el-input>
         </el-form-item>
         <br>
         <!--密码-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-view" show-password v-model="password"></el-input>
+          <el-input prefix-icon="el-icon-view" show-password v-model="password" placeholder="请输入您的密码" class="password"></el-input>
         </el-form-item>
         <!--按钮-->
         <br>
@@ -73,30 +73,33 @@ export default {
   height: 100%;
   background-color:aliceblue;
 }
+
 .left{
   float: left;
-  width: 70%;
+  width: 100%;
   height: 100%;
   left: 0.1%;
   position: relative;
   display: block;
 }
+
 .back{
   height: 100%;
   width: 100%;
 }
+
 .login_box {
-  width: 25%;
-  height: 100%;
-  background-color: aliceblue;
-  border-radius: 30px;
+  width: 340px;
+  height: 540px;
+  background-color: rgba(255,255,255,.9);
+  border-radius: 10px;
   position: absolute;
   right: 0;
   top: 50%;
-  transform: translate(-10%,-50%);
+  transform: translate(-30%,-50%);
   .avatar_box{
     height: 22%;
-    width: 48%;
+    width: 40%;
     background-color: aliceblue;
     border: 1px solid #eeeeee;
     border-radius: 50%;
@@ -104,7 +107,7 @@ export default {
     box-shadow: 0 0 10px #dddddd;
     position: absolute;
     left: 50%;
-    transform: translate(-50%,50%);
+    transform: translate(-50%,40%);
     img {
       width: 100%;
       height: 100%;
@@ -119,22 +122,32 @@ export default {
   left: 50%;
   top: 20%;
 }
+
 .logbtn {
   width: 50%;
+  transform: translate(0,-100%);
 }
+
 .login-form {
   position: absolute;
-  top: 46%;
+  top: 45%;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
 }
+
 /deep/ .el-input__inner{
-          height: 55px;
+          height: 45px;
         }
+
 .for-regist {
   margin-right : 1pc;
   display: flex;
   justify-content: flex-end;
+  transform: translate(10%,30%);
+}
+
+.password{
+  transform: translate(0,-30%);
 }
 </style>

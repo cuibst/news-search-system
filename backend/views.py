@@ -18,7 +18,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-from .models import User, News, Behavior, Record
+from .models import User, News, Behavior, Record, Search
 
 
 # Create your views here.
@@ -417,7 +417,7 @@ def get_behavior(request):
     tmp_dict1 = {}
     tmp_list = []
     for item in user1.user_behavior.all():
-        if item in tmp_dict1:
+        if item.content in tmp_dict1:
             tmp_dict1[item.content] += 1
         else:
             tmp_dict1[item.content] = 1
@@ -524,4 +524,78 @@ def post_record(request):
     return JsonResponse({
         'code': 200,
         'info': 'save successfully'
+    }, status=200)
+
+
+@csrf_exempt
+def post_search(request):
+    '''
+        post search result
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+
+    user4 = User.objects.filter(id=user_id).first()
+    data = json.loads(request.body)
+    tmp_list = data['search']
+    for item in tmp_list:
+        tmp_search = Search(content=item)
+        tmp_search.save()
+    return JsonResponse({
+        'code': 200
+    }, status=200)
+
+
+@csrf_exempt
+def get_search(request):
+    '''
+        get search result
+    '''
+    print(1)
+    for item in Search.objects.all():
+        num = 365 * (datetime.now().year-item.create_time.year) + \
+              30 * (datetime.now().month - item.create_time.month)\
+              + datetime.now().day - item.create_time.day
+        if num > 365:
+            return JsonResponse({
+                'info': 'fake time'
+            })
+        if num > 10:
+            item.delete()
+
+    tmp_dict = {}
+    tmp_list = []
+    for item in Search.objects.all():
+        if item.content in tmp_dict:
+            tmp_dict[item.content] += 1
+        else:
+            tmp_dict[item.content] = 1
+            tmp_list.append(item.content)
+    tmp_list.sort(key=lambda elem: tmp_dict[elem])
+    tmp_list.reverse()
+    final_list = []
+    if len(tmp_list) < 10:
+        for item in tmp_list:
+            final_list.append(item)
+    else:
+        for i in range(0, 10):
+            final_list.append(tmp_list[i])
+    return JsonResponse({
+        'list': final_list
     }, status=200)

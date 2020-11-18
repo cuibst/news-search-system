@@ -16,5 +16,7 @@ urlpatterns = [
     path('views/', views.views, name='views'),
     path('getbehavior/', views.get_behavior, name='get_behavior'),
     path('getrecord/', views.get_record, name='get_record'),
-    path('postrecord/', views.post_record, name='post_record')
+    path('postrecord/', views.post_record, name='post_record'),
+    path('postsearch/', views.post_search, name='post_search'),
+    path('getsearch/', views.get_search, name='get_search')
 ]

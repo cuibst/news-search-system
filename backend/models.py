@@ -4,12 +4,15 @@ Models for backend
 # pylint: skip-file
 # Please remove these two comments after editing!
 from django.db import models
+import time
+
 
 class User(models.Model):
     name = models.CharField(max_length=20, default='unknown')
     password = models.CharField(max_length=20, default='unknown')
     email = models.CharField(max_length=30, default='unknown')
     phone_number = models.CharField(max_length=20, default='unknown')
+
 
 class News(models.Model):
     source = models.CharField(max_length=100, default='unknown')
@@ -24,13 +27,18 @@ class News(models.Model):
     summary = models.CharField(max_length=500, default='unknown')
     img = models.CharField(max_length=100, default='nothing')
 
+
 class Behavior(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_behavior", default='')
     content = models.CharField(max_length=100, default='')
 
+
 class Record(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_record", default='')
-    content = models.CharField(max_length=100,default='')
+    content = models.CharField(max_length=100, default='')
 
 
+class Search(models.Model):
+    content = models.CharField(max_length=100, default='')
+    create_time = models.DateTimeField(auto_now_add=True, null=True)
 # Create your models here.

@@ -77,7 +77,7 @@
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
                   <a :href="item.news_url" target="_blank">
                     <div style="width: 572px; height: 430px;overflow:hidden">
-                      <img :src="item.img" style="width:572px; height: 430px" alt="" srcset="">
+                      <img :src="item.img" style="width:572px;overflow:hidden" alt="" srcset="">
                     </div>
                     <div class="img_title_box">
                       <span class="img_title"> {{item.title}}</span>

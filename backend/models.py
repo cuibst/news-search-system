@@ -40,5 +40,5 @@ class Record(models.Model):
 
 class Search(models.Model):
     content = models.CharField(max_length=100, default='')
-    create_time = models.DateTimeField(auto_now_add=True, null=True)
+    create_time = models.CharField(max_length=100, default='')
 # Create your models here.

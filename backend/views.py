@@ -555,7 +555,7 @@ def post_search(request):
     data = json.loads(request.body)
     tmp_list = data['search']
     for item in tmp_list:
-        tmp_search = Search(content=item)
+        tmp_search = Search(content=item, create_time=str(time.time()))
         tmp_search.save()
     return JsonResponse({
         'code': 200
@@ -569,14 +569,8 @@ def get_search(request):
     '''
     print(1)
     for item in Search.objects.all():
-        num = 365 * (datetime.now().year-item.create_time.year) + \
-              30 * (datetime.now().month - item.create_time.month)\
-              + datetime.now().day - item.create_time.day
-        if num > 365:
-            return JsonResponse({
-                'info': 'fake time'
-            })
-        if num > 10:
+        num = time.time() - int(item.create_time)
+        if num > 10 * 24 * 60 * 60:
             item.delete()
 
     tmp_dict = {}

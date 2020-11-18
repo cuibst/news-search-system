@@ -344,3 +344,28 @@ class TestViews(TestCase):
         test_list = ['11', '10', '9', '8', '7', '6', '5', '4', '3', '2']
         self.assertEqual(data['length'], 10)
         self.assertEqual(data['data'], test_list)
+
+    def test_get_search(self):
+        '''
+            test get_search
+        '''
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        a.post('/api/views/', data={
+            'like': ['1', '2', '3', '4', '5']
+        }, content_type='application/json')
+        a.post('/api/views/', data={
+            'like': ['1', '2', '3', '4', '5']
+        }, content_type='application/json')
+        response = a.get('/api/getsearch/')
+        data = json.loads(response.content)
+        self.assertEqual(data['list'], ['5', '4', '3', '2', '1'])

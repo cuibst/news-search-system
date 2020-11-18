@@ -385,6 +385,8 @@ def views(request):
         print(item)
         tmp_behavior = Behavior(user=user1, content=item)
         tmp_behavior.save()
+        tmp_search = Search(content=item, create_time=str(time.time()))
+        tmp_search.save()
     return JsonResponse({
         'code': 200
     }, status=200)
@@ -528,48 +530,13 @@ def post_record(request):
 
 
 @csrf_exempt
-def post_search(request):
-    '''
-        post search result
-    '''
-    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
-    user_id = -1
-    with open('./backend/token.json', 'r', encoding='utf-8') as f:
-        tmp_dict = json.load(f)
-        for key, value in tmp_dict.items():
-            if token == value[0]:
-                if value[1] + TIME_OUT < time.time():
-                    return JsonResponse({
-                        'code': 403,
-                        'info': 'overdue token'
-                    }, status=200)
-                user_id = int(key)
-                break
-    if user_id == -1:
-        return JsonResponse({
-            'code': 403,
-            'info': 'invalid token'
-        }, status=200)
-
-    user4 = User.objects.filter(id=user_id).first()
-    data = json.loads(request.body)
-    tmp_list = data['search']
-    for item in tmp_list:
-        tmp_search = Search(content=item, create_time=str(time.time()))
-        tmp_search.save()
-    return JsonResponse({
-        'code': 200
-    }, status=200)
-
-
-@csrf_exempt
 def get_search(request):
     '''
         get search result
     '''
     print(1)
     for item in Search.objects.all():
-        num = time.time() - int(item.create_time)
+        num = time.time() - float(item.create_time)
         if num > 10 * 24 * 60 * 60:
             item.delete()
 

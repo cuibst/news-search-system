@@ -182,7 +182,7 @@ class TestViews(TestCase):
         b = Client(HTTP_AUTHENTICATION_TOKEN=token1)
         response = b.get('/api/user/')
         data = json.loads(response.content)
-        self.assertEqual(data['code'], 403)
+        self.assertEqual(data['code'], 401)
         self.assertEqual(data['info'], 'invalid token')
 
     def test_user_change(self):
@@ -262,7 +262,7 @@ class TestViews(TestCase):
             'like': ['1', '2', '3', '4', '5']
         }, content_type='application/json')
         data = json.loads(response.content)
-        self.assertEqual(data['code'], 403)
+        self.assertEqual(data['code'], 401)
         self.assertEqual(data['info'], 'invalid token')
 
     def test_get_behavior(self):

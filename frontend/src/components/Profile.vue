@@ -6,6 +6,12 @@
        <li>电子邮箱：&nbsp;{{user.email}}</li>
        <li>手机号码：&nbsp;{{user.phonenumber}}</li>
      </ul>
+     <h3 class="tit2">搜索记录 <span>History</span></h3>
+     <ul>
+       <li v-for="(item, index) in history" :key="index">
+         <span class="history" @click="search(item)">{{item}}</span>
+       </li>
+     </ul>
      <h3 class="tit2">猜你喜欢 <span>Like</span></h3>
      <el-row v-for="(item,index) in likenews" :key="index">
        <el-col :sm="24" :md="13">
@@ -31,7 +37,8 @@ export default {
   },
   data () {
     return {
-      likenews: []
+      likenews: [],
+      history: []
     }
   },
   created () {
@@ -46,6 +53,9 @@ export default {
       this.likenews = []
       console.log(error)
       alert('服务器忙')
+    })
+    axios.get('/api/getrecord/').then(ret => {
+      this.history = ret.data.data
     })
   },
   methods: {
@@ -114,5 +124,8 @@ ul li {
 .el-col{
   text-align: left;
   min-height: 100px;
+}
+.history{
+  cursor: pointer;
 }
 </style>

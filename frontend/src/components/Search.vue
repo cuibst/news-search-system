@@ -53,13 +53,13 @@
           </el-col>
         </el-col>
       </el-row>
-  </div>
-  <div class="content">
       <el-row>
-        <el-col :xs="18" :sm="12" :offset="2">
+        <el-col :xs="18" :sm="12" :offset="2" style="font-size:10px">
           共搜索到{{count}}个结果<span v-if="removecnt === 0">。</span><span v-else>，并为您去除了本页中的{{removecnt}}条重复结果</span>
         </el-col>
       </el-row>
+  </div>
+  <div class="content">
       <el-row>
         <el-col :xs="22" :sm="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">

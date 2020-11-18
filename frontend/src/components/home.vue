@@ -10,14 +10,14 @@
             <a href="#/register" class="login_btn" >注册</a>
           </el-col>
         </el-col>
-        <el-col :span="7" :offset="17" style="text-align:right;" v-if="login">
-          <el-col :span="14" class="head_nav_h" >
+        <div style="float:right;font-family:'pingfang'" v-if="login">
+          <div class="head_nav_user">
             欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
-          </el-col>
-          <el-col :span="10" class="head_nav_h" >
-            <span class="quit_btn" @click="quituser">退出登录</span>
-          </el-col>
-        </el-col>
+          </div>
+          <div class="head_nav_h" style="display:inline;float:right">
+            <div class="quit_btn" @click="quituser"> 退出登录</div>
+          </div>
+        </div>
       </el-row>
 
       <el-row class="search">
@@ -34,9 +34,6 @@
                 @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
-            </el-col>
-            <el-col :span="4" class="help">
-              <span>帮助</span>
             </el-col>
           </div>
         </el-col>
@@ -92,16 +89,16 @@
             <h3 class="tit2">热搜新闻词 <span>HOT WORDS</span></h3>
           </el-col>
           <el-col :span="24">
-            <el-col :span="8" class="news_word" @click.native="getsearch(hotwords[0])">{{hotwords[0]}}</el-col>
-            <el-col :span="8" class="news_word" @click.native="getsearch(hotwords[1])">{{hotwords[1]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[2])">{{hotwords[2]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[3])">{{hotwords[3]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[4])">{{hotwords[4]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[5])">{{hotwords[5]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[6])">{{hotwords[6]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[7])">{{hotwords[7]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[8])">{{hotwords[8]}}</el-col>
-            <el-col :span="4" class="news_word_small" @click.native="getsearch(hotwords[9])">{{hotwords[9]}}</el-col>
+            <el-col :span="8" class="news_word"  @click.native="getsearch(hotwords[0])">{{hotwords[0]}}</el-col>
+            <el-col :span="8" class="news_word1"  @click.native="getsearch(hotwords[1])">{{hotwords[1]}}</el-col>
+            <el-col :span="4" class="news_word_small"  @click.native="getsearch(hotwords[2])">{{hotwords[2]}}</el-col>
+            <el-col :span="4" class="news_word_small1"  @click.native="getsearch(hotwords[3])">{{hotwords[3]}}</el-col>
+            <el-col :span="4" class="news_word_small"  @click.native="getsearch(hotwords[4])">{{hotwords[4]}}</el-col>
+            <el-col :span="4" class="news_word_small1"  @click.native="getsearch(hotwords[5])">{{hotwords[5]}}</el-col>
+            <el-col :span="4" class="news_word_small"  @click.native="getsearch(hotwords[6])">{{hotwords[6]}}</el-col>
+            <el-col :span="4" class="news_word_small1"  @click.native="getsearch(hotwords[7])">{{hotwords[7]}}</el-col>
+            <el-col :span="4" class="news_word_small"  @click.native="getsearch(hotwords[8])">{{hotwords[8]}}</el-col>
+            <el-col :span="4" class="news_word_small1"  @click.native="getsearch(hotwords[9])">{{hotwords[9]}}</el-col>
           </el-col>
           <div v-show="login">
           <el-col :span="24">
@@ -298,6 +295,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../common/font/font.css';
 .login_btn {
   color: black
 }
@@ -496,30 +494,58 @@ export default {
 }
 .news_word{
     font-size: 18px;
-    background: #3064bb;
     padding:20px 10px;
     border:1px solid #fff;
+    background: #3064bb;
+    height:100px;
+    color: #fff;
+    text-align: center;
+    line-height: 24px;
+}
+.news_word1{
+    font-size: 18px;
+    padding:20px 10px;
+    border:1px solid #fff;
+    background: #6699c9;
     height:100px;
     color: #fff;
     text-align: center;
     line-height: 24px;
 }
 .news_word:hover{
-  background-color: green;
+  background-color:#003599;
+  cursor: pointer;
+}
+.news_word1:hover{
+  background-color:#003599;
   cursor: pointer;
 }
 .news_word_small{
     font-size: 14px;
-    background: #3064bb;
     padding:20px 12px;
     border:1px solid #fff;
+    background: #3064bb;
+    height:100px;
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+}
+.news_word_small1{
+    font-size: 14px;
+    padding:20px 12px;
+    border:1px solid #fff;
+    background: #6699c9;
     height:100px;
     color: #fff;
     text-align: center;
     line-height: 20px;
 }
 .news_word_small:hover{
-  background-color: green;
+  background-color:#003599;
+  cursor: pointer;
+}
+.news_word_small1:hover{
+  background-color:#003599;
   cursor: pointer;
 }
 .el-carousel__item:nth-child(2n) {

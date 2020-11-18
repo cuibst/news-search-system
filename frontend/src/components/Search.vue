@@ -44,8 +44,8 @@
                   搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="true">按相关排序</el-dropdown-item>
-                  <el-dropdown-item command="false">按时间排序</el-dropdown-item>
+                  <el-dropdown-item command="true" :class="time?'selected':''">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="false" :class="time?'':'selected'">按时间排序</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
           </el-col>
@@ -114,7 +114,7 @@ export default {
     }
   },
   methods: {
-    handleCommand: async function (command) {
+    handleCommand: function (command) {
       this.time = command === 'true'
       this.KeyChange(this.keyword)
     },
@@ -157,11 +157,7 @@ export default {
       axios.post('/api/postrecord',
         {
           content: newkey
-        }).then(ret => {
-        console.log(ret)
-      }, error => {
-        console.log(error)
-      })
+        })
     },
     search () {
       // 此处处理搜索路径变更
@@ -286,5 +282,9 @@ export default {
 .choice{
   padding-left: 10px;
   padding-top: 10px;
+}
+.selected{
+  background-color: rgb(64, 158, 255);
+  color: white
 }
 </style>

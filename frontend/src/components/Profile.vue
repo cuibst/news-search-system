@@ -6,8 +6,8 @@
        <li>电子邮箱：&nbsp;{{user.email}}</li>
        <li>手机号码：&nbsp;{{user.phonenumber}}</li>
      </ul>
-     <h3 class="tit2">搜索记录 <span>History</span></h3>
-     <ul>
+     <h3 class="tit2" v-if="length>0">搜索记录 <span>History</span></h3>
+     <ul v-if="length>0">
        <li v-for="(item, index) in history" :key="index">
          <span class="history" @click="search(item)">{{item}}</span>
        </li>
@@ -38,7 +38,8 @@ export default {
   data () {
     return {
       likenews: [],
-      history: []
+      history: [],
+      length: 0
     }
   },
   created () {
@@ -56,11 +57,18 @@ export default {
     })
     axios.get('/api/getrecord/').then(ret => {
       this.history = ret.data.data
+      this.length = ret.data.length
+    }, error => {
+      this.length = 0
+      console.log(error)
     })
   },
   methods: {
     goto (url) {
       window.open(url, '_blank')
+    },
+    search (keyword) {
+      this.$router.push({ name: 'SearchResult', params: { keyword: keyword } })
     }
   }
 }
@@ -127,5 +135,7 @@ ul li {
 }
 .history{
   cursor: pointer;
+  text-decoration: underline;
+  font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 </style>

@@ -30,11 +30,25 @@
             <el-col :span="8" class="searchinput">
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
-                v-model = "keyword"
+                v-model.lazy = "keyword"
                 @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
             </el-col>
+            <el-col :span="2">
+              <div> </div>
+            </el-col>
+            <el-col :span="4">
+              <el-dropdown @command="handleCommand" class="choice">
+                <span class="el-dropdown-link">
+                  搜索工具<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="true" :class="time?'selected':''">按相关排序</el-dropdown-item>
+                  <el-dropdown-item command="false" :class="time?'':'selected'">按时间排序</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+          </el-col>
         </el-col>
       </el-row>
   </div>
@@ -43,7 +57,7 @@
         <el-col :span="12" :offset="2">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
-              <h4 class="titles" v-html="item.title" @click="goto(item.news_url, item.category)">{{item.title}}</h4>
+              <h4 class="titles" v-html="item.title" @click="goto(item)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
               <el-col :span="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
                 <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
@@ -82,7 +96,8 @@ export default {
       infolist: [],
       currentpage: 1,
       pages: 0,
-      login: false
+      login: false,
+      time: false
     }
   },
   mounted () {
@@ -99,18 +114,35 @@ export default {
     }
   },
   methods: {
-    goto (url, type) {
+    handleCommand: function (command) {
+      this.time = command === 'true'
+      this.KeyChange(this.keyword)
+    },
+    goto: async function (item) {
+      var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
+      var particle = []
+      var totest = item.summary + item.title
+      var r = reg.exec(totest)
+      while (r) {
+        if (particle.indexOf(r[1]) === -1) {
+          particle.push(r[1])
+        }
+        totest = totest.replace(reg, '')
+        r = reg.exec(totest)
+      }
+      console.log(particle)
       axios.post('/api/views/',
         {
-          news_type: type
+          like: particle
         })
-      window.open(url, '_blank')
+      window.open(item.news_url, '_blank')
     },
     KeyChange: async function (newkey) {
       await axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
-            query: newkey
+            query: newkey,
+            time: this.time
           }
         }).then(ret => {
         this.infolist = ret.data.infolist
@@ -122,6 +154,10 @@ export default {
         this.infolist = []
         alert('服务器忙')
       })
+      axios.post('/api/postrecord',
+        {
+          content: newkey
+        })
     },
     search () {
       // 此处处理搜索路径变更
@@ -133,7 +169,8 @@ export default {
         {
           params: {
             query: this.keyword,
-            start: (currentPage - 1) * 20
+            start: (currentPage - 1) * 20,
+            time: this.time
           }
         }).then(ret => {
         this.infolist = ret.data.infolist
@@ -236,5 +273,20 @@ export default {
   color: black;
   text-decoration: underline;
   cursor: pointer;
+}
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
+}
+.choice{
+  padding-left: 10px;
+  padding-top: 10px;
+}
+.selected{
+  background-color: rgb(64, 158, 255);
+  color: white
 }
 </style>

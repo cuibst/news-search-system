@@ -18,7 +18,9 @@ from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-from .models import User, News
+from bs4 import BeautifulSoup
+from .models import User, News, Behavior, Record
+
 
 # Create your views here.
 HEADER = {'typ': 'JWP', 'alg': 'default'}
@@ -59,7 +61,6 @@ def login(request):
     login
     '''
     if request.method == 'POST':
-
         data = json.loads(request.body)
         name = data['username']
         password = data['password']
@@ -78,7 +79,7 @@ def login(request):
                 tmp_dict = json.load(f)
                 print(tmp_dict)
                 print("________________________________________________________")
-                tmp_dict[str(user.id)] = (token, time.time())
+                tmp_dict[str(user.id)] = [token, time.time()]
                 print(tmp_dict)
                 f.close()
             with open('./backend/token.json', 'w') as f:
@@ -252,9 +253,14 @@ def get_news(request):
     for news in News.objects.order_by('-pk').filter(Q(img__startswith='https') & cat_query)[:5]:
         data = news_to_dict(news)
         imgnews_list.append(data)
-    for news in News.objects.order_by('-pk').filter(cat_query)[:20]:
+    for news in News.objects.order_by('-pk').filter(cat_query)[:25]:
+        if len(textnews_list) >= 20:
+            break
         data = news_to_dict(news)
-        textnews_list.append(data)
+        if data not in imgnews_list:
+            textnews_list.append(data)
+        else:
+            continue
     response_data = {
         'data': {
             'imgnews': imgnews_list,
@@ -289,9 +295,11 @@ def user_change(request):
                 'code': 403,
                 'info': "invalid token"
             }, status=200)
+        print("------------------------")
+        print(user_id)
         user = User.objects.filter(id=user_id).first()
         data = json.loads(request.body)
-
+        print(user.password)
         if data['oldpasswd'] != user.password:
             return JsonResponse({
                 'code': 402
@@ -302,6 +310,7 @@ def user_change(request):
         if data['password'] != '':
             user.password = data['password']
         if user.name == data['username']:
+            user.save()
             return JsonResponse({
                 'code': 200
             }, status=200)
@@ -310,7 +319,8 @@ def user_change(request):
             user.name = data['username']
             user.save()
             return JsonResponse({
-                'code': 200
+                'code': 200,
+                'info': 'name changed'
             }, status=200)
         return JsonResponse({
             'code': 401
@@ -347,4 +357,197 @@ def user(request):
             'phonenumber': user.phone_number,
             'email': user.email
         }
-    })
+    }, status=200)
+
+
+@csrf_exempt
+def views(request):
+    '''
+        record what the user like
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    user1 = User.objects.filter(id=user_id).first()
+    print(user1.id)
+    data = json.loads(request.body)
+    tmp_list = data['like']
+    for item in tmp_list:
+        print(item)
+        tmp_behavior = Behavior(user=user1, content=item)
+        tmp_behavior.save()
+    return JsonResponse({
+        'code': 200
+    }, status=200)
+
+
+@csrf_exempt
+def get_behavior(request):
+    '''
+        get what the user may like
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    user1 = User.objects.filter(id=user_id).first()
+    tmp_dict1 = {}
+    tmp_list = []
+    for item in user1.user_behavior.all():
+        if item in tmp_dict1:
+            tmp_dict1[item.content] += 1
+        else:
+            tmp_dict1[item.content] = 1
+            tmp_list.append(item.content)
+    print(tmp_dict1)
+    tmp_list.sort(key=lambda elem: tmp_dict1[elem])
+
+    if len(tmp_list) < 5:
+        return JsonResponse({
+            'list': tmp_list,
+            'length': len(tmp_list)
+        }, status=200)
+    final_list = []
+    print(final_list)
+    for i in range(0, 5):
+        final_list.append(tmp_list[i])
+    return JsonResponse({
+        'list': final_list,
+        'length': 5
+    }, status=200)
+
+
+@csrf_exempt
+def get_record(request):
+    '''
+        get users' search history
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    print(user_id)
+    user3 = User.objects.filter(id=user_id).first()
+    length = user3.user_record.count()
+    tmp_list = []
+    for i in user3.user_record.all():
+        tmp_list.append(i.content)
+    tmp_list.reverse()
+    return JsonResponse({
+        'length': length,
+        'data': tmp_list
+    }, status=200)
+
+
+@csrf_exempt
+def post_record(request):
+    '''
+        post users' search history
+    '''
+    print(1)
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 403,
+                        'info': 'overdue token'
+                    }, status=200)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 403,
+            'info': 'invalid token'
+        }, status=200)
+    print(user_id)
+    user2 = User.objects.filter(id=user_id).first()
+    data = json.loads(request.body)
+    content = data['content']
+    record = Record(user=user2, content=content)
+    for item in user2.user_record.all():
+        if item.content == content:
+            item.delete()
+            record.save()
+            return JsonResponse({
+                'code': 200,
+                'info': 'repeat search'
+            }, status=200)
+    record.save()
+    num = user2.user_record.count()
+    if num > 10:
+        user2.user_record.first().delete()
+        return JsonResponse({
+            'code': 200,
+            'info': 'replace one'
+        }, status=200)
+    return JsonResponse({
+        'code': 200,
+        'info': 'save successfully'
+    }, status=200)
+
+@csrf_exempt
+def get_hotwords(request):
+    '''
+    crawl hotwords from baidu news
+    '''
+    baidunews_url = 'https://news.baidu.com/'
+    response = requests.get(url=baidunews_url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    soup.encode('utf-8')
+    hotwords = soup.select('a.hotwords_li_a')
+    hotwords_list = []
+    for hotword in hotwords:
+        hotwords_list.append(hotword.text)
+    return_data = {
+        'data': hotwords_list
+    }
+    return JsonResponse(return_data, json_dumps_params={
+        'ensure_ascii': False
+    }, status=200, charset='utf-8')

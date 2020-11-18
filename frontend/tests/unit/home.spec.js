@@ -11,9 +11,6 @@ Vue.prototype.$store = store
 
 describe('homepage.vue', () => {
   it('deal correctly with network failure', async () => {
-    mockAxios.get.mockImplementationOnce(() => {
-      return Promise.reject(Error('Network Failure'))
-    })
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const router = new VueRouter()
@@ -23,9 +20,6 @@ describe('homepage.vue', () => {
     })
     await flushPromises()
     expect(JSON.stringify(wrapper.vm.imgnews)).toBe('[]')
-    mockAxios.get.mockImplementationOnce(() => {
-      return Promise.reject(Error('Network Failure'))
-    })
     wrapper.vm.selectclass(1)
     console.log('This is network failure' + wrapper.vm.textnews)
     await flushPromises()
@@ -61,6 +55,13 @@ describe('homepage.vue', () => {
               { news_id: 'qq_20201028A01PVT00', news_url: 'https://new.qq.com/omn/20201028/20201028A01PVT00.html', title: '保定检法联手 力促行政争议实质性化解', source: 'qq', category: 'politics', media: '河北检察', tags: '保定,保定市检察院,涿州市', pub_date: '2020-10-28 08:09:33', summary: '河北检察公众号ID：hbsjcy近日，保定市检察院、保定市中级法院与涿州市检察院、涿州市法院以及保定莲池区法院组成联合办案组，针对一起工商行政登记纠纷行政争议案件，在涿州市行政争议化解中心召开行政争……', img: 'https://inews.gtimg.com/newsapp_bt/0/12681291106/1000' }
             ]
           }
+        }
+      })
+    })
+    mockAxios.get.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          data: ['习近平出席中央全面依法治国工作会议', '习近平出席金砖国家领导人第十二次会晤', '北方暴雪南方多地气温超31度', '国家邮政局回应信息泄露', '中国新冠肺炎疫苗研发进展', '钟睒睒再次成为中国首富', '我爱我家回应接盘蛋壳公寓', '山东被虐待致死女子表哥发声', '湖南一餐馆发生爆炸', '印度教徒趴地让200多头牛踩']
         }
       })
     })
@@ -181,6 +182,13 @@ describe('homepage.vue', () => {
         }
       })
     })
+    mockAxios.get.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          data: ['习近平出席中央全面依法治国工作会议', '习近平出席金砖国家领导人第十二次会晤', '北方暴雪南方多地气温超31度', '国家邮政局回应信息泄露', '中国新冠肺炎疫苗研发进展', '钟睒睒再次成为中国首富', '我爱我家回应接盘蛋壳公寓', '山东被虐待致死女子表哥发声', '湖南一餐馆发生爆炸', '印度教徒趴地让200多头牛踩']
+        }
+      })
+    })
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const routes = [
@@ -198,6 +206,6 @@ describe('homepage.vue', () => {
     wrapper.vm.keyword = 'Iphone12'
     const button = wrapper.find('.btn_search')
     button.trigger('click')
-    wrapper.vm.search()
+    wrapper.vm.getsearch('美团')
   })
 })

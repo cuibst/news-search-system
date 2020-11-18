@@ -63,7 +63,7 @@
               <ul v-for="(item,index) in textnews" :key="index" >
                 <li @click="goto(item.news_url)">
                   <i class="dot"></i>
-                  <span>{{item.title}}</span>
+                  <span :style="{'font-weight': index%5==0?'bold':''}">{{item.title}}</span>
                 </li>
               </ul>
             </div>
@@ -77,7 +77,7 @@
                 <el-carousel-item v-for="(item,index) in imgnews" :key="index">
                   <a :href="item.news_url" target="_blank">
                     <div style="width: 572px; height: 430px;overflow:hidden">
-                      <img :src="item.img" style="width:572px;overflow:hidden" alt="" srcset="">
+                      <img :src="item.img" style="width:572px;min-height: 430px" alt="" srcset="">
                     </div>
                     <div class="img_title_box">
                       <span class="img_title"> {{item.title}}</span>
@@ -244,33 +244,33 @@ export default {
     window.addEventListener('scroll', this.handleScrollx, true)
   },
   created () {
-    this.login = (typeof (this.$store.state.token) !== 'undefined') && (this.$store.state.token !== '')
-    var that = this
-    axios.get('/api/getnews/',
-      {
-        params: {
-          type: 0
-        }
-      }).then(ret => {
-      that.imgnews = ret.data.data.imgnews
-      that.textnews = ret.data.data.textnews
-      that.likewords = ret.data.data.likeword || '习近平'
-      this.getLikenews()
-    }, error => {
-      that.imgnews = []
-      that.textnews = []
-      that.likewords = '习近平'
-      console.log(error)
-      alert('服务器忙')
-    })
-    axios.get('/api/gethotwords/').then(
-      ret => {
-        this.hotwords = ret.data.data
-      }, error => {
-        console.log(error)
-        this.hotwords = []
-      }
-    )
+    // this.login = (typeof (this.$store.state.token) !== 'undefined') && (this.$store.state.token !== '')
+    // var that = this
+    // axios.get('/api/getnews/',
+    //   {
+    //     params: {
+    //       type: 0
+    //     }
+    //   }).then(ret => {
+    //   that.imgnews = ret.data.data.imgnews
+    //   that.textnews = ret.data.data.textnews
+    //   that.likewords = ret.data.data.likeword || '习近平'
+    //   this.getLikenews()
+    // }, error => {
+    //   that.imgnews = []
+    //   that.textnews = []
+    //   that.likewords = '习近平'
+    //   console.log(error)
+    //   alert('服务器忙')
+    // })
+    // axios.get('/api/gethotwords/').then(
+    //   ret => {
+    //     this.hotwords = ret.data.data
+    //   }, error => {
+    //     console.log(error)
+    //     this.hotwords = []
+    //   }
+    // )
   },
   data () {
     return {
@@ -282,7 +282,12 @@ export default {
       activenav: 0,
       selactive: 0,
       navlist: ['要闻', '政治', '财经', '科技', '军事', '社会', '教育', '运动', '娱乐', '生活'],
-      imgnews: [],
+      imgnews: [
+        {
+          img: 'https://inews.gtimg.com/newsapp_bt/0/12788413894/1000',
+          title: '以"要回爸妈帮我保管的钱"为理由'
+        }
+      ],
       textnews: [],
       likenews: [],
       likeimgnews: {},

@@ -18,6 +18,7 @@ class NewsPipeline:
     # 以后要将查重工作提前到爬取之前
     current_dir_path = Path(__file__).parent
     news_list = []
+    news_id_set = set()
     news_capacity = 20
     upload_news_url = 'https://news-search-system-rzotgorz.app.secoder.net/api/uploadnews/'
 
@@ -26,6 +27,7 @@ class NewsPipeline:
         called when the spider is open
         '''
         self.news_list.clear()
+        self.news_id_set.clear()
         print(spider.name, 'opened.')
 
     def process_item(self, item, spider): #pylint: disable=unused-argument
@@ -38,7 +40,11 @@ class NewsPipeline:
                 'data': self.news_list
             }, headers={'Content-Type': 'application/json'}, timeout=100)
             self.news_list.clear()
-        self.news_list.append(dict(item))
+            self.news_id_set.clear()
+        item_dict = dict(item)
+        if item_dict['news_id'] not in self.news_id_set:
+            self.news_id_set.add(item_dict['news_id'])
+            self.news_list.append(dict(item))
         return item
 
     def close_spider(self, spider):

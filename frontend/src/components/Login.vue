@@ -1,10 +1,5 @@
 <template>
   <div class="login_container">
-    <div class="text">
-      <span>tg新闻</span>
-      <br>
-      <span>发现全球新闻</span>
-    </div>
     <div class="login_box">
       <!-- 头像区域 -->
       <div class="avatar_box">
@@ -149,6 +144,11 @@ export default {
 .text{
   color: white;
   font-size: 50px;
-  transform: translate(40%,0%);
+  transform: translate(50%,150%);
+  font-family: "黑体";
+}
+
+.text1{
+  transform: translate(4%,70%);
 }
 </style>

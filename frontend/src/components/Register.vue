@@ -1,10 +1,13 @@
 <template>
   <div class="login_container">
-    <div class="left">
-      <img src="https://passport.baidu.com/static/passpc-account/img/reg_bg_min.jpg" class="back">
-    </div>
     <div class="login_box">
       <!-- 头像区域 -->
+      <div class="welcome">
+        欢迎注册
+        <div class="for-regist">
+          已有账户？<a href='#/login'>登录</a>
+        </div>
+      </div>
       <div class="avatar_box">
         <img src="../assets/logo.png">
       </div>
@@ -141,14 +144,22 @@ export default {
 
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
+@import '../common/font/font.css';
 .login_container {
   background-color: #66CCFF;
   height: 100%;
+  background-image:url("../assets/background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+  background-size: contain;
+  -webkit-background-size: cover;/* 兼容Webkit内核浏览器如Chrome和Safari */
+  -o-background-size: cover;/* 兼容Opera */
 }
 
 .login_box {
   width: 340px;
-  height: 700px;
+  height: 800px;
   background-color: rgba(255,255,255,.9);
   border-radius: 30px;
   position: absolute;
@@ -189,23 +200,20 @@ export default {
 
 .login-form {
   position: absolute;
-  top: 40%;
+  top: 45%;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
-.left{
-  float: left;
-  width: 100%;
-  height: 100%;
-  left: 0.1%;
-  position: relative;
-  display: block;
+.welcome{
+  font-family: "pingfang";
+  font-size: 30px;
+  transform: translate(5%,50%);
+  font-weight:bold
 }
 
-.back{
-  height: 100%;
-  width: 100%;
+.for-regist{
+  font-size: 15px;
 }
 </style>

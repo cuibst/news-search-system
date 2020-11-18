@@ -2,7 +2,6 @@
 Extra Settings
 '''
 import os
-import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,7 +15,7 @@ DATABASES = {
         'NAME': 'news',
         'USER': 'postgres',
         'PASSWORD': '12345678',
-        'HOST': 'localhost',
+        'HOST': 'postgres.rzotgorz.secoder.local',
         'PORT': '5432',
     },
 }

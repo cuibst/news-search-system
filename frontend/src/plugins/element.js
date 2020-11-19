@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Button, Container, Header, Aside, Main, Col, Row, Input, Form, FormItem, Message, Carousel, CarouselItem, Pagination, Menu, MenuItem, Submenu, Dropdown, DropdownItem, DropdownMenu } from 'element-ui'
+import { Button, Container, Header, Aside, Main, Col, Row, Input, Form, FormItem, Message, Carousel, CarouselItem, Pagination, Menu, MenuItem, Submenu, Dropdown, DropdownItem, DropdownMenu, Autocomplete } from 'element-ui'
 
 Vue.use(Button)
 Vue.use(Container)
@@ -20,4 +20,5 @@ Vue.use(Submenu)
 Vue.use(Dropdown)
 Vue.use(DropdownItem)
 Vue.use(DropdownMenu)
+Vue.use(Autocomplete)
 Vue.prototype.$message = Message

@@ -3,7 +3,7 @@
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
         <el-col :span="6"  :offset="18" style="text-align:right;min-width:200px" v-if="!login">
-          <el-col :span="4"  class="head_nav_h"  >
+          <el-col :span="4"  :offset="16" class="head_nav_h"  >
             <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
           <el-col :span="4"  class="head_nav_h"  >
@@ -26,14 +26,17 @@
             <el-col :span="4">
               <img src="@/assets/logo3.png" id="logo" alt="">
             </el-col>
-            <el-col :span="16">
-              <el-input
-                class="searchinput"
+            <el-col :span="16" :offset="-2">
+              <el-autocomplete
+                class="inline-input searchinput"
+                :fetch-suggestions="querySearch"
                 placeholder="请输入内容"
                 v-model="keyword"
-                @keyup.enter.native="search">
+                @keyup.enter.native="search"
+                style="width: 100%"
+                >
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
-              </el-input>
+              </el-autocomplete>
             </el-col>
           </div>
         </el-col>
@@ -186,7 +189,6 @@ export default {
       })
     },
     getLikenews () {
-      console.log(this.likewords)
       axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
@@ -194,7 +196,6 @@ export default {
           }
         }).then(ret => {
         this.likenews = ret.data.infolist
-        console.log(ret.data.infolist)
         var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
         var j = 0
         var len = 0
@@ -207,7 +208,7 @@ export default {
         }
         this.likenews = this.unique(this.likenews)
         for (j = 0, len = this.likenews.length; j < len; j++) {
-          if (this.likenews[j].img !== 'empty' && this.likenews[j].img !== 'unknown img') {
+          if (this.likenews[j].img !== 'empty' && this.likenews[j].img !== 'unknown img' && this.likenews[j].img.indexOf('http://') === -1) {
             this.likeimgnews = this.likenews[j]
             this.likenews.splice(j, 1)
             break
@@ -239,6 +240,20 @@ export default {
       this.$store.commit('rm_token')
       this.login = false
       document.location = '#/home'
+    },
+    querySearch (queryString, cb) {
+      var history = this.history
+      var result = queryString ? history.filter(this.createFilter(queryString)) : history.slice(0, 10)
+      var results = []
+      for (const item of result) {
+        results.push({ value: item })
+      }
+      cb(results)
+    },
+    createFilter (queryString) {
+      return (history) => {
+        return (history.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
     }
   },
   mounted () {
@@ -272,6 +287,12 @@ export default {
         this.hotwords = []
       }
     )
+    axios.get('/api/getrecord/').then(ret => {
+      this.history = ret.data.data
+    }, error => {
+      this.history = []
+      console.log(error)
+    })
   },
   data () {
     return {
@@ -288,7 +309,8 @@ export default {
       likenews: [],
       likeimgnews: {},
       likewords: '',
-      hotwords: []
+      hotwords: [],
+      history: []
     }
   }
 }

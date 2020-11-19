@@ -1,7 +1,7 @@
 <template>
 <div>
-<el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="!login" >
-  <el-col :span="6"  :offset="18" style="text-align:right;">
+<el-row style="padding:10px; border-bottom:1px solid #ccc;" >
+  <el-col :span="6"  :offset="18" style="text-align:right;" v-if="!login">
       <el-col :span="4"  :offset="16" class="head_nav_h"  >
         <div class="head_btn" @click="tologin">登录</div>
       </el-col>
@@ -9,16 +9,14 @@
         <div class="head_btn" @click="toregister">注册</div>
       </el-col>
   </el-col>
-</el-row>
-<el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="login" >
-  <el-col :span="7" :offset="17" style="text-align:right;">
-    <el-col :span="14" class="head_nav_h" >
-      欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
-    </el-col>
-    <el-col :span="10" class="head_nav_h" >
-      <div class="head_btn" @click="quituser">退出登录</div>
-    </el-col>
-  </el-col>
+  <div style="float:right;font-family:'pingfang'" v-if="login">
+    <div class="head_nav_user">
+      欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+    </div>
+    <div class="head_nav_h" style="display:inline;float:right">
+      <div class="quit_btn" @click="quituser"> 退出登录</div>
+    </div>
+  </div>
 </el-row>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
@@ -128,6 +126,7 @@ export default {
       this.KeyChange(this.keyword)
     },
     goto: async function (item) {
+      // 此处将用户关注的新闻分词提取出来
       var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
       var particle = []
       var totest = item.summary + item.title

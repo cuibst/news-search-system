@@ -3,7 +3,7 @@
     <el-container>
     <el-aside :style="'width: '+ ((offsetWid > 400)? '140px' : '60px')" >
       <a href="/" class="index">
-          <img src="../assets/logo3.png" width="90%">
+          <img src="../assets/logo3.png" width="60%" style="margin-top:30px">
       </a>
       <el-menu default-active="1" class="el-menu-vertial-demo"
        @select="changeindex" style="margin-top:20px; padding-top:0; border:0" :collapse="offsetWid < 400">
@@ -72,7 +72,6 @@ export default {
       that.offsetWid = document.documentElement.clientWidth || screen.width
     })
     this.getUser()
-    console.log('width:' + ((this.offsetWid > 400) ? '140px' : '30px'))
   },
   methods: {
     getUser: function () {

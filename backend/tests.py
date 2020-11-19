@@ -129,35 +129,37 @@ class TestViews(TestCase):
         '''
             Test /api/uploadnews/
         '''
-        news = News(source='1', news_url='2', category='3',
-                    media='7', tags='6', title='5', news_id='4',
-                    pub_date='8', content='9', summary='10', img='11')
-        news.save()
+        news_rep = News(source='source_rep', news_url='news_url_rep', category='category_rep',
+                        media='media_rep', tags='tags_rep', title='title_rep', news_id='news_id_rep',
+                        pub_date='pub_date_rep', content=['content1_rep', 'content2_rep'],
+                        summary='summary_rep', img='img_rep')
+        news_rep.save()
+        post_news_error = {
+            "source": "source_test",
+            "news_url": "news_url_test",
+            "category": "category_test",
+            "media": "media_test",
+            "tags": "tags_test",
+            "title": "title_test",
+            "pub_date": "pub_date_test",
+            "content": "content_test",
+            "summary": "summary_test",
+        }
+        post_news_rep = post_news_error.copy()
+        post_news_rep['news_id'] = 'news_id_rep'
+        post_news_rep['img'] = 'img_test'
+        post_news_suc = post_news_error.copy()
+        post_news_suc['news_id'] = 'news_id_suc'
+        post_news_suc['img'] = 'img_test'
+        post_news_error['news_id'] = 'news_id_error'
         response = self.client.post('/api/uploadnews/', data={
-            'data': [
-                {
-                    "source": "1",
-                    "news_url": "d",
-                    "category": "a",
-                    "media": "11",
-                    "tags": "12",
-                    "title": "112",
-                    "news_id": "4",
-                    "pub_date": "255",
-                    "content": "2333",
-                    "summary": "9080",
-                    "img": "9878",
-                    "test": True
-                }
-            ]
+            'data': [post_news_suc, post_news_rep, post_news_error]
         }, content_type='application/json')
-
-        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(data['code'], 200)
-        self.assertEqual(data['info'], 'Preserve process finished.')
         self.assertEqual(data['total_repetitive'], 1)
-        news.delete()
+        self.assertEqual(data['total_success'], 1)
+        self.assertEqual(data['total_error'], 1)
+        news_rep.delete()
 
     def test_user(self):
         '''

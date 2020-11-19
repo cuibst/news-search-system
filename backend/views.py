@@ -155,7 +155,10 @@ def upload_news(request):
                 'tags', 'pub_date', 'summary', 'img']
     news_id_dict = {'news_id': []}
     print("### Start to filter valid news:", datetime.now())
+    tmp_news = News.objects.all()[0]
+    print('### Exist news_id:', tmp_news.news_id)
     rep_news_list = News.objects.values('news_id').filter(news_id__in=origin_news_id_list)
+    print("### origin_news_id_list", origin_news_id_list)
     rep_news_id_list = [news['news_id'] for news in rep_news_list]
     total_repetitive = len(rep_news_id_list)
     print("###", rep_news_id_list)
@@ -178,14 +181,15 @@ def upload_news(request):
         if error:
             total_error += 1
             error_list.append(data['news_id'])
-        news_id_dict['news_id'].append(data['news_id'])
-        news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
-                    media=data['media'], tags=data['tags'], title=data['title'],
-                    news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
-                    content=str(content), summary=data['summary'])
-        news.full_clean()
-        news.save()
-        total_success += 1
+        else:
+            news_id_dict['news_id'].append(data['news_id'])
+            news = News(source=data['source'], news_url=data['news_url'], category=data['category'],
+                        media=data['media'], tags=data['tags'], title=data['title'],
+                        news_id=data['news_id'], img=data['img'], pub_date=data['pub_date'],
+                        content=str(content), summary=data['summary'])
+            news.full_clean()
+            news.save()
+            total_success += 1
     print("### Valid news found:", datetime.now())
     print("### Start to send request to lucene:", datetime.now())
     lucene_url = "https://news-search-lucene-rzotgorz.app.secoder.net/index/add"

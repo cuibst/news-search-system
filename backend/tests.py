@@ -400,6 +400,40 @@ class TestViews(TestCase):
         self.assertEqual(data['length'], 10)
         self.assertEqual(data['data'], test_list)
 
+    def test_delete_record(self):
+        '''
+            test delete record
+        '''
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        a = Client(HTTP_AUTHENTICATION_TOKEN='123456')
+        response = a.delete('/api/deleterecord/')
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 401)
+        self.assertEqual(data['info'], 'invalid token')
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        for i in range(1, 12):
+            a.post('/api/postrecord/', data={
+                'content': str(i)
+            }, content_type='application/json')
+        response = a.delete('/api/deleterecord/')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['code'], 200)
+        self.assertEqual(data['info'], 'Record deleted successfully')
+        response = a.get('/api/getrecord/')
+        data = json.loads(response.content)
+        self.assertEqual(data['length'], 0)
+
     def test_get_hotwords(self):
         '''
         test for get_hotwords() function in views.py

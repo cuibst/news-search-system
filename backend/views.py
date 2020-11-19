@@ -539,6 +539,37 @@ def get_record(request):
         'data': tmp_list
     }, status=200)
 
+@csrf_exempt
+def delete_record(request):
+    '''
+        delete users' search history
+    '''
+    token = request.META.get('HTTP_AUTHENTICATION_TOKEN')
+    user_id = -1
+    with open('./backend/token.json', 'r', encoding='utf-8') as f:
+        tmp_dict = json.load(f)
+        for key, value in tmp_dict.items():
+            if token == value[0]:
+                if value[1] + TIME_OUT < time.time():
+                    return JsonResponse({
+                        'code': 401,
+                        'info': 'overdue token'
+                    }, status=401)
+                user_id = int(key)
+                break
+    if user_id == -1:
+        return JsonResponse({
+            'code': 401,
+            'info': 'invalid token'
+        }, status=401)
+    print(user_id)
+    user = User.objects.filter(id=user_id).first()
+    Record.objects.filter(user=user).delete()
+    return JsonResponse({
+        'code': 200,
+        'info': 'Record deleted successfully'
+    }, status=200)
+
 
 @csrf_exempt
 def post_record(request):

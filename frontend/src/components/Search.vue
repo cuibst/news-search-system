@@ -10,16 +10,14 @@
       </el-col>
   </el-col>
 </el-row>
-<el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="login" >
-  <el-col :span="7" :offset="17" style="text-align:right;">
-    <el-col :span="14" class="head_nav_h" >
-      欢迎您,<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
-    </el-col>
-    <el-col :span="10" class="head_nav_h" >
-      <div class="head_btn" @click="quituser">退出登录</div>
-    </el-col>
-  </el-col>
-</el-row>
+<div style="float:right;font-family:'pingfang'" v-if="login">
+  <div class="head_nav_user">
+    欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+  </div>
+  <div class="head_nav_h" style="display:inline;float:right">
+    <div class="quit_btn" @click="quituser"> 退出登录</div>
+  </div>
+</div>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>

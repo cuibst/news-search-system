@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import mockAxios from '../__mocks__/axios'
-
+import '../../src/plugins/element.js'
 describe('Profile.vue', () => {
   it('it renders data successfully', async () => {
     mockAxios.get.mockImplementationOnce(() => {

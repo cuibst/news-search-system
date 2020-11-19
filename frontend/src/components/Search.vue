@@ -1,23 +1,23 @@
 <template>
 <div>
-<el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="!login" >
-  <el-col :span="6"  :offset="18" style="text-align:right;">
-      <el-col :span="4"  :offset="16" class="head_nav_h">
+<el-row style="padding:10px; border-bottom:1px solid #ccc;" >
+  <el-col :span="6"  :offset="18" style="text-align:right;" v-if="!login">
+      <el-col :span="4"  :offset="16" class="head_nav_h" >
         <div class="head_btn" @click="tologin">登录</div>
       </el-col>
       <el-col :span="4"  class="head_nav_h"  >
         <div class="head_btn" @click="toregister">注册</div>
       </el-col>
   </el-col>
+  <div style="float:right;font-family:'pingfang'" v-if="login">
+    <div class="head_nav_user">
+      欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
+    </div>
+    <div class="head_nav_h" style="display:inline;float:right">
+      <div class="quit_btn" @click="quituser"> 退出登录</div>
+    </div>
+  </div>
 </el-row>
-<div style="float:right;font-family:'pingfang'" v-if="login">
-  <div class="head_nav_user">
-    欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
-  </div>
-  <div class="head_nav_h" style="display:inline;float:right">
-    <div class="quit_btn" @click="quituser"> 退出登录</div>
-  </div>
-</div>
 <div style="padding:  1rem;" class="news">
   <div class="nav">
       <el-row>
@@ -28,12 +28,17 @@
               </a>
             </el-col>
             <el-col :xs="{span: 10, offset: 4}" :sm="8" class="searchinput">
-              <el-input placeholder = "请输入内容"
+              <el-autocomplete
+                class="inline-input searchinput"
                 suffix-icon = "el-icon-search"
-                v-model.lazy = "keyword"
-                @keyup.enter.native="search">
+                :fetch-suggestions="querySearch"
+                placeholder="请输入内容"
+                v-model.lazy="keyword"
+                @keyup.enter.native="search"
+                style="width: 100%"
+                >
                 <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
-              </el-input>
+              </el-autocomplete>
             </el-col>
             <el-col :xs="10" :sm="4">
               <el-dropdown @command="handleCommand" class="choice">
@@ -64,7 +69,7 @@
               <el-col :xs="12" :sm="12" :md="5" v-if="(item.img!='empty'&&item.img!='unknown img'&&item.source!='xinhua')">
                 <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
               </el-col>
-              <el-col :xs="20" :sm="20" :md="(item.img=='empty'||item.img=='unknown img')?24:19" class="news_info">
+              <el-col :xs="20" :sm="20" :md="(item.img=='empty'||item.img=='unknown img'||item.source=='xinhua')?24:19" class="news_info">
                 <div>
                   <span class="srouces">{{item.media}}</span>
                   <span class="publish_time">{{item.pub_date}}</span>
@@ -101,7 +106,8 @@ export default {
       count: 0,
       removecnt: 0,
       login: false,
-      time: false
+      time: false,
+      history: []
     }
   },
   mounted () {
@@ -109,6 +115,7 @@ export default {
     this.keyword = this.$route.params.keyword
     document.title = this.$route.meta.title + this.keyword
     this.KeyChange(this.keyword)
+    this.getHistory()
   },
 
   watch: {
@@ -123,6 +130,7 @@ export default {
       this.KeyChange(this.keyword)
     },
     goto: async function (item) {
+      // 此处将用户关注的新闻分词提取出来
       var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
       var particle = []
       var totest = item.summary + item.title
@@ -169,6 +177,15 @@ export default {
           content: newkey
         })
     },
+    getHistory () {
+      axios.get('/api/getrecord/').then(ret => {
+        console.log(history)
+        this.history = ret.data.data
+      }, error => {
+        this.history = []
+        console.log(error)
+      })
+    },
     search () {
       // 此处处理搜索路径变更
       this.$router.push({ name: 'SearchResult', params: { keyword: this.keyword } })
@@ -207,6 +224,20 @@ export default {
     },
     toregister () {
       document.location = '#/register'
+    },
+    querySearch (queryString, cb) {
+      var history = this.history
+      var result = queryString ? history.filter(this.createFilter(queryString)) : history.slice(0, 10)
+      var results = []
+      for (const item of result) {
+        results.push({ value: item })
+      }
+      cb(results)
+    },
+    createFilter (queryString) {
+      return (history) => {
+        return (history.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
     }
   }
 }

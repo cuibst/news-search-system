@@ -3,7 +3,7 @@
     <div>
       <el-row style="padding:10px; border-bottom:1px solid #ccc;">
         <el-col :span="6"  :offset="18" style="text-align:right;min-width:200px" v-if="!login">
-          <el-col :span="4"  class="head_nav_h"  >
+          <el-col :span="4"  :offset="16" class="head_nav_h"  >
             <a href="#/userhome" class="login_btn" >登录</a>
           </el-col>
           <el-col :span="4"  class="head_nav_h"  >
@@ -26,15 +26,18 @@
             <el-col :span="4">
               <img src="@/assets/logo3.png" id="logo" alt="">
             </el-col>
-            <el-col :span="16">
-              <el-input
-                class="searchinput"
+            <el-col :span="16" :offset="-2">
+              <el-autocomplete
+                class="inline-input searchinput"
+                :fetch-suggestions="querySearch"
                 suffix-icon = "el-icon-search"
                 placeholder="请输入内容"
                 v-model.lazy="keyword"
-                @keyup.enter.native="search">
+                @keyup.enter.native="search"
+                style="width: 100%"
+                >
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
-              </el-input>
+              </el-autocomplete>
             </el-col>
           </div>
         </el-col>
@@ -165,10 +168,10 @@ export default {
       const res = new Map()
       return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
     },
-    selectclass (index) {
+    selectclass: async function (index) {
       this.activenav = index
       var that = this
-      axios.get('/api/getnews/',
+      await axios.get('/api/getnews/',
         {
           params: {
             type: index
@@ -185,6 +188,7 @@ export default {
         console.log(error)
         alert('服务器忙')
       })
+      scrollTo(0, 0)
     },
     getLikenews () {
       axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
@@ -206,13 +210,13 @@ export default {
         }
         this.likenews = this.unique(this.likenews)
         for (j = 0, len = this.likenews.length; j < len; j++) {
-          if (this.likenews[j].img !== 'empty' && this.likenews[j].img !== 'unknown img') {
+          if (this.likenews[j].img !== 'empty' && this.likenews[j].img !== 'unknown img' && this.likenews[j].img.indexOf('http://') === -1) {
             this.likeimgnews = this.likenews[j]
             this.likenews.splice(j, 1)
             break
           }
         }
-        this.likenews = this.likenews.slice(0, (this.likenews.length > 10) ? 10 : (this.likenews.length))
+        this.likenews = this.likenews.slice(0, (this.likenews.length > 6) ? 6 : (this.likenews.length))
       }, error => {
         this.likenews = this.imgnews
         console.log(error)
@@ -238,6 +242,20 @@ export default {
       this.$store.commit('rm_token')
       this.login = false
       document.location = '#/home'
+    },
+    querySearch (queryString, cb) {
+      var history = this.history
+      var result = queryString ? history.filter(this.createFilter(queryString)) : history.slice(0, 10)
+      var results = []
+      for (const item of result) {
+        results.push({ value: item })
+      }
+      cb(results)
+    },
+    createFilter (queryString) {
+      return (history) => {
+        return (history.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
     }
   },
   mounted () {
@@ -271,6 +289,12 @@ export default {
         this.hotwords = []
       }
     )
+    axios.get('/api/getrecord/').then(ret => {
+      this.history = ret.data.data
+    }, error => {
+      this.history = []
+      console.log(error)
+    })
   },
   data () {
     return {
@@ -287,7 +311,8 @@ export default {
       likenews: [],
       likeimgnews: {},
       likewords: '',
-      hotwords: []
+      hotwords: [],
+      history: []
     }
   }
 }
@@ -459,7 +484,7 @@ export default {
   position:absolute;
   width:100%;
   height:100px;
-  bottom: -14%;
+  bottom: -15%;
   left: 0%;
   background-color: rgba(0, 0, 0, 0.466);
   color: white;
@@ -468,6 +493,7 @@ export default {
 }
 .img_title{
   font-weight: bold;
+  font-size: 15px;
   opacity: 1;
 }
 .img_tit:hover{

@@ -167,10 +167,10 @@ export default {
       const res = new Map()
       return arr.filter((arr) => !res.has(arr.title) && res.set(arr.title, 1))
     },
-    selectclass (index) {
+    selectclass: async function (index) {
       this.activenav = index
       var that = this
-      axios.get('/api/getnews/',
+      await axios.get('/api/getnews/',
         {
           params: {
             type: index
@@ -187,6 +187,7 @@ export default {
         console.log(error)
         alert('服务器忙')
       })
+      scrollTo(0, 0)
     },
     getLikenews () {
       axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
@@ -214,7 +215,7 @@ export default {
             break
           }
         }
-        this.likenews = this.likenews.slice(0, (this.likenews.length > 10) ? 10 : (this.likenews.length))
+        this.likenews = this.likenews.slice(0, (this.likenews.length > 6) ? 6 : (this.likenews.length))
       }, error => {
         this.likenews = this.imgnews
         console.log(error)
@@ -489,7 +490,7 @@ export default {
   position:absolute;
   width:100%;
   height:100px;
-  bottom: -14%;
+  bottom: -15%;
   left: 0%;
   background-color: rgba(0, 0, 0, 0.466);
   color: white;
@@ -498,6 +499,7 @@ export default {
 }
 .img_title{
   font-weight: bold;
+  font-size: 15px;
   opacity: 1;
 }
 .img_tit:hover{

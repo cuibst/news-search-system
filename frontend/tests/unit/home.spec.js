@@ -68,6 +68,13 @@ describe('homepage.vue', () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
+          data: ['12', 'Iphone12']
+        }
+      })
+    })
+    mockAxios.get.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
           code: 200,
           count: 60,
           infolist: [
@@ -103,6 +110,11 @@ describe('homepage.vue', () => {
       localVue
     })
     await flushPromises()
+    wrapper.setData({
+      keyword: '12'
+    })
+    wrapper.vm.querySearch('12', (index) => { console.log(index) })
+    wrapper.vm.querySearch('', (index) => { console.log(index) })
     wrapper.vm.handleScrollx()
     expect(wrapper.find('.nav').exists()).toBe(true)
     wrapper.vm.handleScrollx(scroll, 300)
@@ -168,7 +180,7 @@ describe('homepage.vue', () => {
               { news_id: 'qq_20201028A01PVG00', news_url: 'https://new.qq.com/omn/20201028/20201028A01PVG00.html', title: '泰信互联网基金净值上涨1.37％ 请保持关注', source: 'qq', category: 'finance', media: '基金异动', tags: '基金,泰信,腾讯,沪深300指数,累计净值', pub_date: '2020-10-28 08:10:13', summary: '腾讯基金10月27日讯，泰信互联网基金（代码001978）公布最新净值，数据显示，泰信互联网净值上涨1.37%。本基金单位净值为1.623元，累计净值为1.623元。泰信互联网基金近一周下跌2.11……', img: 'empty' },
               { news_id: 'xinhua_1125921046', news_url: 'http://www.jx.xinhuanet.com/2020-04/29/c_1125921046.htm', title: '购房补贴全部发放 契税补贴暂不考虑', source: 'xinhua', category: 'other', media: '新华网', tags: 'unknown tags', pub_date: '2020-04-29 09:29:28', summary: '购房者期盼2016年施行的鼓励购房举措及时落地，抚州市临川区相关部门给说法。', img: 'empty' },
               { news_id: 'qq_20201028A01PVK00', news_url: 'https://new.qq.com/omn/20201028/20201028A01PVK00.html', title: '长盛创新基金净值上涨1.27％ 请保持关注', source: 'qq', category: 'finance', media: '基金异动', tags: '基金,长盛', pub_date: '2020-10-28 08:10:14', summary: '腾讯基金10月27日讯，长盛创新基金（代码004745）公布最新净值，数据显示，长盛创新净值上涨1.27%。本基金单位净值为1.5107元，累计净值为1.5107元。长盛创新基金近一周下跌1.11%……', img: 'empty' },
-              { news_id: 'xinhua_1125921005', news_url: 'http://www.jx.xinhuanet.com/2020-04/29/c_1125921005.htm', title: '给住宅楼加装电梯 这里的居民办成了', source: 'xinhua', category: 'other', media: '新华网', tags: 'unknown tags', pub_date: '2020-04-29 09:29:28', summary: '加装电梯，筹集资金也是关键的一步。', img: 'http://www.jx.xinhuanet.com/2020-04/29/1125921005_15881220717831n.jpg' },
+              { news_id: 'xinhua_1125921005', news_url: 'http://www.jx.xinhuanet.com/2020-04/29/c_1125921005.htm', title: '给住宅楼加装电梯 这里的居民办成了', source: 'xinhua', category: 'other', media: '新华网', tags: 'unknown tags', pub_date: '2020-04-29 09:29:28', summary: '加装电梯，筹集资金也是关键的一步。', img: 'https://www.jx.xinhuanet.com/2020-04/29/1125921005_15881220717831n.jpg' },
               { news_id: 'qq_20201028A01PVM00', news_url: 'https://new.qq.com/omn/20201028/20201028A01PVM00.html', title: '弘阳服务：曾焕沙物业掘金14亿｜物业造富', source: 'qq', category: 'finance', media: '乐居财经', tags: '弘阳服务,曾焕沙,物业,弘阳地产,弘阳集团', pub_date: '2020-10-28 08:10:14', summary: '编者按：31家上市物企，超过7成发布了股权激励计划。不同企业的激励方案有何特色，成效如何？上市造就多少富豪？乐居财经“物业造富”系列，解码物企股权激励和造富生态。本期关注弘阳服务。乐居财经 ……', img: 'empty' },
               { news_id: 'xinhua_1125906738', news_url: 'http://www.jx.xinhuanet.com/2020-04/26/c_1125906738.htm', title: 'LPR迎史上最大降息——你的房贷少还多少', source: 'xinhua', category: 'other', media: '新华网', tags: 'unknown tags', pub_date: '2020-04-26 10:31:46', summary: '4月，LPR迎来史上最大幅度的降息。', img: 'empty' },
               { news_id: 'qq_20201028A01PW100', news_url: 'https://new.qq.com/omn/20201028/20201028A01PW100.html', title: '华夏军工安全基金净值上涨1.02％ 请保持关注', source: 'qq', category: 'finance', media: '基金异动', tags: '基金,华夏', pub_date: '2020-10-28 08:10:17', summary: '腾讯基金10月27日讯，华夏军工安全基金（代码002251）公布最新净值，数据显示，华夏军工安全净值上涨1.02%。本基金单位净值为1.384元，累计净值为1.384元。华夏军工安全基金近一周下跌4……', img: 'empty' },
@@ -189,6 +201,13 @@ describe('homepage.vue', () => {
         }
       })
     })
+    mockAxios.get.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
+          data: []
+        }
+      })
+    })
     const localVue = createLocalVue()
     localVue.use(VueRouter)
     const routes = [
@@ -203,9 +222,12 @@ describe('homepage.vue', () => {
       localVue
     })
     await flushPromises()
-    wrapper.vm.keyword = 'Iphone12'
     const button = wrapper.find('.btn_search')
     button.trigger('click')
     wrapper.vm.getsearch('美团')
+    wrapper.setData({
+      keyword: '12'
+    })
+    wrapper.vm.querySearch('12', (index) => { console.log(index) })
   })
 })

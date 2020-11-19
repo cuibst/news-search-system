@@ -16,6 +16,7 @@ urlpatterns = [
     path('views/', views.views, name='views'),
     path('getbehavior/', views.get_behavior, name='get_behavior'),
     path('getrecord/', views.get_record, name='get_record'),
+    path('deleterecord/', views.delete_record, name='delete_record'),
     path('postrecord/', views.post_record, name='post_record'),
     path('gethotwords/', views.get_hotwords, name='get_hotwords'),
     path('getsearch/', views.get_search, name='get_search')

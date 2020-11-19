@@ -29,8 +29,9 @@
             <el-col :span="16">
               <el-input
                 class="searchinput"
+                suffix-icon = "el-icon-search"
                 placeholder="请输入内容"
-                v-model="keyword"
+                v-model.lazy="keyword"
                 @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-input>
@@ -186,7 +187,6 @@ export default {
       })
     },
     getLikenews () {
-      console.log(this.likewords)
       axios.get('https://news-search-lucene-rzotgorz.app.secoder.net/index/search',
         {
           params: {
@@ -194,7 +194,6 @@ export default {
           }
         }).then(ret => {
         this.likenews = ret.data.infolist
-        console.log(ret.data.infolist)
         var reg = new RegExp('<span style="color:#F96600">(.+?)</span>')
         var j = 0
         var len = 0
@@ -327,13 +326,6 @@ export default {
   height:50px;
   transform: translate(0,-10%);
 }
-.btn_search{
-      background-color: #4e6ef2 !important;
-      color:#fff !important;
-      border-radius: 0;
-      padding: 14px 15px !important;
-      border: none !important;
-}
 .type:hover{
   background-color: crimson;
   cursor: pointer;
@@ -346,9 +338,9 @@ export default {
 .btn_search{
   background-color: #4e6ef2 !important;
   color:#fff !important;
-  border-radius: 0;
-  padding: 14px 15px !important;
-  border: none !important;
+  border-radius: 2px;
+  padding: 13px 20px !important;
+  border: 1px !important;
 }
 .help{
     text-align: center;

@@ -127,6 +127,13 @@ describe('Search.vue', () => {
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
+          data: ['合', '合体']
+        }
+      })
+    })
+    mockAxios.get.mockImplementationOnce(() => {
+      return Promise.resolve({
+        data: {
           code: 200,
           count: 60,
           infolist: [
@@ -171,6 +178,12 @@ describe('Search.vue', () => {
       router,
       localVue
     })
+    await flushPromises()
+    wrapper.setData({
+      keyword: '合'
+    })
+    wrapper.vm.querySearch('合', (index) => { console.log(index) })
+    wrapper.vm.querySearch('', (index) => { console.log(index) })
     mockAxios.get.mockImplementationOnce(() => {
       return Promise.resolve({
         data: {
@@ -201,7 +214,6 @@ describe('Search.vue', () => {
         }
       })
     })
-    await flushPromises()
     wrapper.vm.KeyChange('合肥')
     const button = wrapper.find('.el-button')
     button.trigger('click')

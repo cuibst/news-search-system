@@ -18,6 +18,7 @@ def parse_item(response):
     :return:
     '''
     # 从新闻页爬取信息，传递给pipelines
+    print('### parse item called')
     url = response.request.url
     script_list = response.xpath('/html/head//script/text()').extract()
     news_brief_info = None
@@ -69,6 +70,28 @@ def parse_item(response):
         return
 
 
+class QqHeadSpider(Spider):
+    '''
+    spider for qq head website
+    '''
+    name = 'qq_head'
+    allowed_domains = ['new.qq.com']
+    current_dir_path = Path(__file__).parent
+    start_urls = ['https://www.qq.com']
+
+    def parse(self, response, **kwargs):
+        '''
+        parse useful urls from response from qq head page
+        '''
+        href_list = response.xpath('//a/@href').extract()
+        for href in href_list:
+            if re.match(r'https://new\.qq\.com/omn/20\d{6}/20\d{6}\w{6}00\.html', href):
+                yield Request(url=str(href), callback=parse_item)
+            elif re.match(r'https://new\.qq\.com/rain/a/20\d{6}\w{6}00', href):
+                yield Request(url=str(href), callback=parse_item)
+
+
+
 class QqIncSpider(Spider):
     '''
     The spider for qq news info
@@ -112,8 +135,8 @@ class QqIncSpider(Spider):
             match_obj = re.match(r'https://new\.qq\.com/omn/20\d{6}/(20\d{6}\w{6}00)\.html', dic['url'])
             if match_obj:
                 rain_url = 'https://new.qq.com/rain/a/' + match_obj.group(1)
-                yield Request(rain_url, callback=parse_item)
-                yield Request(dic['url'], callback=parse_item)
+                yield Request(url=rain_url, callback=parse_item)
+                yield Request(url=dic['url'], callback=parse_item)
 
 
 class QqFullSpider(Spider):

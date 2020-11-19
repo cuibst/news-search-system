@@ -2,7 +2,7 @@
 <div>
 <el-row style="padding:10px; border-bottom:1px solid #ccc;" v-if="!login" >
   <el-col :span="6"  :offset="18" style="text-align:right;">
-      <el-col :span="4"  :offset="16" class="head_nav_h"  >
+      <el-col :span="4"  :offset="16" class="head_nav_h">
         <div class="head_btn" @click="tologin">登录</div>
       </el-col>
       <el-col :span="4"  class="head_nav_h"  >
@@ -27,16 +27,13 @@
                 <img src="@/assets/logo3.png" alt="" class="searchlogo" width="100%" height="100%" >
               </a>
             </el-col>
-            <el-col :xs="{span: 20, offset: 2}" :sm="8" class="searchinput">
+            <el-col :xs="{span: 10, offset: 4}" :sm="8" class="searchinput">
               <el-input placeholder = "请输入内容"
                 suffix-icon = "el-icon-search"
                 v-model.lazy = "keyword"
                 @keyup.enter.native="search">
                 <el-button slot="append" class="btn_search" @click="search">搜索</el-button>
               </el-input>
-            </el-col>
-            <el-col :span="2">
-              <div> </div>
             </el-col>
             <el-col :xs="10" :sm="4">
               <el-dropdown @command="handleCommand" class="choice">
@@ -52,19 +49,19 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :xs="18" :sm="12" :offset="2" style="font-size:10px">
+        <el-col :xs="{span: 18, offset: 4}" :sm="{span: 18, offset: 6}" :lg=" {span: 18, offset: 4}" style="font-size:10px">
           共搜索到{{count}}个结果<span v-if="removecnt === 0">。</span><span v-else>，并为您去除了本页中的{{removecnt}}条重复结果</span>
         </el-col>
       </el-row>
   </div>
   <div class="content">
       <el-row>
-        <el-col :xs="22" :sm="12" :offset="2">
+        <el-col :xs="22" :sm="12" :offset="4">
           <el-col :span="24" v-for="(item,index) in infolist" :key="index">
             <div class="box">
               <h4 class="titles" v-html="item.title" @click="goto(item)">{{item.title}}</h4>
               <!-- Do not show anything if no image in the web -->
-              <el-col :xs="12" :sm="12" :md="5" v-if="(item.img!='empty'&&item.img!='unknown img')">
+              <el-col :xs="12" :sm="12" :md="5" v-if="(item.img!='empty'&&item.img!='unknown img'&&item.source!='xinhua')">
                 <div :style="{'background-image': 'url('+item.img+')' }" class="news_img"></div>
               </el-col>
               <el-col :xs="20" :sm="20" :md="(item.img=='empty'||item.img=='unknown img')?24:19" class="news_info">
@@ -245,6 +242,7 @@ export default {
 .box{
   line-height: 25px;
   overflow: hidden;
+  padding: 20px 0;
 }
 .titles{
   text-decoration:underline;

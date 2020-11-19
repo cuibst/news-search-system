@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -13,14 +12,17 @@ export default new Vuex.Store({
     set_token (state, data) {
       state.token = data.token
       state.username = data.username
-      sessionStorage.token = data.token
-      sessionStorage.username = data.username
+      var exdate = new Date()
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000)
+      window.document.cookie = 'token' + '=' + data.token + ';path=/;expires=' + exdate.toGMTString()
+      window.document.cookie = 'username' + '=' + data.username + ';path=/;expires=' + exdate.toGMTString()
     },
-    // 删除口令
     rm_token (state) {
       state.token = ''
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('username')
+      var exdate = new Date()
+      exdate.setTime(exdate.getTime() - 1)
+      window.document.cookie = 'token=' + ' ;expires=' + exdate
+      window.document.cookie = 'username=' + ' ;expires=' + exdate
     }
   }
 })

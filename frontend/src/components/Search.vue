@@ -14,7 +14,7 @@
       欢迎您，<a href="#/user" class="login_btn">{{this.$store.state.username}}</a>
     </div>
     <div class="head_nav_h" style="display:inline;float:right">
-      <div class="quit_btn" @click="quituser"> 退出登录</div>
+      <div class="head_btn" @click="quituser"> 退出登录</div>
     </div>
   </div>
 </el-row>
@@ -180,7 +180,6 @@ export default {
     },
     getHistory () {
       axios.get('/api/getrecord/').then(ret => {
-        console.log(history)
         this.history = ret.data.data
       }, error => {
         this.history = []
@@ -338,4 +337,5 @@ export default {
   background-color: rgb(64, 158, 255);
   color: white
 }
+
 </style>

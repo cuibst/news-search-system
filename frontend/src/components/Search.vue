@@ -273,6 +273,7 @@ export default {
 .box{
   line-height: 25px;
   overflow: hidden;
+  padding: 20px 0;
 }
 .titles{
   text-decoration:underline;

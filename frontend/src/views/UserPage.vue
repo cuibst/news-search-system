@@ -67,10 +67,7 @@ export default {
   },
   mounted () {
     this.offsetWid = document.documentElement.clientWidth || screen.width
-    const that = this
-    window.addEventListener('resize', () => {
-      that.offsetWid = document.documentElement.clientWidth || screen.width
-    })
+    window.addEventListener('resize', this.resize())
     this.getUser()
   },
   methods: {
@@ -85,6 +82,9 @@ export default {
     changeindex: function (index) {
       this.getUser()
       this.activeindex = index
+    },
+    resize () {
+      this.offsetWid = document.documentElement.clientWidth || screen.width
     }
   }
 }

@@ -30,8 +30,9 @@
               <el-autocomplete
                 class="inline-input searchinput"
                 :fetch-suggestions="querySearch"
+                suffix-icon = "el-icon-search"
                 placeholder="请输入内容"
-                v-model="keyword"
+                v-model.lazy="keyword"
                 @keyup.enter.native="search"
                 style="width: 100%"
                 >
@@ -350,13 +351,6 @@ export default {
   height:50px;
   transform: translate(0,-10%);
 }
-.btn_search{
-      background-color: #4e6ef2 !important;
-      color:#fff !important;
-      border-radius: 0;
-      padding: 14px 15px !important;
-      border: none !important;
-}
 .type:hover{
   background-color: crimson;
   cursor: pointer;
@@ -369,9 +363,9 @@ export default {
 .btn_search{
   background-color: #4e6ef2 !important;
   color:#fff !important;
-  border-radius: 0;
-  padding: 14px 15px !important;
-  border: none !important;
+  border-radius: 2px;
+  padding: 13px 20px !important;
+  border: 1px !important;
 }
 .help{
     text-align: center;

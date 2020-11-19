@@ -301,6 +301,16 @@ class TestViews(TestCase):
         '''
         test for getnews() in views.py
         '''
+        # add test news
+        for i in range(50):
+            news = News(source='source_test', news_url='news_url_test',
+                        category='politics', media='media_test', tags='tags_test',
+                        title='title_test', news_id='news_id_test_' + str(i),
+                        pub_date='pub_date_test', content=['content1_test', 'content2_test'],
+                        summary='summary_test',
+                        img='https://inews.gtimg.com/newsapp_bt/0/12785958623/1000')
+            news.save()
+        # add test user
         user = User(name='1', password='12')
         user.save()
         self.client.post('/api/login/', data={
@@ -311,17 +321,20 @@ class TestViews(TestCase):
             tmp_dict = json.load(f)
         k = str(user.id)
         token = tmp_dict[k][0]
-        tmp_behavior = Behavior(user=user, content='1')
-        tmp_behavior.save()
-        tmp_behavior2 = Behavior(user=user, content='2')
-        tmp_behavior2.save()
-        tmp_behavior3 = Behavior(user=user, content='2')
-        tmp_behavior3.save()
+        content_list = ['1', '2', '2']
+        for i in range(3):
+            tmp_behavior = Behavior(user=user, content=content_list[i])
+            tmp_behavior.save()
         a = Client(HTTP_AUTHENTICATION_TOKEN=token)
-        response = a.get('/api/getnews/')
-        data = json.loads(response.content)
-        assert 'imgnews' in data['data']
-        assert 'textnews' in data['data']
+        url_list = ['/api/getnews/', '/api/getnews/?type=1', '/api/getnews/?type=20']
+        for url in url_list:
+            response = a.get(url)
+            data = json.loads(response.content)
+            assert len(data['data']['imgnews']) > 0
+            assert len(data['data']['textnews']) > 0
+        for news in News.objects.all():
+            news.delete()
+
 
 
     def test_post_record(self):

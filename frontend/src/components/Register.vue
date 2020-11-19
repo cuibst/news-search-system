@@ -2,6 +2,12 @@
   <div class="login_container">
     <div class="login_box">
       <!-- 头像区域 -->
+      <div class="welcome">
+        欢迎注册
+        <div class="for-regist">
+          已有账户？<a href='#/login'>登录</a>
+        </div>
+      </div>
       <div class="avatar_box">
         <img src="../assets/logo.png">
       </div>
@@ -138,23 +144,31 @@ export default {
 
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
+@import '../common/font/font.css';
 .login_container {
   background-color: #66CCFF;
   height: 100%;
+  background-image:url("../assets/background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+  background-size: contain;
+  -webkit-background-size: cover;/* 兼容Webkit内核浏览器如Chrome和Safari */
+  -o-background-size: cover;/* 兼容Opera */
 }
 
 .login_box {
-  width: 450px;
-  height: 500px;
-  background-color: aliceblue;
+  width: 340px;
+  height: 800px;
+  background-color: rgba(255,255,255,.9);
   border-radius: 30px;
   position: absolute;
-  left: 50%;
+  right: 0;
   top: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-30%,-50%);
   .avatar_box{
-    height: 130px;
-    width: 130px;
+    height: 22%;
+    width: 50%;
     background-color: aliceblue;
     border: 1px solid #eeeeee;
     border-radius: 50%;
@@ -162,7 +176,7 @@ export default {
     box-shadow: 0 0 10px #dddddd;
     position: absolute;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%,30%);
     img {
       width: 100%;
       height: 100%;
@@ -181,14 +195,25 @@ export default {
 .logbtn {
   display: flex;
   justify-content: flex-end;
+  transform: translate(0,60%);
 }
 
 .login-form {
   position: absolute;
-  top: 100px;
+  top: 45%;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
+.welcome{
+  font-family: "pingfang";
+  font-size: 30px;
+  transform: translate(5%,50%);
+  font-weight:bold
+}
+
+.for-regist{
+  font-size: 15px;
+}
 </style>

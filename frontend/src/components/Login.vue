@@ -9,16 +9,23 @@
       <el-form class="login-form">
         <!--用户名-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-user" v-model="username"></el-input>
+          <el-input prefix-icon="el-icon-user" v-model="username" placeholder="请输入您的用户名"></el-input>
         </el-form-item>
+        <br>
         <!--密码-->
         <el-form-item>
-          <el-input prefix-icon="el-icon-view" show-password v-model="password"></el-input>
+          <el-input prefix-icon="el-icon-view" show-password
+            v-model="password" placeholder="请输入您的密码" class="password" @keyup.enter.native="sendlogin"></el-input>
         </el-form-item>
         <!--按钮-->
-        <el-form-item class="logbtn">
-          <el-button type="primary" @click="sendlogin">登录</el-button>
+        <br>
+        <br>
+        <el-form-item style="text-align:center">
+          <el-button type="primary"  round @click="sendlogin" class="logbtn">登 录</el-button>
         </el-form-item>
+        <div class="for-regist">
+          还没有账户？<a href='#/register'>注册</a>
+        </div>
       </el-form>
     </div>
   </div>
@@ -32,8 +39,7 @@ export default {
   data () {
     return {
       username: '',
-      password: '',
-      lastURL: '/#/sample'
+      password: ''
     }
   },
   methods: {
@@ -43,9 +49,9 @@ export default {
         password: this.password
       }).then(ret => {
         if (ret.data.code === 200) {
-          window.sessionStorage.setItem('token', ret.data.Token)
+          this.$store.commit('set_token', { token: ret.data.Token, username: this.username })
           this.$message.success('登陆成功')
-          document.location = '/#/sample'
+          this.$emit('succeed')
         } else {
           this.password = ''
           this.$message.error('错误的用户名或密码')
@@ -55,11 +61,6 @@ export default {
         this.$message.error('网络连接错误')
       })
     }
-  },
-  route: {
-    canActivate (transition) {
-      this.lastURL = transition.from.path
-    }
   }
 }
 </script>
@@ -67,22 +68,29 @@ export default {
 <style lang="less" scoped>
 @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
 .login_container {
-  background-color: #66CCFF;
   height: 100%;
+  background-color:aliceblue;
+  background-image:url("../assets/background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+  background-size: contain;
+  -webkit-background-size: cover;/* 兼容Webkit内核浏览器如Chrome和Safari */
+  -o-background-size: cover;/* 兼容Opera */
 }
 
 .login_box {
-  width: 450px;
-  height: 300px;
-  background-color: aliceblue;
-  border-radius: 30px;
+  width: 340px;
+  height: 540px;
+  background-color: rgba(255,255,255,.9);
+  border-radius: 10px;
   position: absolute;
-  left: 50%;
+  right: 0;
   top: 50%;
   transform: translate(-50%,-50%);
   .avatar_box{
-    height: 130px;
-    width: 130px;
+    height: 22%;
+    width: 40%;
     background-color: aliceblue;
     border: 1px solid #eeeeee;
     border-radius: 50%;
@@ -90,7 +98,7 @@ export default {
     box-shadow: 0 0 10px #dddddd;
     position: absolute;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%,40%);
     img {
       width: 100%;
       height: 100%;
@@ -107,14 +115,41 @@ export default {
 }
 
 .logbtn {
-  display: flex;
-  justify-content: flex-end;
+  width: 50%;
+  transform: translate(0,-100%);
 }
+
 .login-form {
   position: absolute;
-  bottom: 0;
+  top: 45%;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
+}
+
+/deep/ .el-input__inner{
+          height: 45px;
+        }
+
+.for-regist {
+  margin-right : 1pc;
+  display: flex;
+  justify-content: flex-end;
+  transform: translate(-25%,30%);
+}
+
+.password{
+  transform: translate(0,-30%);
+}
+
+.text{
+  color: white;
+  font-size: 50px;
+  transform: translate(50%,150%);
+  font-family: "黑体";
+}
+
+.text1{
+  transform: translate(4%,70%);
 }
 </style>

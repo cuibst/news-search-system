@@ -85,6 +85,7 @@ describe('Profile.vue', () => {
       }
     })
     await flushPromises()
+    wrapper.vm.senddelete()
     expect(wrapper.html()).toContain('b@bat.com')
     wrapper.vm.goto('https://www.meituan.com/')
   })
@@ -96,6 +97,9 @@ describe('Profile.vue', () => {
       return Promise.reject(Error('Network Failed'))
     })
     mockAxios.get.mockImplementationOnce(() => {
+      return Promise.reject(Error('Network Failure'))
+    })
+    mockAxios.delete.mockImplementationOnce(() => {
       return Promise.reject(Error('Network Failure'))
     })
     const localVue = createLocalVue()
@@ -113,5 +117,6 @@ describe('Profile.vue', () => {
     wrapper.vm.getLikenews()
     await flushPromises()
     expect(JSON.stringify(wrapper.vm.likenews)).toBe('[]')
+    wrapper.vm.senddelete()
   })
 })

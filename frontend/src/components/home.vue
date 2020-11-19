@@ -35,6 +35,7 @@
                 v-model.lazy="keyword"
                 @keyup.enter.native="search"
                 style="width: 100%"
+                @select="search"
                 >
                 <el-button slot="append" class="btn_search" @click="search">Search</el-button>
               </el-autocomplete>

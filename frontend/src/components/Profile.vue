@@ -6,7 +6,10 @@
        <li>电子邮箱：&nbsp;{{user.email}}</li>
        <li>手机号码：&nbsp;{{user.phonenumber}}</li>
      </ul>
-     <h3 class="tit2" v-if="length>0">搜索记录 <span>History</span></h3>
+     <h3 class="tit2" v-if="length>0">
+       搜索记录 <span>History</span>
+       <div class="delete" style="display:inline;float:right" @click="senddelete">清空记录</div>
+     </h3>
      <ul v-if="length>0">
        <li v-for="(item, index) in history" :key="index">
          <span class="history" @click="search(item)">{{item}}</span>
@@ -99,6 +102,18 @@ export default {
         this.likenews = []
         console.log(error)
       })
+    },
+    senddelete () {
+      axios.delete('/api/deleterecord/').then(
+        ret => {
+          this.length = 0
+          this.history = []
+          this.$message.success('清除成功')
+        }, error => {
+          alert('删除失败')
+          console.log(error)
+        }
+      )
     }
   }
 }
@@ -132,9 +147,15 @@ ul li {
     position: relative;
     top: 1px;
     padding-left: 5px;
-    font: 500 20px/25px arial,sans-serif;
+    font: 500 22px/27px arial,sans-serif;
     -webkit-font-smoothing: antialiased;
     color: #999;
+}
+.delete{
+  text-align: right;
+  cursor: pointer;
+  color:black;
+  font: 580 15px/20px arial,sans-serif;
 }
 .el-row{
   margin-top: 10px;

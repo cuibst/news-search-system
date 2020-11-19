@@ -442,11 +442,9 @@ def views(request):
     tmp_list = data['like']
     print(tmp_list)
     for item in tmp_list:
-
         tmp_behavior = Behavior(user=user1, content=item)
         tmp_behavior.save()
         print(item)
-
     return JsonResponse({
         'code': 200
     }, status=200)

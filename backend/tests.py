@@ -8,7 +8,7 @@ import json
 import requests
 from django.test import TestCase
 from django.test import Client
-from backend.models import User, News
+from backend.models import User, News, Behavior, Record
 from backend.views import news_to_dict
 
 # Create your tests here.
@@ -299,10 +299,29 @@ class TestViews(TestCase):
         '''
         test for getnews() in views.py
         '''
-        response = self.client.get('/api/getnews/')
+        user = User(name='1', password='12')
+        user.save()
+        self.client.post('/api/login/', data={
+            'username': '1',
+            'password': '12'
+        }, content_type='application/json')
+        with open('./backend/token.json', 'r', encoding='utf-8') as f:
+            tmp_dict = json.load(f)
+        k = str(user.id)
+        token = tmp_dict[k][0]
+        tmp_behavior = Behavior(user=user, content='1')
+        tmp_behavior.save()
+        tmp_behavior2 = Behavior(user=user, content='2')
+        tmp_behavior2.save()
+        tmp_behavior3 = Behavior(user=user, content='2')
+        tmp_behavior3.save()
+        a = Client(HTTP_AUTHENTICATION_TOKEN=token)
+        response = a.get('/api/getnews/')
         data = json.loads(response.content)
         assert 'imgnews' in data['data']
         assert 'textnews' in data['data']
+
+
     def test_post_record(self):
         '''
             test post_record

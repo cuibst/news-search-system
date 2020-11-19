@@ -10,10 +10,22 @@ import '../assets/styles/global.css'
 import store from '../store'
 
 Vue.use(VueRouter)
-if (sessionStorage.getItem('token')) {
+
+if (window.document.cookie) {
+  var arr = window.document.cookie.split('; ')
+  var username = ''
+  var token = ''
+  for (var i = 0; i < arr.length; i++) {
+    var arr2 = arr[i].split('=')
+    if (arr2[0] === 'username') {
+      username = arr2[1]
+    } else if (arr2[0] === 'token') {
+      token = arr2[1]
+    }
+  }
   store.commit('set_token', {
-    token: sessionStorage.getItem('token'),
-    username: sessionStorage.getItem('username')
+    token: token,
+    username: username
   })
 }
 const routes = [
